@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Student {
+class Tutor {
   final String? id;
   final String? name;
   final String? email;
@@ -8,18 +8,18 @@ class Student {
   final DateTime? timeIn;
   final DateTime? timeOut;
 
-  Student({
+  Tutor({
     this.id,
-    this.name,
-    this.email,
-    this.createdAt,
+    required this.name,
+    required this.email,
+    required this.createdAt,
     this.timeIn,
     this.timeOut,
   });
 
-  factory Student.fromMap(Map<String, dynamic> map, String documentId) {
-    return Student(
-      id: documentId,
+  factory Tutor.fromMap(Map<String, dynamic> map) {
+    return Tutor(
+      id: map['id'],
       name: map['name'],
       email: map['email'],
       createdAt: (map['created_at'] as Timestamp?)?.toDate(),
@@ -30,11 +30,12 @@ class Student {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'name': name,
       'email': email,
-      'created_at': createdAt != null ? Timestamp.fromDate(createdAt!) : null,
-      'time_in': timeIn != null ? Timestamp.fromDate(timeIn!) : null,
-      'time_out': timeOut != null ? Timestamp.fromDate(timeOut!) : null,
+      'created_at': Timestamp.fromDate(createdAt!),
+      'time_in': null,
+      'time_out': null,
     };
   }
 }

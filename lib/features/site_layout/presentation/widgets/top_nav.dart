@@ -24,7 +24,7 @@ AppBar topNavigationBar(BuildContext context, GlobalKey<ScaffoldState> key, Stri
       // ),
       title: Obx(()=>Padding(padding: EdgeInsets.only(top: 24), child: Row(
         children: [
-          CustomText(text: MenController.instance.returnRouteName(),),
+          CustomText(text: MenController.instance.returnRouteName(), weight: FontWeight.w500,),
           Expanded(child: Container()),
 
           // Container(

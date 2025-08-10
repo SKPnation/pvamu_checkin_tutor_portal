@@ -4,11 +4,14 @@ import 'package:pvamu_checkin_tutor_portal/core/global/custom_button.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_text.dart';
 import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/presentation/controllers/courses_controller.dart';
+import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/controllers/tutors_controller.dart';
 
 class AssignTutorButton extends StatelessWidget {
-  const AssignTutorButton({super.key, required this.coursesController});
+  const AssignTutorButton({super.key, required this.coursesController, required this.tutorsController});
 
   final CoursesController coursesController;
+  final TutorsController tutorsController;
+
   @override
   Widget build(BuildContext context) {
     return CustomButton(

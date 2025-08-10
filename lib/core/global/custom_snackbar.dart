@@ -54,4 +54,12 @@ class CustomSnackBar {
     //       backgroundColor: AppColors.red);
     // }
   }
+
+  static void successSnackBar({String? title, required String body}) {
+    return CustomSnackBar.showSnackBar(
+        context: Get.context!,
+        title: title ?? "Success",
+        message: body,
+        backgroundColor: Colors.green);
+  }
 }

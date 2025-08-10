@@ -6,44 +6,135 @@ import 'package:pvamu_checkin_tutor_portal/core/global/custom_text.dart';
 import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/presentation/controllers/courses_controller.dart';
 
-class AddCourseButton extends StatelessWidget {
+class AddCourseButton extends StatefulWidget {
   const AddCourseButton({super.key, required this.coursesController});
 
   final CoursesController coursesController;
+
+  @override
+  State<AddCourseButton> createState() => _AddCourseButtonState();
+}
+
+class _AddCourseButtonState extends State<AddCourseButton> {
+  var courseNameErr = "";
+
+  var courseCodeErr = "";
+
+  var courseCategoryErr = "";
 
   @override
   Widget build(BuildContext context) {
     return CustomButton(
       onPressed: () {
         Get.dialog(
-          AlertDialog(
-            title: Text("Add a course"),
-            content: Column(
-              children: [
-                CustomFormField(
-                  hint: "Course name",
-                  textEditingController: coursesController.courseNameTEC,
-                ),
-                CustomFormField(
-                  hint: "Course code",
-                  textEditingController: coursesController.courseCodeTEC,
-                ),
-                CustomFormField(
-                  hint: "Course category",
-                  textEditingController: coursesController.courseCodeTEC,
-                ),
+          StatefulBuilder(
+            builder: (context, setDialogState) {
+              return AlertDialog(
+                backgroundColor: AppColors.white,
+                title: Text("Add a course"),
+                content: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomFormField(
+                      hint: "Course name, e.g CINS 5307",
+                      textCapitalization: TextCapitalization.characters,
+                      textEditingController:
+                          widget.coursesController.courseNameTEC,
+                    ),
+                    if (courseNameErr.isNotEmpty)
+                      CustomText(text: courseNameErr, color: AppColors.red),
+                    SizedBox(height: 4),
+                    CustomFormField(
+                      hint: "Course code, e.g 20071",
+                      textEditingController:
+                          widget.coursesController.courseCodeTEC,
+                    ),
+                    if (courseCodeErr.isNotEmpty)
+                      CustomText(text: courseCodeErr, color: AppColors.red),
 
-                CustomButton(onPressed: (){}, text: "Add course")
-              ],
-            ),
-          )
+                    SizedBox(height: 4),
+                    CustomFormField(
+                      hint: "Course category, e.g Information Technology",
+                      textEditingController:
+                          widget.coursesController.courseCategoryTEC,
+                    ),
+                    if (courseCategoryErr.isNotEmpty)
+                      CustomText(text: courseCategoryErr, color: AppColors.red),
+
+                    SizedBox(height: 8),
+
+                    CustomButton(
+                      onPressed: () async {
+                        if (widget
+                                .coursesController
+                                .courseNameTEC
+                                .text
+                                .isEmpty &&
+                            widget
+                                .coursesController
+                                .courseCodeTEC
+                                .text
+                                .isEmpty &&
+                            widget
+                                .coursesController
+                                .courseCategoryTEC
+                                .text
+                                .isEmpty) {
+                          courseNameErr = "The course name is required";
+                          courseCodeErr = "The course code is required";
+                          courseCategoryErr = "The course category is required";
+                        } else if (widget
+                            .coursesController
+                            .courseNameTEC
+                            .text
+                            .isEmpty) {
+                          courseNameErr = "The course name is required";
+                          courseCodeErr = "";
+                          courseCategoryErr = "";
+                        } else if (widget
+                            .coursesController
+                            .courseCodeTEC
+                            .text
+                            .isEmpty) {
+                          courseNameErr = "";
+                          courseCodeErr = "The course code is required";
+                          courseCategoryErr = "";
+                        } else if (widget
+                            .coursesController
+                            .courseCategoryTEC
+                            .text
+                            .isEmpty) {
+                          courseNameErr = "";
+                          courseCodeErr = "";
+                          courseCategoryErr = "The course category is required";
+                        } else {
+                          courseNameErr = "";
+                          courseCodeErr = "";
+                          courseCategoryErr = "";
+
+                          await widget.coursesController.addCourse();
+                        }
+
+                        setDialogState(() {});
+                      },
+                      text: "Add course",
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         );
       },
       child: Row(
         children: [
-          Icon(Icons.add, color: AppColors.white,),
+          Icon(Icons.add, color: AppColors.white),
           SizedBox(width: 8),
-          CustomText(text: "Add Course", weight: FontWeight.w600, color: AppColors.white,),
+          CustomText(
+            text: "Add Course",
+            weight: FontWeight.w600,
+            color: AppColors.white,
+          ),
         ],
       ),
     );
