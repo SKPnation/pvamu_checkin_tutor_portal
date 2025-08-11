@@ -23,10 +23,11 @@ class StudentLogItem extends StatelessWidget {
             0: FlexColumnWidth(), // Name column
             1: FlexColumnWidth(), // Email column
             2: FlexColumnWidth(), // Course column
-            3: FlexColumnWidth(), // Time In column
-            4: FlexColumnWidth(), // Time Out column
-            5: FlexColumnWidth(), // Duration column
-            6: FlexColumnWidth(), // Status column
+            3: FlexColumnWidth(), // Tutor column
+            4: FlexColumnWidth(), // Time In column
+            5: FlexColumnWidth(), // Time Out column
+            6: FlexColumnWidth(), // Duration column
+            7: FlexColumnWidth(), // Status column
           },
           children: [
             TableRow(
@@ -36,10 +37,16 @@ class StudentLogItem extends StatelessWidget {
                   child: CustomText(text: item.email.toString(), size: 12),
                 ),
                 Center(
-                  child: CustomText(
+                  child: SizedBox(width: 100, child: CustomText(
                     text: "${item.course?.category!} - ${item.course?.name!}",
                     size: 12,
-                  ),
+                  ))
+                ),
+                Center(
+                    child: SizedBox(width: 100, child: CustomText(
+                      text: "${item.tutor == null ? "tutor" : item.tutor?.name!}",
+                      size: 12,
+                    ))
                 ),
                 Center(
                   child: CustomText(text: formatTime(item.timeIn), size: 12),
@@ -51,6 +58,8 @@ class StudentLogItem extends StatelessWidget {
                     size: 12,
                   ),
                 ),
+
+                //duRATION
                 Center(
                   child: CustomText(
                     text:
