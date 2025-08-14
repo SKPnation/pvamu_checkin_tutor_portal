@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pvamu_checkin_tutor_portal/core/global/assign_tutor_dialog.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_button.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_text.dart';
 import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
@@ -17,17 +18,10 @@ class AssignTutorButton extends StatelessWidget {
     return CustomButton(
       onPressed: () {
         Get.dialog(
-            AlertDialog(
-              title: Text("Assign a tutor"),
-              content: Column(
-                children: [
-                  //Dropdown for tutors
-                  //Dropdown for courses
-
-                  CustomButton(onPressed: (){}, text: "Assign")
-                ],
-              ),
-            )
+          AssignTutorDialog(
+            coursesController: coursesController,
+            tutorsController: tutorsController,
+          ),
         );
       },
       child: Row(

@@ -9,14 +9,26 @@ class TutorsController extends GetxController {
   final nameTEC = TextEditingController();
   final emailAddressTEC = TextEditingController();
 
+  Rx<Tutor>? selectedTutor;
+
   TutorsRepoImpl tutorsRepo = TutorsRepoImpl();
 
-  Future addTutor() async => await tutorsRepo.addTutor(
-    Tutor(
-      id: tutorsRepo.tutorsCollection.doc().id,
-      name: nameTEC.text,
-      email: emailAddressTEC.text,
-      createdAt: DateTime.now(),
-    ),
-  );
+  Future addTutor() async =>
+      await tutorsRepo.addTutor(
+        Tutor(
+          id: tutorsRepo.tutorsCollection
+              .doc()
+              .id,
+          name: nameTEC.text,
+          email: emailAddressTEC.text,
+          createdAt: DateTime.now(),
+        ),
+      );
+
+  Future<List<Tutor>> getTutors() async =>
+      await tutorsRepo.getTutors();
+
+  Future assignToCourse({required String courseId, required String tutorId}) async {
+    await tutorsRepo.assign( courseId: courseId, tutorId: tutorId);
+  }
 }

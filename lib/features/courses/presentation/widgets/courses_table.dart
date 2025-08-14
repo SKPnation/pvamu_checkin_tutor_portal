@@ -69,7 +69,7 @@ class _CoursesTableState extends State<CoursesTable> {
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(
-                            color: Color(0xFF43A95D),
+                            color: AppColors.purple,
                           ),
                         ));
                   }

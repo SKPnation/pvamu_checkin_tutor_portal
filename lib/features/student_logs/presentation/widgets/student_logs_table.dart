@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_text.dart';
 import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
 import 'package:pvamu_checkin_tutor_portal/core/utils/functions.dart';
-import 'package:pvamu_checkin_tutor_portal/features/student_logs/presentation/widgets/student_log_item.dart';
 import 'package:pvamu_checkin_tutor_portal/features/student_logs/data/models/student_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/student_logs/presentation/controllers/student_logs_controller.dart';
 
@@ -185,6 +184,8 @@ class _StudentLogsTableState extends State<StudentLogsTable> {
                         ],
                       ),
                       if (!isLastItem) const Divider(),
+                      if(isLastItem) SizedBox(height: 8),
+
                     ],
                   );
                 }).toList(),

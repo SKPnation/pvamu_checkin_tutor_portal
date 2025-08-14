@@ -53,6 +53,7 @@ class CourseItem extends StatelessWidget {
         ),
 
         if (!isLastItem) Divider(),
+        if(isLastItem) SizedBox(height: 8),
       ],
     );
   }

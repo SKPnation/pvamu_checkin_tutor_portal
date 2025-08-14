@@ -20,6 +20,7 @@ class AddTutorButton extends StatelessWidget {
           StatefulBuilder(
             builder: (context, setDialogState) {
               return AlertDialog(
+                backgroundColor: AppColors.white,
                 title: Text("Add a tutor"),
                 content: Column(
                   children: [

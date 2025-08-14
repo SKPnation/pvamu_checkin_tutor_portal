@@ -4,8 +4,13 @@ import 'package:pvamu_checkin_tutor_portal/features/courses/data/models/course_m
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_model.dart';
 
 String formatTime(DateTime? time) {
-  if (time == null) return 'N/A';
+  if (time == null) return '--';
   return DateFormat('h:mm a').format(time).toUpperCase(); // e.g., 12:15pm
+}
+
+String formatDate(DateTime? date) {
+  if (date == null) return '--';
+  return DateFormat('MM/dd/yyyy').format(date); // e.g., 12/28/25
 }
 
 String formatDuration(Duration d) {
@@ -33,4 +38,24 @@ Future<Tutor> getTutor(DocumentReference docRef) async {
   return Tutor.fromMap(
     tutorSnap.data() as Map<String, dynamic>,
   );
+}
+
+Future<List<Course>> getAssignedCourses(List<dynamic> coursesRefs) async {
+  List<Course> courses = [];
+
+  for(var ref in coursesRefs){
+    if (ref is DocumentReference) {
+      final courseSnap = await ref.get();
+      if (courseSnap.exists) {
+        courses.add(
+          Course.fromMap({
+            'id': courseSnap.id,
+            ...courseSnap.data() as Map<String, dynamic>,
+          }),
+        );
+      }
+    }
+  }
+
+  return courses;
 }

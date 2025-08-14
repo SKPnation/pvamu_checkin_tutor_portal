@@ -26,11 +26,14 @@ class Student {
     this.timeOut,
   });
 
-  static Future<Student> fromMapAsync(Map<String, dynamic> map, String docId) async {
+  static Future<Student> fromMapAsync(
+    Map<String, dynamic> map,
+    String docId,
+  ) async {
     Course course = await getCourse(map['course'] as DocumentReference);
     Tutor? tutor;
-    if(map['tutor'] != null){
-     tutor = await getTutor(map['tutor'] as DocumentReference);
+    if (map['tutor'] != null) {
+      tutor = await getTutor(map['tutor'] as DocumentReference);
     }
 
     return Student(
@@ -38,10 +41,16 @@ class Student {
       name: map['name'] ?? '',
       email: map['email'] ?? '',
       createdAt: (map['created_at'] as Timestamp).toDate(),
-      timeIn: map['time_in'] != null ? (map['time_in'] as Timestamp).toDate() : null,
-      timeOut: map['time_out'] != null ? (map['time_out'] as Timestamp).toDate() : null,
+      timeIn:
+          map['time_in'] != null
+              ? (map['time_in'] as Timestamp).toDate()
+              : null,
+      timeOut:
+          map['time_out'] != null
+              ? (map['time_out'] as Timestamp).toDate()
+              : null,
       course: course,
-      tutor: tutor
+      tutor: tutor,
     );
   }
 
@@ -54,7 +63,7 @@ class Student {
       'time_in': timeIn != null ? Timestamp.fromDate(timeIn!) : null,
       'time_out': timeOut != null ? Timestamp.fromDate(timeOut!) : null,
       'course': CoursesRepoImpl().coursesCollection.doc(course?.id!),
-      'tutor': StudentRepoImpl().studentsCollection.doc(tutor?.id!)
+      'tutor': StudentRepoImpl().studentsCollection.doc(tutor?.id!),
     };
   }
 }
