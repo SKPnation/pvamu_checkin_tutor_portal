@@ -1,32 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_text.dart';
 import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
-import 'package:pvamu_checkin_tutor_portal/features/courses/presentation/controllers/courses_controller.dart';
-import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_model.dart';
+import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/assigned_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/controllers/tutors_controller.dart';
-import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/widgets/tutor_item.dart';
+import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/widgets/assigned_tutor_item.dart';
 
-class TutorsTable extends StatefulWidget {
-  const TutorsTable({super.key});
+class AssignedTutorsTable extends StatefulWidget {
+  const AssignedTutorsTable({super.key});
 
   @override
-  State<TutorsTable> createState() => _TutorsTableState();
+  State<AssignedTutorsTable> createState() => _AssignedTutorsTableState();
 }
 
-class _TutorsTableState extends State<TutorsTable> {
+class _AssignedTutorsTableState extends State<AssignedTutorsTable> {
   final tutorsController = TutorsController.instance;
-  final courseController = CoursesController.instance;
 
-  var columnsArray = [
-    "Name",
-    "Email",
-    "Time In",
-    "Time Out",
-    "Duration",
-    'Status',
-    "Date Added",
-    "Actions",
-  ];
+  var columnsArray = ["Assigned Tutor", "Course(s)", "Actions"];
 
   @override
   Widget build(BuildContext context) {
@@ -45,13 +34,8 @@ class _TutorsTableState extends State<TutorsTable> {
           Table(
             columnWidths: const {
               0: FlexColumnWidth(), // Name column
-              1: FlexColumnWidth(), // Email column
-              2: FlexColumnWidth(), // Time In column//
-              3: FlexColumnWidth(), // Time In column//
-              4: FlexColumnWidth(), // Duration column//
-              5: FlexColumnWidth(), // Status column//
-              6: FlexColumnWidth(), // Date Added column//
-              7: FlexColumnWidth(), // Actions column// // Status column
+              1: FlexColumnWidth(), // Course(s) column
+              2: FlexColumnWidth(), // Status column//
             },
             children: [
               TableRow(
@@ -73,7 +57,7 @@ class _TutorsTableState extends State<TutorsTable> {
           SizedBox(height: 4),
           const Divider(),
           FutureBuilder(
-            future: tutorsController.getTutors(),
+            future: tutorsController.getAssignedTutors(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
@@ -94,28 +78,23 @@ class _TutorsTableState extends State<TutorsTable> {
                 );
               }
 
-              var tutors = snapshot.data as List<Tutor>;
+              var assignedTutors = snapshot.data as List<AssignedModel>;
 
-              tutors.sort((a, b) {
-                if (a.timeIn != null && b.timeIn != null) {
-                  return b.timeIn!.compareTo(a.timeIn!);
-                } else {
-                  return b.createdAt!.compareTo(a.createdAt!);
-                }
-              });
+              assignedTutors.sort(
+                (a, b) => b.createdAt!.compareTo(a.createdAt!),
+              );
 
               return Column(
                 children:
-                    tutors.map((e) {
-                      var isLastItem = tutors[tutors.length - 1].id == e.id;
+                assignedTutors.map((e) {
+                  var isLastItem = assignedTutors[assignedTutors.length - 1].id == e.id;
 
-                      return TutorItem(
-                        item: e,
-                        isLastItem: isLastItem,
-                        coursesController: courseController,
-                        tutorsController: tutorsController,
-                      );
-                    }).toList(),
+                  return AssignedTutorItem(
+                    item: e,
+                    isLastItem: isLastItem,
+                    tutorsController: tutorsController,
+                  );
+                }).toList(),
               );
             },
           ),

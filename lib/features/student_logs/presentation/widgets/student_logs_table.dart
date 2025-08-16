@@ -38,6 +38,7 @@ class _StudentLogsTableState extends State<StudentLogsTable> {
 
       child: Column(
         children: [
+          SizedBox(height: 4),
           Table(
             columnWidths: const {
               0: FlexColumnWidth(), // Name column
@@ -67,7 +68,8 @@ class _StudentLogsTableState extends State<StudentLogsTable> {
             ],
           ),
 
-          SizedBox(height: 11.5),
+          SizedBox(height: 4),
+          const Divider(),
           FutureBuilder(
             future: studentsController.getStudentLogs(),
             builder: (context, snapshot) {

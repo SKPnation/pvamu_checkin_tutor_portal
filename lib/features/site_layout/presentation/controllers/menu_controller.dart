@@ -32,6 +32,8 @@ class MenController extends GetxController{
         return _customIcon(Icons.book, itemName);
       case Routes.tutorsDisplayName:
         return _customIcon(Icons.people, itemName);
+      case Routes.assignedTutorsDisplayName:
+        return _customIcon(Icons.person_pin_rounded, itemName);
       default:
         return _customIcon(Icons.logout, itemName);
     }
@@ -45,6 +47,8 @@ class MenController extends GetxController{
         return Routes.coursesDisplayName;
       case Routes.tutorsRoute:
         return Routes.tutorsDisplayName;
+      case Routes.assignedTutorsRoute:
+        return Routes.assignedTutorsDisplayName;
       default:
         return Routes.dashboardDisplayName;
     }

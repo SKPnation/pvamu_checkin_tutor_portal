@@ -6,6 +6,7 @@ import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:pvamu_checkin_tutor_portal/core/constants/app_strings.dart';
 import 'package:pvamu_checkin_tutor_portal/core/data/local/get_store.dart';
+import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/pages/assigned_tutors_page.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/presentation/pages/courses_page.dart';
 import 'package:pvamu_checkin_tutor_portal/features/dashboard/presentation/pages/dashboard.dart';
 import 'package:pvamu_checkin_tutor_portal/features/site_layout/presentation/pages/site_layout.dart';
@@ -42,6 +43,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return _getPageRoute(CoursesPage());
     case Routes.tutorsRoute:
       return _getPageRoute(TutorsPage());
+    case Routes.assignedTutorsRoute:
+      return _getPageRoute(AssignedTutorsPage());
     default:
       return _getPageRoute(Dashboard());
   }
@@ -63,7 +66,11 @@ abstract class Routes {
   static const tutorsDisplayName = AppStrings.tutorsTitle;
   static const tutorsRoute = "/tutors";
 
+  static const assignedTutorsDisplayName = AppStrings.assignedTutorsTitle;
+  static const assignedTutorsRoute = "/assigned-tutors";
+
   static const rootRoute = "/";
+
 }
 
 class MenuItem {
@@ -77,4 +84,5 @@ List<MenuItem> sideMenuItemRoutes = [
   MenuItem(Routes.dashboardDisplayName, Routes.dashboardRoute),
   MenuItem(Routes.coursesDisplayName, Routes.coursesRoute),
   MenuItem(Routes.tutorsDisplayName, Routes.tutorsRoute),
+  MenuItem(Routes.assignedTutorsDisplayName, Routes.assignedTutorsRoute),
 ];

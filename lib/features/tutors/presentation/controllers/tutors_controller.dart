@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/assigned_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/repos/tutors_repo_impl.dart';
 
@@ -31,4 +32,7 @@ class TutorsController extends GetxController {
   Future assignToCourse({required String courseId, required String tutorId}) async {
     await tutorsRepo.assign( courseId: courseId, tutorId: tutorId);
   }
+
+  Future<List<AssignedModel>> getAssignedTutors() async =>
+      await tutorsRepo.getAssignedTutors();
 }

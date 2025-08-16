@@ -34,6 +34,8 @@ class _CoursesTableState extends State<CoursesTable> {
 
         child: Column(
           children: [
+            SizedBox(height: 4),
+
             Table(
               columnWidths: const {
                 0: FlexColumnWidth(), // Course column
@@ -59,7 +61,9 @@ class _CoursesTableState extends State<CoursesTable> {
               ],
             ),
 
-            SizedBox(height: 11.5),
+            SizedBox(height: 4),
+            const Divider(),
+
             FutureBuilder(
                 future: coursesController.getCourses(),
                 builder: (context, snapshot) {
