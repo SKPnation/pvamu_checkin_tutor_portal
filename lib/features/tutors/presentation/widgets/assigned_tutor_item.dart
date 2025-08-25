@@ -17,8 +17,8 @@ class AssignedTutorItem extends StatelessWidget {
   final AssignedModel item;
   final bool isLastItem;
 
-  final actionKey = GlobalKey();
-  final viewKey = GlobalKey();
+  final assignedTutorActionKey = GlobalKey();
+  final assignedTutorViewKey = GlobalKey();
 
   final TutorsController tutorsController;
 
@@ -37,36 +37,70 @@ class AssignedTutorItem extends StatelessWidget {
           children: [
             TableRow(
               children: [
-                Center(child: CustomText(text: item.tutor == null ? "--" : item.tutor?.name, size: 12)),
+                Center(
+                  child: CustomText(
+                    text: item.tutor == null ? "--" : item.tutor?.name,
+                    size: 12,
+                  ),
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CustomText(text: "${item.courses?.length} course${item.courses!.length > 1 ? "s" :""}",),
+                    CustomText(
+                      text:
+                          "${item.courses?.length} course${item.courses!.length > 1 ? "s" : ""}",
+                    ),
                     SizedBox(width: 4),
                     GestureDetector(
-                      key: viewKey,
-                      onTap: () => displayCoursesPopUp(context, item.courses, viewKey, item.tutor!.id!),
-                      child: Container(width: 50,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
-                              color: AppColors.gold,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.15), // softer, semi-transparent shadow
-                                  blurRadius: 6, // smoothness
-                                  spreadRadius: 1, // subtle spread
-                                  offset: const Offset(0, 3), // shadow position (x, y)
-                                ),
-                              ]
+                      key: assignedTutorViewKey,
+                      onTap:
+                          () => displayCoursesPopUp(
+                            context,
+                            item.courses,
+                            assignedTutorViewKey,
+                            item.tutor!.id!,
                           ),
-                          child: Center(child: CustomText(text: "view", color: AppColors.white, weight: FontWeight.bold,),)),
-                    )
+                      child: Container(
+                        width: 50,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          color: AppColors.gold,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.15),
+                              // softer, semi-transparent shadow
+                              blurRadius: 6,
+                              // smoothness
+                              spreadRadius: 1,
+                              // subtle spread
+                              offset: const Offset(
+                                0,
+                                3,
+                              ), // shadow position (x, y)
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: CustomText(
+                            text: "view",
+                            color: AppColors.white,
+                            weight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-                
+
                 GestureDetector(
-                  key: actionKey,
-                  onTap: () => displayActionPopUp(context, tutorsController, actionKey, item.tutor!.id!),
+                  key: assignedTutorActionKey,
+                  onTap:
+                      () => displayActionPopUp(
+                        context,
+                        tutorsController,
+                        assignedTutorActionKey,
+                        item.tutor!.id!,
+                      ),
                   child: Icon(Icons.more_vert),
                 ),
               ],
@@ -81,21 +115,22 @@ class AssignedTutorItem extends StatelessWidget {
   }
 
   displayActionPopUp(
-      BuildContext context,
-      TutorsController tutorsController,
-      GlobalKey key,
-      String tutorId,
-      ) {
-    final RenderBox button = key.currentContext!.findRenderObject() as RenderBox;
+    BuildContext context,
+    TutorsController tutorsController,
+    GlobalKey key,
+    String tutorId,
+  ) {
+    final RenderBox button =
+        key.currentContext!.findRenderObject() as RenderBox;
     final RenderBox overlay =
-    Overlay.of(context).context.findRenderObject() as RenderBox;
+        Overlay.of(context).context.findRenderObject() as RenderBox;
 
     // Position of the button relative to the overlay
-    final Offset topLeft =
-    button.localToGlobal(Offset.zero, ancestor: overlay);
-    final Offset bottomRight =
-    button.localToGlobal(button.size.bottomRight(Offset.zero),
-        ancestor: overlay);
+    final Offset topLeft = button.localToGlobal(Offset.zero, ancestor: overlay);
+    final Offset bottomRight = button.localToGlobal(
+      button.size.bottomRight(Offset.zero),
+      ancestor: overlay,
+    );
 
     final RelativeRect position = RelativeRect.fromRect(
       Rect.fromPoints(topLeft, bottomRight),
@@ -117,21 +152,22 @@ class AssignedTutorItem extends StatelessWidget {
   }
 
   displayCoursesPopUp(
-      BuildContext context,
-      List<Course>? courses,
-      GlobalKey key,
-      String tutorId,
-      ) {
-    final RenderBox button = key.currentContext!.findRenderObject() as RenderBox;
+    BuildContext context,
+    List<Course>? courses,
+    GlobalKey key,
+    String tutorId,
+  ) {
+    final RenderBox button =
+        key.currentContext!.findRenderObject() as RenderBox;
     final RenderBox overlay =
-    Overlay.of(context).context.findRenderObject() as RenderBox;
+        Overlay.of(context).context.findRenderObject() as RenderBox;
 
     // Position of the button relative to the overlay
-    final Offset topLeft =
-    button.localToGlobal(Offset.zero, ancestor: overlay);
-    final Offset bottomRight =
-    button.localToGlobal(button.size.bottomRight(Offset.zero),
-        ancestor: overlay);
+    final Offset topLeft = button.localToGlobal(Offset.zero, ancestor: overlay);
+    final Offset bottomRight = button.localToGlobal(
+      button.size.bottomRight(Offset.zero),
+      ancestor: overlay,
+    );
 
     final RelativeRect position = RelativeRect.fromRect(
       Rect.fromPoints(topLeft, bottomRight),
@@ -142,7 +178,16 @@ class AssignedTutorItem extends StatelessWidget {
       context: context,
       color: Colors.white,
       position: position,
-      items: courses!.map((e)=>PopupMenuItem<String>(value: e.id!, onTap: null, child: CustomText(text: '${e.category} - ${e.name}'),)).toList(),
+      items:
+          courses!
+              .map(
+                (e) => PopupMenuItem<String>(
+                  value: e.id!,
+                  onTap: null,
+                  child: CustomText(text: '${e.category} - ${e.name}'),
+                ),
+              )
+              .toList(),
     );
   }
 }

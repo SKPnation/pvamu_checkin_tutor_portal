@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/widgets/settings_horizontal_menu_item.dart';
 
 class SettingsSideMenuItem extends StatelessWidget {
   final String? itemName;
@@ -10,6 +11,11 @@ class SettingsSideMenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Column(
+      children: [
+        SettingsHorizontalMenuItem(itemName: itemName!, onTap: onTap!),
+        SizedBox(height: 20)
+      ],
+    );
   }
 }
