@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/assign_tutor_dialog.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_text.dart';
+import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
 import 'package:pvamu_checkin_tutor_portal/core/utils/functions.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/presentation/controllers/courses_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_model.dart';
@@ -77,6 +78,7 @@ class TutorItem extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      item.blockedAt != null ? Flexible(child: CustomText(text: "Deactivated", color: AppColors.red)) :
                       item.timeIn == null && item.timeOut == null
                           ? SizedBox()
                           : Container(
@@ -93,6 +95,7 @@ class TutorItem extends StatelessWidget {
                       const SizedBox(width: 4),
                       CustomText(
                         text:
+                        item.blockedAt != null ? "" :
                             (item.timeIn == null && item.timeOut == null)
                                 ? "--"
                                 : (item.timeIn != null && item.timeOut == null)
@@ -164,19 +167,20 @@ class TutorItem extends StatelessWidget {
               ),
             );
           },
-          // await tutorsController.archive(therapistId),
           value: 'assign',
           child: const Text('Assign'),
         ),
         PopupMenuItem(
-          onTap: () {},
-          // await tutorsController.archive(therapistId),
-          value: 'archive',
-          child: const Text('Archive'),
+          onTap: () async{
+            await tutorsController.deactivate(tutorId: tutorId);
+          },
+          value: 'block',
+          child: const Text('Block'),
         ),
         PopupMenuItem(
-          onTap: () {
-            // await tutorsController.delete(therapistId),
+          onTap: () async{
+            await tutorsController.delete(tutorId: tutorId);
+            tutorsController.getTutors();
           },
           value: 'delete',
           child: Text('Delete'),

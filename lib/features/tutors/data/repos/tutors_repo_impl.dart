@@ -9,10 +9,15 @@ import 'package:pvamu_checkin_tutor_portal/features/tutors/domain/repos/tutors_r
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/controllers/tutors_controller.dart';
 
 class TutorsRepoImpl extends TutorsRepo {
+  final CollectionReference coursesCollection = FirebaseFirestore.instance
+      .collection('courses');
   final CollectionReference tutorsCollection = FirebaseFirestore.instance
       .collection('tutors');
   final CollectionReference assignedCollection = FirebaseFirestore.instance
       .collection('assigned');
+
+  DocumentReference<Map<String, dynamic>> tutorRef(String tutorId) =>
+      FirebaseFirestore.instance.doc('/tutors/$tutorId');
 
   @override
   Future<void> addTutor(tutor) async {
@@ -55,10 +60,11 @@ class TutorsRepoImpl extends TutorsRepo {
       var coursesRefs = <DocumentReference>[];
 
       if (querySnapshot.docs.isNotEmpty) {
-        var mapObject = querySnapshot.docs.single.data() as Map<String, dynamic>;
+        var mapObject =
+            querySnapshot.docs.single.data() as Map<String, dynamic>;
 
-        coursesRefs = (mapObject['courses'] as List<dynamic>)
-            .cast<DocumentReference>();
+        coursesRefs =
+            (mapObject['courses'] as List<dynamic>).cast<DocumentReference>();
 
         coursesRefs.add(courseRef);
 
@@ -67,7 +73,6 @@ class TutorsRepoImpl extends TutorsRepo {
         });
 
         CustomSnackBar.successSnackBar(body: "Assigned successfully");
-
       } else {
         final id = assignedCollection.doc().id;
         final data = <String, dynamic>{
@@ -97,7 +102,6 @@ class TutorsRepoImpl extends TutorsRepo {
 
       TutorsController.instance.selectedTutor = null;
       CoursesController.instance.selectedCourse = null;
-
     } catch (e) {
       print("Failed: $e");
       CustomSnackBar.errorSnackBar("Failed: $e");
@@ -106,7 +110,7 @@ class TutorsRepoImpl extends TutorsRepo {
   }
 
   @override
-  Future<List<AssignedModel>> getAssignedTutors() async{
+  Future<List<AssignedModel>> getAssignedTutors() async {
     final querySnapshot = await assignedCollection.get();
     final docs = querySnapshot.docs;
 
@@ -121,13 +125,17 @@ class TutorsRepoImpl extends TutorsRepo {
       }
 
       // resolve courses
-      final courseRefs = (doc['courses'] as List?)?.cast<DocumentReference>() ?? [];
+      final courseRefs =
+          (doc['courses'] as List?)?.cast<DocumentReference>() ?? [];
       final courseSnapshots = await Future.wait(courseRefs.map((e) => e.get()));
 
-      final courses = courseSnapshots
-          .where((snap) => snap.exists)
-          .map((snap) => Course.fromMap(snap.data() as Map<String, dynamic>))
-          .toList();
+      final courses =
+          courseSnapshots
+              .where((snap) => snap.exists)
+              .map(
+                (snap) => Course.fromMap(snap.data() as Map<String, dynamic>),
+              )
+              .toList();
 
       // build model
       assignedTutors.add(
@@ -135,11 +143,55 @@ class TutorsRepoImpl extends TutorsRepo {
           id: doc.id,
           tutor: tutor,
           courses: courses,
-          createdAt: doc['created_at']?.toDate()
+          createdAt: doc['created_at']?.toDate(),
         ),
       );
     }
 
     return assignedTutors;
+  }
+
+  @override
+  Future<void> deactivate({required String tutorId}) async {
+    final data = <String, dynamic>{"blocked_at": DateTime.now()};
+
+    await tutorsCollection.doc(tutorId).update(data);
+  }
+
+  @override
+  Future<void> delete({required String tutorId}) async {
+    final querySnapshot =
+        await assignedCollection
+            .where("tutor", isEqualTo: tutorRef(tutorId))
+            .get();
+
+    if (querySnapshot.size != 0) {
+      //1. Get assigned tutor doc reference
+      final assignedRef = querySnapshot.docs.first.reference;
+
+      //2. Delete the assigned doc
+      await assignedRef.delete();
+
+      // 3. Find all "courses" docs where 'tutors' array contains this tutorRef
+      final coursesQuery =
+          await coursesCollection
+              .where("tutors", arrayContains: tutorRef(tutorId))
+              .get();
+
+      //4. Loop through each and remove the reference from the array
+      final futures = coursesQuery.docs.map((doc) {
+        return doc.reference.update({
+          'tutors': FieldValue.arrayRemove([tutorRef(tutorId)]),
+        });
+      });
+
+      await Future.wait(futures);
+
+
+      //5. Delete the "tutor doc" from the "tutors" collection
+      await tutorRef(tutorId).delete();
+
+      CustomSnackBar.successSnackBar(body: "Deleted successfully");
+    }
   }
 }

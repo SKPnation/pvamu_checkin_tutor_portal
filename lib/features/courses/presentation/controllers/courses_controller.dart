@@ -18,17 +18,35 @@ class CoursesController extends GetxController {
   Rx<Course>? selectedCourse;
   Rx<Tutor>? selectedTutor;
 
-  Future addCourse() async => await coursesRepo.addCourse(
-    Course(
-      id: coursesRepo.coursesCollection.doc().id,
-      name: courseNameTEC.text,
-      code: courseCodeTEC.text,
-      category: courseCategoryTEC.text,
-      status: "Published",
-      createdAt: DateTime.now(),
-    ),
-  );
+  var courses = <Course>[].obs;
+  var isLoading = false.obs;
+  var error = ''.obs;
 
-  Future<List<Course>> getCourses() async =>
-      await coursesRepo.getCourses();
+  Future addCourse() async {
+    await coursesRepo.add(
+        Course(
+          id: coursesRepo.coursesCollection.doc().id,
+          name: courseNameTEC.text,
+          code: courseCodeTEC.text,
+          category: courseCategoryTEC.text,
+          status: "Published",
+          createdAt: DateTime.now(),
+        ));
+
+    getCourses();
+  }
+
+  Future getCourses() async =>
+    courses.value = await coursesRepo.getCourses();
+
+
+  Future archiveCourse({required String courseId}) async{
+    await coursesRepo.archive(courseId: courseId);
+    getCourses();
+  }
+
+  Future delete({required String courseId}) async {
+    await coursesRepo.delete(courseId: courseId);
+    getCourses();
+  }
 }

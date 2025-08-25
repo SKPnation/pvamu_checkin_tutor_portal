@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_text.dart';
 import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/presentation/controllers/courses_controller.dart';
@@ -27,6 +28,13 @@ class _TutorsTableState extends State<TutorsTable> {
     "Date Added",
     "Actions",
   ];
+
+  @override
+  void initState() {
+    tutorsController.getTutors();
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,53 +80,45 @@ class _TutorsTableState extends State<TutorsTable> {
           ),
           SizedBox(height: 4),
           const Divider(),
-          FutureBuilder(
-            future: tutorsController.getTutors(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(color: AppColors.purple),
-                  ),
-                );
-              }
 
-              if (snapshot.hasError) {
-                return Center(
-                  child: Text(
-                    'Error: ${snapshot.error}',
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                );
-              }
-
-              var tutors = snapshot.data as List<Tutor>;
-
-              tutors.sort((a, b) {
-                if (a.timeIn != null && b.timeIn != null) {
-                  return b.timeIn!.compareTo(a.timeIn!);
-                } else {
-                  return b.createdAt!.compareTo(a.createdAt!);
-                }
-              });
-
-              return Column(
-                children:
-                    tutors.map((e) {
-                      var isLastItem = tutors[tutors.length - 1].id == e.id;
-
-                      return TutorItem(
-                        item: e,
-                        isLastItem: isLastItem,
-                        coursesController: courseController,
-                        tutorsController: tutorsController,
-                      );
-                    }).toList(),
+          Obx(() {
+            if (tutorsController.isLoading.value) {
+              return const Center(
+                child: SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(),
+                ),
               );
-            },
-          ),
+            }
+
+            if (tutorsController.error.isNotEmpty) {
+              return Center(
+                child: Text(
+                  'Error: ${tutorsController.error.value}',
+                  style: const TextStyle(color: Colors.red),
+                ),
+              );
+            }
+
+            if (tutorsController.tutors.isEmpty) {
+              return const Center(child: Text("No tutors found"));
+            }
+
+            return Column(
+              children: tutorsController.tutors.map((e) {
+                var isLastItem =
+                    tutorsController.tutors.last.id == e.id;
+                return TutorItem(
+                  item: e,
+                  isLastItem: isLastItem,
+                  coursesController: courseController,
+                  tutorsController: tutorsController,
+                );
+              }).toList(),
+            );
+          }),
+
         ],
       ),
     );

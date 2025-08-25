@@ -41,7 +41,7 @@ class SideMenu extends StatelessWidget {
                         end: Alignment.bottomRight,
                       ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
                       child: CustomText(
-                        text: "Check-In",
+                        text: "C-Commons",
                         color: Colors.white, // Important: must be set, even if overridden
                         size: 24,
                         weight: FontWeight.w600,
@@ -95,15 +95,18 @@ class SideMenu extends StatelessWidget {
                       (item) => SideMenuItem(
                         itemName: item.name,
                         onTap: () async {
-                          // if(item.route == Routes.authenticationPageRoute){
-                          //  bool signOut = await authController.signOut();
-                          //  menController.changeActiveItemTo(item.name, item.route);
-                          //
-                          //  if(signOut){
-                          //    Get.offAllNamed(Routes.authenticationPageRoute);
-                          //    getStore.clearAllData();
-                          //  }
-                          // }
+                          if(item.route == Routes.authRoute){
+
+                            //TODO: Uncomment
+                           // bool signOut = await authController.signOut();
+                           menController.changeActiveItemTo(item.name, item.route);
+
+                            //TODO: Uncomment
+                            // if(signOut){
+                           //   Get.offAllNamed(Routes.authenticationPageRoute);
+                           //   getStore.clearAllData();
+                           // }
+                          }
 
                           if (!menController.isActive(item.name)) {
                             menController.changeActiveItemTo(

@@ -7,12 +7,14 @@ class Tutor {
   final DateTime? createdAt;
   final DateTime? timeIn;
   final DateTime? timeOut;
+  final DateTime? blockedAt;
 
   Tutor({
     this.id,
     required this.name,
     required this.email,
     required this.createdAt,
+    this.blockedAt,
     this.timeIn,
     this.timeOut,
   });
@@ -23,6 +25,7 @@ class Tutor {
       name: map['name'],
       email: map['email'],
       createdAt: (map['created_at'] as Timestamp?)?.toDate(),
+      blockedAt: (map['blocked_at'] as Timestamp?)?.toDate(),
       timeIn: (map['time_in'] as Timestamp?)?.toDate(),
       timeOut: (map['time_out'] as Timestamp?)?.toDate(),
     );
@@ -34,6 +37,7 @@ class Tutor {
       'name': name,
       'email': email,
       'created_at': Timestamp.fromDate(createdAt!),
+      'blocked_at': null,
       'time_in': null,
       'time_out': null,
     };

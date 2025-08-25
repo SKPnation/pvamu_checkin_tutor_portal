@@ -1,11 +1,15 @@
 //part of app_pages;
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:pvamu_checkin_tutor_portal/core/constants/app_strings.dart';
 import 'package:pvamu_checkin_tutor_portal/core/data/local/get_store.dart';
+import 'package:pvamu_checkin_tutor_portal/core/navigation/auth_middleware.dart';
+import 'package:pvamu_checkin_tutor_portal/features/auth/presentation/pages/auth_page.dart';
+import 'package:pvamu_checkin_tutor_portal/features/settings/presentation/pages/settings_page.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/pages/assigned_tutors_page.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/presentation/pages/courses_page.dart';
 import 'package:pvamu_checkin_tutor_portal/features/dashboard/presentation/pages/dashboard.dart';
@@ -17,14 +21,14 @@ abstract class AppPages {
 
   // static final bool isLoggedIn = getStore.get('isLoggedIn') ?? false;
 
-  static final String initial = Routes.rootRoute;
 
-  // static final String initial = isLoggedIn
-  //     ? Routes.rootRoute
-  //     : Routes.authenticationPageRoute;
+  static final String initial = FirebaseAuth.instance.currentUser != null
+      ? Routes.rootRoute
+      : Routes.authRoute;
 
   static final pages = [
-    GetPage(name: Routes.rootRoute, page: () => SiteLayout()),
+    GetPage(name: Routes.rootRoute, page: () => SiteLayout(), middlewares: [AuthMiddleware()]),
+    GetPage(name: Routes.authRoute, page: () => AuthPage()),
     //remember to add middleware
   ];
 
@@ -32,6 +36,8 @@ abstract class AppPages {
     Dashboard(),
     CoursesPage(),
     TutorsPage(),
+    AssignedTutorsPage(),
+    SettingsPage()
   ];
 }
 
@@ -69,6 +75,9 @@ abstract class Routes {
   static const assignedTutorsDisplayName = AppStrings.assignedTutorsTitle;
   static const assignedTutorsRoute = "/assigned-tutors";
 
+  static const logoutDisplayName = AppStrings.logoutTitle;
+  static const authRoute = "/authentication";
+
   static const rootRoute = "/";
 
 }
@@ -85,4 +94,5 @@ List<MenuItem> sideMenuItemRoutes = [
   MenuItem(Routes.coursesDisplayName, Routes.coursesRoute),
   MenuItem(Routes.tutorsDisplayName, Routes.tutorsRoute),
   MenuItem(Routes.assignedTutorsDisplayName, Routes.assignedTutorsRoute),
+  MenuItem(Routes.logoutDisplayName, Routes.authRoute),
 ];

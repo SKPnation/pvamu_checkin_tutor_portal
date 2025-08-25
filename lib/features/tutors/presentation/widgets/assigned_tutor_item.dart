@@ -37,11 +37,11 @@ class AssignedTutorItem extends StatelessWidget {
           children: [
             TableRow(
               children: [
-                Center(child: CustomText(text: item.tutor?.name, size: 12)),
+                Center(child: CustomText(text: item.tutor == null ? "--" : item.tutor?.name, size: 12)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CustomText(text: "${item.courses?.length} courses",),
+                    CustomText(text: "${item.courses?.length} course${item.courses!.length > 1 ? "s" :""}",),
                     SizedBox(width: 4),
                     GestureDetector(
                       key: viewKey,

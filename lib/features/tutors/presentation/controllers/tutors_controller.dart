@@ -14,25 +14,43 @@ class TutorsController extends GetxController {
 
   TutorsRepoImpl tutorsRepo = TutorsRepoImpl();
 
-  Future addTutor() async =>
-      await tutorsRepo.addTutor(
-        Tutor(
-          id: tutorsRepo.tutorsCollection
-              .doc()
-              .id,
-          name: nameTEC.text,
-          email: emailAddressTEC.text,
-          createdAt: DateTime.now(),
-        ),
-      );
+  var tutors = <Tutor>[].obs;
+  var isLoading = false.obs;
+  var error = ''.obs;
 
-  Future<List<Tutor>> getTutors() async =>
-      await tutorsRepo.getTutors();
+  Future addTutor() async {
+    await tutorsRepo.addTutor(
+      Tutor(
+        id: tutorsRepo.tutorsCollection.doc().id,
+        name: nameTEC.text,
+        email: emailAddressTEC.text,
+        createdAt: DateTime.now(),
+      ),
+    );
 
-  Future assignToCourse({required String courseId, required String tutorId}) async {
-    await tutorsRepo.assign( courseId: courseId, tutorId: tutorId);
+    getTutors();
   }
+
+  Future getTutors() async => tutors.value = await tutorsRepo.getTutors();
 
   Future<List<AssignedModel>> getAssignedTutors() async =>
       await tutorsRepo.getAssignedTutors();
+
+  Future assignToCourse({
+    required String courseId,
+    required String tutorId,
+  }) async {
+    await tutorsRepo.assign(courseId: courseId, tutorId: tutorId);
+    getTutors();
+  }
+
+  Future deactivate({required String tutorId}) async {
+    await tutorsRepo.deactivate(tutorId: tutorId);
+    getTutors();
+  }
+
+  Future delete({required String tutorId}) async {
+    await tutorsRepo.delete(tutorId: tutorId);
+    getTutors();
+  }
 }
