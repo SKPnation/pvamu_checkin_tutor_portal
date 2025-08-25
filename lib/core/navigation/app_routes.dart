@@ -1,5 +1,6 @@
 //part of app_pages;
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,9 +19,6 @@ import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/pages/tu
 
 abstract class AppPages {
   AppPages._();
-
-  // static final bool isLoggedIn = getStore.get('isLoggedIn') ?? false;
-
 
   static final String initial = FirebaseAuth.instance.currentUser != null
       ? Routes.rootRoute
@@ -51,6 +49,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return _getPageRoute(TutorsPage());
     case Routes.assignedTutorsRoute:
       return _getPageRoute(AssignedTutorsPage());
+    case Routes.settingsRoute:
+      return _getPageRoute(SettingsPage());
     default:
       return _getPageRoute(Dashboard());
   }
@@ -75,6 +75,9 @@ abstract class Routes {
   static const assignedTutorsDisplayName = AppStrings.assignedTutorsTitle;
   static const assignedTutorsRoute = "/assigned-tutors";
 
+  static const settingsDisplayName = AppStrings.settingsDisplayTitle;
+  static const settingsRoute = "/settings";
+
   static const logoutDisplayName = AppStrings.logoutTitle;
   static const authRoute = "/authentication";
 
@@ -94,5 +97,6 @@ List<MenuItem> sideMenuItemRoutes = [
   MenuItem(Routes.coursesDisplayName, Routes.coursesRoute),
   MenuItem(Routes.tutorsDisplayName, Routes.tutorsRoute),
   MenuItem(Routes.assignedTutorsDisplayName, Routes.assignedTutorsRoute),
+  MenuItem(Routes.settingsDisplayName, Routes.settingsRoute),
   MenuItem(Routes.logoutDisplayName, Routes.authRoute),
 ];
