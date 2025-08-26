@@ -20,14 +20,13 @@ class AddAdminButton extends StatelessWidget {
             builder: (context, setDialogState) {
               return AlertDialog(
                 backgroundColor: AppColors.white,
-                title: Text("Add a tutor"),
+                title: Text("Add member"),
                 content: Column(
                   children: [
                     CustomFormField(
                       hint: "First name",
                       textEditingController: settingsController.firstNameTEC,
                     ),
-                    SizedBox(height: 8),
                     CustomFormField(
                       hint: "Last name",
                       textEditingController: settingsController.lastNameTEC,
@@ -41,15 +40,22 @@ class AddAdminButton extends StatelessWidget {
 
                     CustomFormField(
                       hint: "Password",
+                      readOnly: true,
                       textInputType: TextInputType.visiblePassword,
                       textEditingController: settingsController.passwordTEC,
+                      suffix: SizedBox(
+                        width: 150,
+                        child: CustomButton(onPressed: (){}, text: "generate"),
+                      ),
                     ),
+
+                    SizedBox(height: 16),
 
                     CustomButton(
                       onPressed: () async {
                         await settingsController.addAdminUser();
                       },
-                      text: "Add tutor",
+                      text: "Add member",
                     ),
                   ],
                 ),
@@ -59,6 +65,7 @@ class AddAdminButton extends StatelessWidget {
         );
       },
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Icon(Icons.add, color: AppColors.white),
           SizedBox(width: 8),

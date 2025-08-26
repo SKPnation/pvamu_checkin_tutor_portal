@@ -34,7 +34,6 @@ class SettingsRoutes {
         return _getPageRoute(TeamManagementTab());
       default:
         return _getPageRoute(GeneralTab());
-      // return _getPageRoute(GeneralTab());
     }
   }
 

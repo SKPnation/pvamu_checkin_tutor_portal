@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pvamu_checkin_tutor_portal/core/constants/app_strings.dart';
@@ -38,10 +39,10 @@ AppBar topNavigationBar(BuildContext context, GlobalKey<ScaffoldState> key, Stri
           // ),
 
           CustomText(
-              text: "Admin",
+              text: FirebaseAuth.instance.currentUser?.email,
               size: 14,
               color: AppColors.black,
-              weight: FontWeight.normal),
+              weight: FontWeight.bold),
 
         ],),)),
 

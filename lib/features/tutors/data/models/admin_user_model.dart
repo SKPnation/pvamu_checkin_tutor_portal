@@ -1,0 +1,45 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class AdminUser {
+  final String id;
+  final String name;
+  final String email;
+  final DateTime? createdAt;
+  final DateTime? timeIn;
+  final DateTime? timeOut;
+  final DateTime? blockedAt;
+
+  AdminUser({
+    this.createdAt,
+    this.timeIn,
+    this.timeOut,
+    this.blockedAt,
+    required this.id,
+    required this.name,
+    required this.email,
+  });
+
+  factory AdminUser.fromMap(Map<String, dynamic> map) {
+    return AdminUser(
+      id: map['id'],
+      name: map['name'],
+      email: map['email'],
+      createdAt: (map['created_at'] as Timestamp?)?.toDate(),
+      blockedAt: (map['blocked_at'] as Timestamp?)?.toDate(),
+      timeIn: (map['time_in'] as Timestamp?)?.toDate(),
+      timeOut: (map['time_out'] as Timestamp?)?.toDate(),
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'created_at': Timestamp.fromDate(createdAt!),
+      'blocked_at': null,
+      'time_in': null,
+      'time_out': null,
+    };
+  }
+}

@@ -62,4 +62,6 @@ class SettingsController extends GetxController {
   }
 
   goBack() => settingsNavigatorKey.currentState!.pop();
+
+  Future getAdminUsers() async{}
 }
