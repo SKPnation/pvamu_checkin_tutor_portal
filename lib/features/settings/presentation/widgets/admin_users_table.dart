@@ -15,7 +15,7 @@ class AdminUsersTable extends StatefulWidget {
 class _AdminUsersTableState extends State<AdminUsersTable> {
   final settingsController = SettingsController.instance;
 
-  var columnsArray = ["Name", "Email"];
+  var columnsArray = ["Name", "Email", "Actions"];
 
   @override
   void initState() {
@@ -42,6 +42,7 @@ class _AdminUsersTableState extends State<AdminUsersTable> {
             columnWidths: const {
               0: FlexColumnWidth(), // Email column
               1: FlexColumnWidth(), // Name column
+              2: FlexColumnWidth(), // Actions column
             },
             children: [
               TableRow(

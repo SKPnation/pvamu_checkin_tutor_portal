@@ -7,23 +7,13 @@ class AddAdminUserData extends QueryParams {
   String password = '';
   String firstName = '';
   String lastName = '';
-  DateTime? createdAt;
-  DateTime? updatedAt;
-  DateTime? timeIn;
-  DateTime? timeOut;
-  DateTime? blockedAt;
 
   AddAdminUserData({
     required this.id,
     required this.email,
     required this.password,
     required this.firstName,
-    required this.lastName,
-    this.createdAt,
-    this.updatedAt,
-    this.timeIn,
-    this.timeOut,
-    this.blockedAt,
+    required this.lastName
   });
 
   @override
@@ -33,6 +23,7 @@ class AddAdminUserData extends QueryParams {
     'password': password,
     'f_name': firstName,
     'l_name': lastName,
+    'level': 1,
     'time_in': null,
     'time_out': null,
     'created_at': DateTime.now(),

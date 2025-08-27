@@ -37,4 +37,14 @@ class AuthRepoImpl extends AuthRepo {
       }
     }
   }
+
+  void checkIfUserExistsInDB({required String email}) {
+    /*
+    * TODO: Check if it exists in the DB
+    *  If yes; check if it exists in firebase authentication, if yes; sign in
+    *  If no; do nothing
+    *
+    * */
+
+  }
 }

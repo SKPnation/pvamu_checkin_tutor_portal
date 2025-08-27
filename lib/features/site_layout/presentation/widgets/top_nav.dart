@@ -13,33 +13,13 @@ import 'package:pvamu_checkin_tutor_portal/features/site_layout/presentation/con
 
 AppBar topNavigationBar(BuildContext context, GlobalKey<ScaffoldState> key, String username) =>
     AppBar(
-      // leading: !ResponsiveWidget.isSmallScreen(context)
-      //     ?
-      // SizedBox()
-      //     :
-      // IconButton(
-      //   icon: Icon(Icons.menu, color: AppColors.purple),
-      //   onPressed: (){
-      //     key.currentState!.openDrawer();
-      //   },
-      // ),
+      automaticallyImplyLeading: false, // 👈 hides default back button
       title: Obx(()=>Padding(padding: EdgeInsets.only(top: 24), child: Row(
         children: [
           CustomText(text: MenController.instance.returnRouteName(), weight: FontWeight.w500,),
           Expanded(child: Container()),
-
-          // Container(
-          //   width: 1,
-          //   height: 22,
-          //   color: Colors.grey,
-          // ),
-          //
-          // SizedBox(
-          //   width: 24,
-          // ),
-
           CustomText(
-              text: FirebaseAuth.instance.currentUser?.email,
+              text: FirebaseAuth.instance.currentUser == null ? null.toString() : FirebaseAuth.instance.currentUser!.email,
               size: 14,
               color: AppColors.black,
               weight: FontWeight.bold),

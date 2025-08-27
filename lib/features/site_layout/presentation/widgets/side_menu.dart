@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pvamu_checkin_tutor_portal/core/data/local/get_store.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_text.dart';
 import 'package:pvamu_checkin_tutor_portal/core/navigation/app_routes.dart';
 import 'package:pvamu_checkin_tutor_portal/core/navigation/navigation_controller.dart';
@@ -7,6 +8,7 @@ import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
 import 'package:pvamu_checkin_tutor_portal/core/utils/helpers/image_elements.dart';
 import 'package:pvamu_checkin_tutor_portal/core/utils/helpers/responsiveness.dart';
 import 'package:pvamu_checkin_tutor_portal/core/utils/helpers/size_helpers.dart';
+import 'package:pvamu_checkin_tutor_portal/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/site_layout/presentation/controllers/menu_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/site_layout/presentation/widgets/side_menu_item.dart';
 
@@ -26,27 +28,33 @@ class SideMenu extends StatelessWidget {
         children: [
           !ResponsiveWidget.isSmallScreen(context)
               ? Padding(
-            padding: EdgeInsets.only(left: 16.0),
+                padding: EdgeInsets.only(left: 16.0),
                 child: Row(
                   children: [
                     Image.asset(ImageElements.pvamuLogo, height: 80, width: 80),
                     SizedBox(width: 16),
-                    Expanded(child: ShaderMask(
-                      shaderCallback: (bounds) => LinearGradient(
-                        colors: [
-                          Colors.white, // Gold
-                          AppColors.gold,
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
-                      child: CustomText(
-                        text: "C-Commons",
-                        color: Colors.white, // Important: must be set, even if overridden
-                        size: 24,
-                        weight: FontWeight.w600,
+                    Expanded(
+                      child: ShaderMask(
+                        shaderCallback:
+                            (bounds) => LinearGradient(
+                              colors: [
+                                Colors.white, // Gold
+                                AppColors.gold,
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ).createShader(
+                              Rect.fromLTWH(0, 0, bounds.width, bounds.height),
+                            ),
+                        child: CustomText(
+                          text: "Ce-Commons",
+                          color: Colors.white,
+                          // Important: must be set, even if overridden
+                          size: 24,
+                          weight: FontWeight.w600,
+                        ),
                       ),
-                    )),
+                    ),
                   ],
                 ),
               )
@@ -81,11 +89,9 @@ class SideMenu extends StatelessWidget {
             ),
 
           if (ResponsiveWidget.isSmallScreen(context))
-            Divider(color: AppColors.grey[100], thickness: 0.25,),
+            Divider(color: AppColors.grey[100], thickness: 0.25),
 
-
-          Divider(color: AppColors.grey[100], thickness: 0.25,),
-
+          Divider(color: AppColors.grey[100], thickness: 0.25),
 
           Column(
             mainAxisSize: MainAxisSize.min,
@@ -95,17 +101,12 @@ class SideMenu extends StatelessWidget {
                       (item) => SideMenuItem(
                         itemName: item.name,
                         onTap: () async {
-                          if(item.route == Routes.authRoute){
-
+                          if (item.route == Routes.authRoute) {
                             //TODO: Uncomment
-                           // bool signOut = await authController.signOut();
-                           menController.changeActiveItemTo(item.name, item.route);
-
-                            //TODO: Uncomment
-                            // if(signOut){
-                           //   Get.offAllNamed(Routes.authenticationPageRoute);
-                           //   getStore.clearAllData();
-                           // }
+                            await AuthController.instance.logOut();
+                            // menController.changeActiveItemTo(item.name, item.route);
+                            Get.offAllNamed(Routes.authRoute);
+                            getStore.clearAllData();
                           }
 
                           if (!menController.isActive(item.name)) {

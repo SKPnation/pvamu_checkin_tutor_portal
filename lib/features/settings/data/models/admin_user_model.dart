@@ -6,6 +6,7 @@ class AdminUser {
   final String lastName;
   final String email;
   final String password;
+  final int? level;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final DateTime? timeIn;
@@ -18,6 +19,7 @@ class AdminUser {
     required this.lastName,
     required this.email,
     required this.password,
+    this.level,
     this.timeIn,
     this.timeOut,
     this.createdAt,
@@ -32,6 +34,7 @@ class AdminUser {
       lastName: map['l_name'],
       email: map['email'],
       password: map['password'],
+      level: map['level'],
       timeIn: (map['time_in'] as Timestamp?)?.toDate(),
       timeOut: (map['time_out'] as Timestamp?)?.toDate(),
       createdAt: (map['created_at'] as Timestamp?)?.toDate(),
@@ -47,6 +50,7 @@ class AdminUser {
       'l_name': lastName,
       'email': email,
       'password': password,
+      'level': level,
       'created_at': Timestamp.fromDate(createdAt!),
       'updated_at': Timestamp.fromDate(updatedAt!),
       'blocked_at':  Timestamp.fromDate(blockedAt!),

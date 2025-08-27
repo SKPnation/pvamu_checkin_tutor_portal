@@ -96,4 +96,16 @@ class SettingsController extends GetxController {
           (index) => chars[random.nextInt(chars.length)],
         ).join();
   }
+
+  blockAdmin(String id) async{
+    await adminUserRepo.blockUser(id: id);
+
+    getAdminUsers();
+  }
+
+  deleteAdmin(String id) async{
+    await adminUserRepo.deleteUser(id: id);
+
+    getAdminUsers();
+  }
 }

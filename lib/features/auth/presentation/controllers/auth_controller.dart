@@ -28,4 +28,10 @@ class AuthController extends GetxController {
       CustomSnackBar.errorSnackBar("Login failed: $e");
     }
   }
+
+  Future logOut() async => await authRepo.logout();
+
+  Future checkIfUserExistsInDB() async{
+    authRepo.checkIfUserExistsInDB(email: emailTEC.text);
+  }
 }
