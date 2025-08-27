@@ -25,7 +25,6 @@ class CoursesRepoImpl extends CoursesRepo {
       CustomSnackBar.successSnackBar(body: "Added new course");
     } catch (e) {
       CustomSnackBar.errorSnackBar("Failed: $e");
-      // Handle failure here
     }
   }
 

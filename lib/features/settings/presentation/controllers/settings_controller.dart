@@ -1,8 +1,13 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pvamu_checkin_tutor_portal/core/navigation/settings_routes.dart';
 import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
+import 'package:pvamu_checkin_tutor_portal/features/settings/data/models/admin_user_model.dart';
+import 'package:pvamu_checkin_tutor_portal/features/settings/data/repos/admin_users_repo_impl.dart';
+import 'package:pvamu_checkin_tutor_portal/features/settings/domain/entities/add_admin_user_data.dart';
 
 class SettingsController extends GetxController {
   static SettingsController get instance => Get.find();
@@ -12,14 +17,15 @@ class SettingsController extends GetxController {
   final emailAddressTEC = TextEditingController();
   final passwordTEC = TextEditingController();
 
-  Future addAdminUser() async {
-    //..
-  }
-
   var activeItem = SettingsRoutes.generalDisplayName.obs;
   final GlobalKey<NavigatorState> settingsNavigatorKey = GlobalKey();
 
   var hoverItem = "".obs;
+  var adminUsers = <AdminUser>[].obs;
+  var isLoading = false.obs;
+  var error = ''.obs;
+
+  AdminUserRepoImpl adminUserRepo = AdminUserRepoImpl();
 
   changeActiveItemTo(String itemName) {
     activeItem.value = itemName;
@@ -63,5 +69,31 @@ class SettingsController extends GetxController {
 
   goBack() => settingsNavigatorKey.currentState!.pop();
 
-  Future getAdminUsers() async{}
+  Future getAdminUsers() async =>
+      adminUsers.value = await adminUserRepo.getUsers();
+
+  Future addAdminUser() async {
+    await adminUserRepo.addUser(
+      AddAdminUserData(
+        id: adminUserRepo.adminUserCollection.doc().id,
+        email: emailAddressTEC.text,
+        password: passwordTEC.text,
+        firstName: firstNameTEC.text,
+        lastName: lastNameTEC.text,
+      ),
+    );
+
+    getAdminUsers();
+  }
+
+  void generatePassword(int length) {
+    const chars =
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    Random random = Random.secure();
+    passwordTEC.text =
+        List.generate(
+          length,
+          (index) => chars[random.nextInt(chars.length)],
+        ).join();
+  }
 }

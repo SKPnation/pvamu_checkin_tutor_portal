@@ -45,7 +45,7 @@ class AddAdminButton extends StatelessWidget {
                       textEditingController: settingsController.passwordTEC,
                       suffix: SizedBox(
                         width: 150,
-                        child: CustomButton(onPressed: (){}, text: "generate"),
+                        child: CustomButton(onPressed: ()=>settingsController.generatePassword(10), text: "generate"),
                       ),
                     ),
 
