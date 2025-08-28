@@ -15,6 +15,7 @@ import 'package:pvamu_checkin_tutor_portal/features/site_layout/presentation/wid
 class SideMenu extends StatelessWidget {
   final menController = Get.put(MenController());
   final navigationController = Get.put(NavigationController());
+  final authController = Get.put(AuthController());
 
   final GlobalKey<ScaffoldState> scaffoldKey;
 
@@ -47,7 +48,7 @@ class SideMenu extends StatelessWidget {
                               Rect.fromLTWH(0, 0, bounds.width, bounds.height),
                             ),
                         child: CustomText(
-                          text: "Ce-Commons",
+                          text: "CE COMMONS",
                           color: Colors.white,
                           // Important: must be set, even if overridden
                           size: 24,

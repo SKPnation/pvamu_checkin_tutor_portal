@@ -6,11 +6,14 @@ import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
 import 'package:pvamu_checkin_tutor_portal/core/utils/helpers/image_elements.dart';
 import 'package:pvamu_checkin_tutor_portal/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/auth/presentation/widgets/form_fields.dart';
+import 'package:pvamu_checkin_tutor_portal/features/site_layout/presentation/controllers/menu_controller.dart';
+import 'package:pvamu_checkin_tutor_portal/features/site_layout/presentation/pages/site_layout.dart';
 
 class AuthPage extends StatelessWidget {
   AuthPage({super.key});
 
   final authController = AuthController.instance;
+  final menuController = MenController.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +54,10 @@ class AuthPage extends StatelessWidget {
               InkWell(
                 onTap: () async{
                   await authController.login();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SiteLayout()),
+                  );
                 },
                 child: Container(
                   decoration: BoxDecoration(color: AppColors.purple,

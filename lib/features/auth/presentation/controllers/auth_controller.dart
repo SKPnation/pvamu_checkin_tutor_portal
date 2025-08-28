@@ -2,13 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_snackbar.dart';
 import 'package:pvamu_checkin_tutor_portal/features/auth/data/repos/auth_repo_impl.dart';
+import 'package:pvamu_checkin_tutor_portal/features/site_layout/presentation/controllers/menu_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/site_layout/presentation/pages/site_layout.dart';
 
 class AuthController extends GetxController {
   static AuthController get instance => Get.find();
 
-  final emailTEC = TextEditingController();
-  final passwordTEC = TextEditingController();
+  final emailTEC = TextEditingController(text: "admin@pvamu.edu");
+  final passwordTEC = TextEditingController(text: "password");
 
   RxBool isPasswordVisible = false.obs;
 
@@ -23,7 +24,10 @@ class AuthController extends GetxController {
 
       print("Logged in as: ${userCredential.user!.uid}");
 
-      Get.to(SiteLayout());
+      // Initialize MenController before SiteLayout
+      Get.put(MenController());
+
+      // Get.to(SiteLayout());
     } catch (e) {
       CustomSnackBar.errorSnackBar("Login failed: $e");
     }
