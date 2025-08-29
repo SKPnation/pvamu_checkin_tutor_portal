@@ -4,12 +4,13 @@ import 'package:pvamu_checkin_tutor_portal/core/global/custom_form_field.dart';
 import 'package:pvamu_checkin_tutor_portal/core/utils/helpers/validators.dart';
 import 'package:pvamu_checkin_tutor_portal/features/auth/presentation/controllers/auth_controller.dart';
 
-CustomFormField emailFormField() {
+CustomFormField emailFormField({void Function(String)? onChanged}) {
   return CustomFormField(
     labelText: 'Email',
     hint: "abc@domain.com",
     textEditingController: AuthController.instance.emailTEC,
     textInputType: TextInputType.emailAddress,
+    onChanged: onChanged,
     validator: (val) {
       if (val!.isEmpty) {
         return 'Please input your email';

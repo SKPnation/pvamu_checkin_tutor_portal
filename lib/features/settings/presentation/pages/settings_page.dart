@@ -20,15 +20,6 @@ class SettingsPage extends StatelessWidget {
         child: Column(
           children: [
             Divider(thickness: 0.5),
-            //Current page title
-            // Container(
-            //     margin: const EdgeInsets.only(top: 80, bottom: 20),
-            //     alignment: Alignment.centerLeft,
-            //     child: CustomText(
-            //       text: "menuController.returnRouteName()",
-            //       size: 24,
-            //       weight: FontWeight.w600,
-            //     )),
 
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,15 +37,3 @@ class SettingsPage extends StatelessWidget {
 
   }
 }
-
-//Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//
-//                   SizedBox(
-//                     height: 60,
-//                     width: 200,
-//                     child: AddAdminButton(settingsController: settingsController),
-//                   ),
-//                 ],
-//               ),

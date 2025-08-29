@@ -12,5 +12,8 @@ class AppStrings{
 
   static const String loginTitle = "Login";
   static const String welcomeBackMsg = "Welcome back to the admin panel.";
+  static const mustBePvamuEmail = "Must be a PVAMU email address";
 
+  static const String slogan = "Excellence Lives Here";
+  static const String appTitle = "CE COMMONS DASHBOARD";
 }

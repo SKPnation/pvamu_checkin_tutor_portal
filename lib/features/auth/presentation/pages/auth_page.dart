@@ -9,11 +9,18 @@ import 'package:pvamu_checkin_tutor_portal/features/auth/presentation/widgets/fo
 import 'package:pvamu_checkin_tutor_portal/features/site_layout/presentation/controllers/menu_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/site_layout/presentation/pages/site_layout.dart';
 
-class AuthPage extends StatelessWidget {
-  AuthPage({super.key});
+class AuthPage extends StatefulWidget {
+  const AuthPage({super.key});
 
+  @override
+  State<AuthPage> createState() => _AuthPageState();
+}
+
+class _AuthPageState extends State<AuthPage> {
   final authController = AuthController.instance;
   final menuController = MenController.instance;
+
+  var emailErrorText = "";
 
   @override
   Widget build(BuildContext context) {
@@ -26,33 +33,86 @@ class AuthPage extends StatelessWidget {
             children: [
               Image.asset(ImageElements.pvamuLogo, height: 200, width: 200),
 
-              const SizedBox(height: 30),
-
-              Text(AppStrings.loginTitle, style: GoogleFonts.roboto(fontSize: 30, fontWeight: FontWeight.w700)),
-
               const SizedBox(height: 15),
 
               CustomText(
-                text: AppStrings.welcomeBackMsg,
+                text: AppStrings.slogan,
                 color: AppColors.grey[300],
-                size: 18,
-                weight: FontWeight.normal,
+                size: 22,
+                fontStyle: FontStyle.italic,
+                weight: FontWeight.bold,
               ),
 
+              const SizedBox(height: 20),
+
+              ShaderMask(
+                shaderCallback:
+                    (bounds) => LinearGradient(
+                      colors: [
+                        AppColors.gold, // Gold
+                        AppColors.purple,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ).createShader(
+                      Rect.fromLTWH(0, 0, bounds.width, bounds.height),
+                    ),
+                child: CustomText(
+                  text: AppStrings.appTitle,
+                  color: Colors.white,
+                  // Important: must be set, even if overridden
+                  size: 28,
+                  weight: FontWeight.w600,
+                ),
+              ),
+
+              // CustomText(
+              //   text: AppStrings.appTitle,
+              //   size: 28,
+              //   weight: FontWeight.bold,
+              // ),
+              const SizedBox(height: 60),
+
+              Text(
+                AppStrings.loginTitle,
+                style: GoogleFonts.roboto(fontSize: 24),
+              ),
+
+              // Text(AppStrings.loginTitle, style: GoogleFonts.roboto(fontSize: 30, fontWeight: FontWeight.w700)),
+
+              // const SizedBox(height: 15),
+              //
+              // CustomText(
+              //   text: AppStrings.welcomeBackMsg,
+              //   color: AppColors.grey[300],
+              //   size: 18,
+              //   weight: FontWeight.normal,
+              // ),
               const SizedBox(height: 30),
 
-              emailFormField(),
+              emailFormField(
+                onChanged: (value) {
+                  if (!authController.isPvamuEmail(value)) {
+                    emailErrorText = AppStrings.mustBePvamuEmail;
+                  } else {
+                    emailErrorText = "";
+                  }
 
+                  setState(() {});
+                },
+              ),
+              if (emailErrorText.isNotEmpty)
+                Text(
+                  emailErrorText,
+                  style: TextStyle(color: Colors.red),
+                ),
               const SizedBox(height: 15),
 
               passwordField(),
 
-
-              const SizedBox(
-                height: 15,
-              ),
+              const SizedBox(height: 15),
               InkWell(
-                onTap: () async{
+                onTap: () async {
                   await authController.login();
                   Navigator.push(
                     context,
@@ -60,16 +120,20 @@ class AuthPage extends StatelessWidget {
                   );
                 },
                 child: Container(
-                  decoration: BoxDecoration(color: AppColors.purple,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black38,
-                          blurRadius: 2.0,
-                          spreadRadius: 0.0,
-                          offset: Offset(2.0, 2.0), // shadow direction: bottom right
-                        )
-                      ]
+                  decoration: BoxDecoration(
+                    color: AppColors.purple,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black38,
+                        blurRadius: 2.0,
+                        spreadRadius: 0.0,
+                        offset: Offset(
+                          2.0,
+                          2.0,
+                        ), // shadow direction: bottom right
+                      ),
+                    ],
                   ),
                   alignment: Alignment.center,
                   width: double.maxFinite,

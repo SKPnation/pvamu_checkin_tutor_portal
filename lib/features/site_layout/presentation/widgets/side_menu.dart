@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:pvamu_checkin_tutor_portal/core/data/local/get_store.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_text.dart';
 import 'package:pvamu_checkin_tutor_portal/core/navigation/app_routes.dart';
@@ -35,24 +36,12 @@ class SideMenu extends StatelessWidget {
                     Image.asset(ImageElements.pvamuLogo, height: 80, width: 80),
                     SizedBox(width: 16),
                     Expanded(
-                      child: ShaderMask(
-                        shaderCallback:
-                            (bounds) => LinearGradient(
-                              colors: [
-                                Colors.white, // Gold
-                                AppColors.gold,
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ).createShader(
-                              Rect.fromLTWH(0, 0, bounds.width, bounds.height),
-                            ),
-                        child: CustomText(
-                          text: "CE COMMONS",
-                          color: Colors.white,
-                          // Important: must be set, even if overridden
-                          size: 24,
-                          weight: FontWeight.w600,
+                      child: CustomText(
+                        text: "PRAIRIE VIEW \nA&M UNIVERSITY",
+                        textStyle: GoogleFonts.poppins(
+                          fontSize: 24,
+                          color: AppColors.white,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),

@@ -35,7 +35,5 @@ class AuthController extends GetxController {
 
   Future logOut() async => await authRepo.logout();
 
-  Future checkIfUserExistsInDB() async{
-    authRepo.checkIfUserExistsInDB(email: emailTEC.text);
-  }
+  bool isPvamuEmail(String email) => email.contains('@pvamu.edu');
 }
