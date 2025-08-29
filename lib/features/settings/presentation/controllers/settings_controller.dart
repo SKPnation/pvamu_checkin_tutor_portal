@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -107,5 +108,19 @@ class SettingsController extends GetxController {
     await adminUserRepo.deleteUser(id: id);
 
     getAdminUsers();
+  }
+
+  Future<bool> resetPwd() async{
+    bool sent = false;
+    String email = FirebaseAuth.instance.currentUser!.email!;
+
+    try{
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      sent = true;
+    }catch(e){
+      print("Error: $e");
+    }
+
+    return sent;
   }
 }

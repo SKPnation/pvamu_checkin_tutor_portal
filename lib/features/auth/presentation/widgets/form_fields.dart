@@ -7,7 +7,7 @@ import 'package:pvamu_checkin_tutor_portal/features/auth/presentation/controller
 CustomFormField emailFormField({void Function(String)? onChanged}) {
   return CustomFormField(
     labelText: 'Email',
-    hint: "abc@domain.com",
+    hint: "abc@pvamu.edu",
     textEditingController: AuthController.instance.emailTEC,
     textInputType: TextInputType.emailAddress,
     onChanged: onChanged,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pvamu_checkin_tutor_portal/core/constants/app_strings.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_text.dart';
@@ -17,7 +18,7 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
-  final authController = AuthController.instance;
+  final authController = Get.put(AuthController());
   final menuController = MenController.instance;
 
   var emailErrorText = "";
@@ -102,10 +103,7 @@ class _AuthPageState extends State<AuthPage> {
                 },
               ),
               if (emailErrorText.isNotEmpty)
-                Text(
-                  emailErrorText,
-                  style: TextStyle(color: Colors.red),
-                ),
+                Text(emailErrorText, style: TextStyle(color: Colors.red)),
               const SizedBox(height: 15),
 
               passwordField(),
@@ -113,11 +111,13 @@ class _AuthPageState extends State<AuthPage> {
               const SizedBox(height: 15),
               InkWell(
                 onTap: () async {
-                  await authController.login();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SiteLayout()),
-                  );
+                  var success = await authController.login();
+                  if (success) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SiteLayout()),
+                    );
+                  }
                 },
                 child: Container(
                   decoration: BoxDecoration(

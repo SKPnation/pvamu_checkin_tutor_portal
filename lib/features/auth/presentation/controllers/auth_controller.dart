@@ -15,22 +15,27 @@ class AuthController extends GetxController {
 
   AuthRepoImpl authRepo = AuthRepoImpl();
 
-  Future<void> login() async {
+  Future<bool> login() async {
+   var success = false;
+
+   // Initialize MenController
+   Get.put(MenController());
+
     try {
       final userCredential = await authRepo.login(
         email: emailTEC.text,
         password: passwordTEC.text,
       );
 
-      print("Logged in as: ${userCredential.user!.uid}");
-
-      // Initialize MenController before SiteLayout
-      Get.put(MenController());
-
-      // Get.to(SiteLayout());
+      if(userCredential.user != null){
+        success = true;
+      }
     } catch (e) {
+      success = false;
       CustomSnackBar.errorSnackBar("Login failed: $e");
     }
+
+    return success;
   }
 
   Future logOut() async => await authRepo.logout();
