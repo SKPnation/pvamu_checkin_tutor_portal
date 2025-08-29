@@ -8,8 +8,8 @@ import 'package:pvamu_checkin_tutor_portal/features/site_layout/presentation/pag
 class AuthController extends GetxController {
   static AuthController get instance => Get.find();
 
-  final emailTEC = TextEditingController(text: "admin@pvamu.edu");
-  final passwordTEC = TextEditingController(text: "password");
+  final emailTEC = TextEditingController();
+  final passwordTEC = TextEditingController();
 
   RxBool isPasswordVisible = false.obs;
 
