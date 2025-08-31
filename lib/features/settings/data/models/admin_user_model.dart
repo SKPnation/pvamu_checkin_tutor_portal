@@ -29,11 +29,11 @@ class AdminUser {
 
   factory AdminUser.fromMap(Map<String, dynamic> map) {
     return AdminUser(
-      id: map['id'],
-      firstName: map['f_name'],
-      lastName: map['l_name'],
-      email: map['email'],
-      password: map['password'],
+      id: map['id'] ?? '',
+      firstName: map['f_name'] ?? '',
+      lastName: map['l_name'] ?? '',
+      email: map['email'] ?? '',
+      password: map['password'] ?? '',
       level: map['level'],
       timeIn: (map['time_in'] as Timestamp?)?.toDate(),
       timeOut: (map['time_out'] as Timestamp?)?.toDate(),
@@ -51,11 +51,11 @@ class AdminUser {
       'email': email,
       'password': password,
       'level': level,
-      'created_at': Timestamp.fromDate(createdAt!),
-      'updated_at': Timestamp.fromDate(updatedAt!),
-      'blocked_at':  Timestamp.fromDate(blockedAt!),
-      'time_in': Timestamp.fromDate(timeIn!),
-      'time_out': Timestamp.fromDate(timeOut!),
+      'created_at': createdAt != null ? Timestamp.fromDate(createdAt!) : null,
+      'updated_at': updatedAt != null ? Timestamp.fromDate(updatedAt!) : null,
+      'blocked_at': blockedAt != null ? Timestamp.fromDate(blockedAt!) : null,
+      'time_in': timeIn != null ? Timestamp.fromDate(timeIn!) : null,
+      'time_out': timeOut != null ? Timestamp.fromDate(timeOut!) : null,
     };
   }
 }

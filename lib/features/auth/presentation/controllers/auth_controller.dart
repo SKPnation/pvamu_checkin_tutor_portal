@@ -21,19 +21,30 @@ class AuthController extends GetxController {
    // Initialize MenController
    Get.put(MenController());
 
-    try {
-      final userCredential = await authRepo.login(
-        email: emailTEC.text,
-        password: passwordTEC.text,
-      );
+   final userCredential = await authRepo.login(
+     email: emailTEC.text,
+     password: passwordTEC.text,
+   );
 
-      if(userCredential.user != null){
-        success = true;
-      }
-    } catch (e) {
-      success = false;
-      CustomSnackBar.errorSnackBar("Login failed: $e");
-    }
+   if(userCredential.user != null){
+     success = true;
+   }
+
+    // try {
+    //   final userCredential = await authRepo.login(
+    //     email: emailTEC.text,
+    //     password: passwordTEC.text,
+    //   );
+    //
+    //   if(userCredential.user != null){
+    //     success = true;
+    //   }
+    // } catch (e) {
+    //   print("Login failed: $e");
+    //   // print(e);
+    //   success = false;
+    //   CustomSnackBar.errorSnackBar("Login failed: $e");
+    // }
 
     return success;
   }

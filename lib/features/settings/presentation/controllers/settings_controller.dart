@@ -2,8 +2,10 @@ import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pvamu_checkin_tutor_portal/core/global/custom_snackbar.dart';
 import 'package:pvamu_checkin_tutor_portal/core/navigation/settings_routes.dart';
 import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
 import 'package:pvamu_checkin_tutor_portal/features/settings/data/models/admin_user_model.dart';
@@ -17,6 +19,7 @@ class SettingsController extends GetxController {
   final lastNameTEC = TextEditingController();
   final emailAddressTEC = TextEditingController();
   final passwordTEC = TextEditingController();
+  final phoneTEC = TextEditingController();
 
   var activeItem = SettingsRoutes.generalDisplayName.obs;
   final GlobalKey<NavigatorState> settingsNavigatorKey = GlobalKey();
@@ -81,8 +84,12 @@ class SettingsController extends GetxController {
         password: passwordTEC.text,
         firstName: firstNameTEC.text,
         lastName: lastNameTEC.text,
+        level: 1
       ),
     );
+
+    Get.back(); //return
+    CustomSnackBar.successSnackBar(body: "Added new member");
 
     getAdminUsers();
   }
@@ -118,7 +125,9 @@ class SettingsController extends GetxController {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       sent = true;
     }catch(e){
-      print("Error: $e");
+      if (kDebugMode) {
+        print("Error: $e");
+      }
     }
 
     return sent;

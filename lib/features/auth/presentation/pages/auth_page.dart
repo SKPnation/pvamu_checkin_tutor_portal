@@ -74,10 +74,10 @@ class _AuthPageState extends State<AuthPage> {
               // ),
               const SizedBox(height: 60),
 
-              Text(
-                AppStrings.loginTitle,
-                style: GoogleFonts.roboto(fontSize: 24),
-              ),
+              // Text(
+              //   AppStrings.loginTitle,
+              //   style: GoogleFonts.roboto(fontSize: 24),
+              // ),
 
               // Text(AppStrings.loginTitle, style: GoogleFonts.roboto(fontSize: 30, fontWeight: FontWeight.w700)),
 
@@ -89,7 +89,7 @@ class _AuthPageState extends State<AuthPage> {
               //   size: 18,
               //   weight: FontWeight.normal,
               // ),
-              const SizedBox(height: 30),
+              // const SizedBox(height: 30),
 
               emailFormField(
                 onChanged: (value) {

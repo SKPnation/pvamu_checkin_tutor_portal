@@ -13,7 +13,7 @@ import 'package:pvamu_checkin_tutor_portal/features/site_layout/presentation/con
 
 AppBar topNavigationBar(BuildContext context, GlobalKey<ScaffoldState> key, String username) =>
     AppBar(
-      automaticallyImplyLeading: false, // 👈 hides default back button
+      automaticallyImplyLeading: false, // hides default back button
       title: Obx(()=>Padding(padding: EdgeInsets.only(top: 24), child: Row(
         children: [
           CustomText(text: MenController.instance.returnRouteName(), weight: FontWeight.w500,),

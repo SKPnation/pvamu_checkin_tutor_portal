@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pvamu_checkin_tutor_portal/core/constants/app_strings.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_text.dart';
 import 'package:pvamu_checkin_tutor_portal/core/navigation/local_navigator.dart';
+import 'package:pvamu_checkin_tutor_portal/features/settings/data/models/admin_user_model.dart';
+import 'package:pvamu_checkin_tutor_portal/features/settings/data/repos/user_data_store.dart';
 import 'package:pvamu_checkin_tutor_portal/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/settings/presentation/widgets/add_admin_button.dart';
 import 'package:pvamu_checkin_tutor_portal/features/settings/presentation/widgets/settings_side_menu.dart';
@@ -13,6 +16,7 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(userDataStore.user);
     return Container(
       padding: const EdgeInsets.only(right: 24, top: 24),
       child: SingleChildScrollView(

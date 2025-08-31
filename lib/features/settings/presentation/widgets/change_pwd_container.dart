@@ -35,19 +35,6 @@ class _ChangePwdContainerState extends State<ChangePwdContainer> {
           CustomText(text: "Password", weight: FontWeight.bold),
           CustomText(text: "Reset your password here"),
           SizedBox(height: 24),
-          // CustomText(text: "Current Password"),
-          // SizedBox(height: 4),
-          // CustomFormField(
-          //   verticalPadding: 12,
-          //   suffix: Icon(Icons.visibility_off),
-          //   inputBorder: OutlineInputBorder(
-          //     borderRadius: BorderRadius.circular(20),
-          //     borderSide: BorderSide(
-          //       color: AppColors.grey[300]!.withOpacity(.3),
-          //     ),
-          //   ),
-          // ),
-          // SizedBox(height: 24),
           ChangePwdButton(
             settingsController: widget.settingsController,
             onPressed: () async {

@@ -12,26 +12,28 @@ class TeamManagementTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [CustomText(text: "Admin management settings", weight: FontWeight.bold,),
-                CustomText(text: "Manage control and permissions in your team", color: AppColors.grey[700]),],
-            ),
-            SizedBox(width: 180,child: AddAdminButton(settingsController: settingsController),)
-          ],
-        ),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [CustomText(text: "Admin management settings", weight: FontWeight.bold,),
+                  CustomText(text: "Manage control and permissions in your team", color: AppColors.grey[700]),],
+              ),
+              SizedBox(width: 180,child: AddAdminButton(settingsController: settingsController),)
+            ],
+          ),
 
-        SizedBox(height: 16),
+          SizedBox(height: 16),
 
-        AdminUsersTable()
+          AdminUsersTable()
 
-      ],
+        ],
+      ),
     );
   }
 }

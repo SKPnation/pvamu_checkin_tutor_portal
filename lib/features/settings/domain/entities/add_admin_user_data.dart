@@ -7,13 +7,15 @@ class AddAdminUserData extends QueryParams {
   String password = '';
   String firstName = '';
   String lastName = '';
+  int level;
 
   AddAdminUserData({
     required this.id,
     required this.email,
     required this.password,
     required this.firstName,
-    required this.lastName
+    required this.lastName,
+    required this.level
   });
 
   @override
@@ -23,7 +25,7 @@ class AddAdminUserData extends QueryParams {
     'password': password,
     'f_name': firstName,
     'l_name': lastName,
-    'level': 1,
+    'level': level,
     'time_in': null,
     'time_out': null,
     'created_at': DateTime.now(),
