@@ -36,16 +36,8 @@ class _AddCourseButtonState extends State<AddCourseButton> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomFormField(
-                      hint: "Course name, e.g CINS 5307",
+                      hint: "Course code, e.g CINS 20071",
                       textCapitalization: TextCapitalization.characters,
-                      textEditingController:
-                          widget.coursesController.courseNameTEC,
-                    ),
-                    if (courseNameErr.isNotEmpty)
-                      CustomText(text: courseNameErr, color: AppColors.red),
-                    SizedBox(height: 4),
-                    CustomFormField(
-                      hint: "Course code, e.g 20071",
                       textEditingController:
                           widget.coursesController.courseCodeTEC,
                     ),
@@ -53,13 +45,14 @@ class _AddCourseButtonState extends State<AddCourseButton> {
                       CustomText(text: courseCodeErr, color: AppColors.red),
 
                     SizedBox(height: 4),
+
                     CustomFormField(
-                      hint: "Course category, e.g Information Technology",
+                      hint: "Course name, e.g Information technology",
                       textEditingController:
-                          widget.coursesController.courseCategoryTEC,
+                          widget.coursesController.courseNameTEC,
                     ),
-                    if (courseCategoryErr.isNotEmpty)
-                      CustomText(text: courseCategoryErr, color: AppColors.red),
+                    if (courseNameErr.isNotEmpty)
+                      CustomText(text: courseNameErr, color: AppColors.red),
 
                     SizedBox(height: 8),
 
@@ -67,22 +60,16 @@ class _AddCourseButtonState extends State<AddCourseButton> {
                       onPressed: () async {
                         if (widget
                                 .coursesController
-                                .courseNameTEC
-                                .text
-                                .isEmpty &&
-                            widget
-                                .coursesController
                                 .courseCodeTEC
                                 .text
                                 .isEmpty &&
                             widget
                                 .coursesController
-                                .courseCategoryTEC
+                                .courseNameTEC
                                 .text
                                 .isEmpty) {
-                          courseNameErr = "The course name is required";
                           courseCodeErr = "The course code is required";
-                          courseCategoryErr = "The course category is required";
+                          courseNameErr = "The course name is required";
                         } else if (widget
                             .coursesController
                             .courseNameTEC
@@ -90,7 +77,6 @@ class _AddCourseButtonState extends State<AddCourseButton> {
                             .isEmpty) {
                           courseNameErr = "The course name is required";
                           courseCodeErr = "";
-                          courseCategoryErr = "";
                         } else if (widget
                             .coursesController
                             .courseCodeTEC
@@ -98,19 +84,9 @@ class _AddCourseButtonState extends State<AddCourseButton> {
                             .isEmpty) {
                           courseNameErr = "";
                           courseCodeErr = "The course code is required";
-                          courseCategoryErr = "";
-                        } else if (widget
-                            .coursesController
-                            .courseCategoryTEC
-                            .text
-                            .isEmpty) {
-                          courseNameErr = "";
-                          courseCodeErr = "";
-                          courseCategoryErr = "The course category is required";
                         } else {
                           courseNameErr = "";
                           courseCodeErr = "";
-                          courseCategoryErr = "";
 
                           await widget.coursesController.addCourse();
                         }

@@ -9,7 +9,6 @@ class CoursesController extends GetxController {
 
   final courseNameTEC = TextEditingController();
   final courseCodeTEC = TextEditingController();
-  final courseCategoryTEC = TextEditingController();
 
   var courseStatus = "archived".obs;
 
@@ -28,12 +27,16 @@ class CoursesController extends GetxController {
           id: coursesRepo.coursesCollection.doc().id,
           name: courseNameTEC.text,
           code: courseCodeTEC.text,
-          category: courseCategoryTEC.text,
           status: "Published",
           createdAt: DateTime.now(),
         ));
 
+    courseNameTEC.clear();
+    courseCodeTEC.clear();
+
     getCourses();
+
+
   }
 
   Future getCourses() async =>

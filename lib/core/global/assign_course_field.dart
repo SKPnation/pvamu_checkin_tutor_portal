@@ -5,7 +5,11 @@ import 'package:pvamu_checkin_tutor_portal/features/courses/data/models/course_m
 import 'package:pvamu_checkin_tutor_portal/features/courses/presentation/controllers/courses_controller.dart';
 
 class AssignCourseField extends StatefulWidget {
-  const AssignCourseField({super.key, required this.coursesController, this.onChanged});
+  const AssignCourseField({
+    super.key,
+    required this.coursesController,
+    this.onChanged,
+  });
 
   final CoursesController coursesController;
   final Function()? onChanged;
@@ -27,9 +31,7 @@ class _AssignCourseFieldState extends State<AssignCourseField> {
               child: SizedBox(
                 height: 20,
                 width: 20,
-                child: CircularProgressIndicator(
-                  color: Color(0xFF43A95D),
-                ),
+                child: CircularProgressIndicator(color: Color(0xFF43A95D)),
               ),
             );
           }
@@ -54,9 +56,7 @@ class _AssignCourseFieldState extends State<AssignCourseField> {
             // Find course by name in the fetched list
             try {
               selectedCourseId =
-                  courses
-                      .firstWhere((c) => c.name == selectedCourse.name)
-                      .id;
+                  courses.firstWhere((c) => c.name == selectedCourse.name).id;
             } catch (e) {
               // If no course matches, leave selectedCourseId null
               selectedCourseId = null;
@@ -68,18 +68,19 @@ class _AssignCourseFieldState extends State<AssignCourseField> {
           return DropdownButtonFormField<String>(
             value: selectedCourseId,
             items:
-            courses.map((course) {
-              return DropdownMenuItem<String>(
-                value: course.id,
-                child: Text("${course.category} - ${course.name}"),
-              );
-            }).toList(),
+                courses.map((course) {
+                  return DropdownMenuItem<String>(
+                    value: course.id,
+                    child: Text("${course.name} - ${course.code}"),
+                  );
+                }).toList(),
             onChanged: (String? value) {
               setState(() {
                 if (value != null) {
                   final course = courses.firstWhere(
-                        (course) => course.id == value,
+                    (course) => course.id == value,
                   );
+
                   if (widget.coursesController.selectedCourse == null) {
                     widget.coursesController.selectedCourse = Rx<Course>(
                       course,

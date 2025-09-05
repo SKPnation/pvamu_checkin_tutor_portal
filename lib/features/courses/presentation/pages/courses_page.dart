@@ -12,24 +12,24 @@ class CoursesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.only(top: 24),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Divider(),
-              SizedBox(height: 16),
-              SizedBox(
-                height: 60,
-                width: 200,
-                child: AddCourseButton(coursesController: coursesController),
-              ),
-
-              SizedBox(height: 40),
-
-              CoursesTable(),
-            ],
+      padding: EdgeInsets.only(top: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Divider(),
+          SizedBox(height: 16),
+          SizedBox(
+            height: 60,
+            width: 200,
+            child: AddCourseButton(coursesController: coursesController),
           ),
-        ));
+
+          SizedBox(height: 40),
+
+          //Only this should scroll but it isn't scrolling
+          Expanded(child: SingleChildScrollView(child: CoursesTable())),
+        ],
+      ),
+    );
   }
 }

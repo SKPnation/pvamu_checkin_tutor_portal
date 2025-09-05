@@ -3,7 +3,6 @@ import 'package:pvamu_checkin_tutor_portal/core/global/custom_text.dart';
 import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/data/models/course_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/assigned_model.dart';
-import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/controllers/tutors_controller.dart';
 
 class AssignedTutorItem extends StatelessWidget {
@@ -184,7 +183,7 @@ class AssignedTutorItem extends StatelessWidget {
                 (e) => PopupMenuItem<String>(
                   value: e.id!,
                   onTap: null,
-                  child: CustomText(text: '${e.category} - ${e.name}'),
+                  child: CustomText(text: '${e.name} - ${e.code}'),
                 ),
               )
               .toList(),

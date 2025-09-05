@@ -33,9 +33,11 @@ class _LargeScreenState extends State<LargeScreen> {
           child: Column(
             children: [
               topNavigationBar(context, widget.scaffoldKey, "Admin"),
-              localNavigator()
+              Expanded(
+                flex: 2,
+                  child: localNavigator())
             ],
-          )
+          ),
 
         ),
         SizedBox(width: 24),

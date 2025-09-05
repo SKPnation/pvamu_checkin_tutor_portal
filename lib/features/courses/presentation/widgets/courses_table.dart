@@ -15,7 +15,7 @@ class CoursesTable extends StatefulWidget {
 
 class _CoursesTableState extends State<CoursesTable> {
   final coursesController = CoursesController.instance;
-  var columnsArray = ["Course", "Code", "Category", "Status", "Action"];
+  var columnsArray = ["Code", "Name", "Status", "Action"];
 
   @override
   void initState() {

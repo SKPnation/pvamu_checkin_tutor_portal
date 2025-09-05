@@ -21,19 +21,17 @@ class CourseItem extends StatelessWidget {
         Table(
           defaultVerticalAlignment: TableCellVerticalAlignment.middle,
           columnWidths: const {
-            0: FlexColumnWidth(), // Name column
-            1: FlexColumnWidth(), // Email column
-            2: FlexColumnWidth(), // Course column
-            3: FlexColumnWidth(), // Time In column// Status column
-            4: FlexColumnWidth(), // Time In column// Status column
+            0: FlexColumnWidth(), //Course
+            1: FlexColumnWidth(), //Category
+            2: FlexColumnWidth(), //Status
+            3: FlexColumnWidth(), //Action
           },
           children: [
             TableRow(
               children: [
-                Center(child: CustomText(text: item.name.toString(), size: 12)),
                 Center(child: CustomText(text: item.code.toString(), size: 12)),
                 Center(
-                  child: CustomText(text: item.category.toString(), size: 12),
+                  child: CustomText(text: item.name.toString(), size: 12),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
