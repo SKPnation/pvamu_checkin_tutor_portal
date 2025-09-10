@@ -104,7 +104,6 @@ class _CoursesTableState extends State<CoursesTable> {
               groupedCourses.putIfAbsent(prefix, () => []).add(course);
             }
 
-
             // Render groups in defined order
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,

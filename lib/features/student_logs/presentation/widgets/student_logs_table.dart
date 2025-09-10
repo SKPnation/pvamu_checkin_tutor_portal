@@ -100,8 +100,6 @@ class _StudentLogsTableState extends State<StudentLogsTable> {
               var students = snapshot.data as List<Student>;
               students.sort((a, b) => b.timeIn!.compareTo(a.timeIn!));
 
-
-
               return Column(
                 children: students.asMap().entries.map((entry) {
                   final index = entry.key;
@@ -138,7 +136,7 @@ class _StudentLogsTableState extends State<StudentLogsTable> {
                               //tutor name
                               Center(
                                 child: CustomText(
-                                  text: item.tutor?.name ?? 'tutor',
+                                  text: item.tutor?.name ?? "--",
                                   size: 12,
                                 ),
                               ),
