@@ -6,6 +6,7 @@ class CustomText extends StatelessWidget {
   final double? size;
   final Color? color;
   final FontWeight? weight;
+  final TextAlign? textAlign;
   final FontStyle? fontStyle;
   final TextStyle? textStyle;
 
@@ -14,6 +15,7 @@ class CustomText extends StatelessWidget {
     this.size,
     this.color,
     this.weight,
+    this.textAlign,
     this.fontStyle,
     this.textStyle,
     super.key});
@@ -22,11 +24,12 @@ class CustomText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text!,
+      textAlign: textAlign,
       style: textStyle ?? TextStyle(
           color: color,
           fontSize: size,
           fontWeight: weight,
-        fontStyle: fontStyle
+          fontStyle: fontStyle
       ),
     );
   }

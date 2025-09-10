@@ -143,7 +143,7 @@ class _StudentLogsTableState extends State<StudentLogsTable> {
                                 ),
                               ),
                               //time in
-                              Center(child: CustomText(text: formatTime(item.timeIn), size: 12)),
+                              Center(child: CustomText(text: "${formatTime(item.timeIn)}\n${formatDate(item.timeIn)}", textAlign: TextAlign.center, size: 12)),
 
                               //time out
                               Center(
