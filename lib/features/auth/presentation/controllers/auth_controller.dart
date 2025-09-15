@@ -30,22 +30,6 @@ class AuthController extends GetxController {
      success = true;
    }
 
-    // try {
-    //   final userCredential = await authRepo.login(
-    //     email: emailTEC.text,
-    //     password: passwordTEC.text,
-    //   );
-    //
-    //   if(userCredential.user != null){
-    //     success = true;
-    //   }
-    // } catch (e) {
-    //   print("Login failed: $e");
-    //   // print(e);
-    //   success = false;
-    //   CustomSnackBar.errorSnackBar("Login failed: $e");
-    // }
-
     return success;
   }
 

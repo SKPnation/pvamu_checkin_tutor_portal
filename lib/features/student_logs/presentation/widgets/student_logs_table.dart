@@ -147,7 +147,7 @@ class _StudentLogsTableState extends State<StudentLogsTable> {
                               Center(
                                 child: CustomText(
                                   text:
-                                  item.timeOut == null ? "--" : formatTime(item.timeOut),
+                                  item.timeOut == null ? "--" : "${formatTime(item.timeOut)}\n${formatDate(item.timeOut)}",
                                   size: 12,
                                 ),
                               ),

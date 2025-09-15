@@ -38,7 +38,7 @@ class Student {
 
     return Student(
       id: docId,
-      name: map['name'] ?? '',
+      name: map['name_lower'] ?? '',
       email: map['email'] ?? '',
       createdAt: (map['created_at'] as Timestamp).toDate(),
       timeIn:

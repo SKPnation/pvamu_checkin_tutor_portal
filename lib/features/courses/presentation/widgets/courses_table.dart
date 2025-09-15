@@ -111,6 +111,13 @@ class _CoursesTableState extends State<CoursesTable> {
                 final courses = groupedCourses[prefix] ?? [];
                 if (courses.isEmpty) return SizedBox.shrink();
 
+                // Sort numerically based on the number after the prefix
+                courses.sort((a, b) {
+                  final aNum = int.tryParse(a.code!.replaceAll(RegExp(r'[^0-9]'), "")) ?? 0;
+                  final bNum = int.tryParse(b.code!.replaceAll(RegExp(r'[^0-9]'), "")) ?? 0;
+                  return aNum.compareTo(bNum);
+                });
+
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
