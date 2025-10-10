@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pvamu_checkin_tutor_portal/core/constants/app_strings.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_text.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/presentation/controllers/courses_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/presentation/widgets/courses_table.dart';
@@ -21,7 +22,7 @@ class CoursesPage extends StatelessWidget {
           SizedBox(
             height: 60,
             width: 200,
-            child: AddCourseButton(coursesController: coursesController),
+            child: AddCourseButton(coursesController: coursesController, from: AppStrings.coursesTitle.toLowerCase(),),
           ),
 
           SizedBox(height: 40),

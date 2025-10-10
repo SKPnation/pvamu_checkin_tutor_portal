@@ -7,6 +7,7 @@ import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
 import 'package:pvamu_checkin_tutor_portal/core/utils/helpers/image_elements.dart';
 import 'package:pvamu_checkin_tutor_portal/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/auth/presentation/widgets/form_fields.dart';
+import 'package:pvamu_checkin_tutor_portal/features/settings/data/repos/user_data_store.dart';
 import 'package:pvamu_checkin_tutor_portal/features/site_layout/presentation/controllers/menu_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/site_layout/presentation/pages/site_layout.dart';
 
@@ -112,10 +113,12 @@ class _AuthPageState extends State<AuthPage> {
               InkWell(
                 onTap: () async {
                   var success = await authController.login();
+
                   if (success) {
-                    Navigator.push(
+                    Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => SiteLayout()),
+                          (Route<dynamic> route) => false, // remove all previous routes
                     );
                   }
                 },

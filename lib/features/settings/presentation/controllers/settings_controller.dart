@@ -10,16 +10,17 @@ import 'package:pvamu_checkin_tutor_portal/core/navigation/settings_routes.dart'
 import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
 import 'package:pvamu_checkin_tutor_portal/features/settings/data/models/admin_user_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/settings/data/repos/admin_users_repo_impl.dart';
+import 'package:pvamu_checkin_tutor_portal/features/settings/data/repos/user_data_store.dart';
 import 'package:pvamu_checkin_tutor_portal/features/settings/domain/entities/add_admin_user_data.dart';
 
 class SettingsController extends GetxController {
   static SettingsController get instance => Get.find();
 
-  final firstNameTEC = TextEditingController();
-  final lastNameTEC = TextEditingController();
-  final emailAddressTEC = TextEditingController();
+  final firstNameTEC = TextEditingController(text: userDataStore.user['f_name']);
+  final lastNameTEC = TextEditingController(text: userDataStore.user['l_name']);
+  final emailAddressTEC = TextEditingController(text: userDataStore.user['email']);
   final passwordTEC = TextEditingController();
-  final phoneTEC = TextEditingController();
+  final phoneTEC = TextEditingController(text: userDataStore.user['phone']);
 
   var activeItem = SettingsRoutes.generalDisplayName.obs;
   final GlobalKey<NavigatorState> settingsNavigatorKey = GlobalKey();

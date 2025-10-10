@@ -7,9 +7,10 @@ import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/presentation/controllers/courses_controller.dart';
 
 class AddCourseButton extends StatefulWidget {
-  const AddCourseButton({super.key, required this.coursesController});
+  const AddCourseButton({super.key, required this.coursesController, this.from});
 
   final CoursesController coursesController;
+  final String? from;
 
   @override
   State<AddCourseButton> createState() => _AddCourseButtonState();
@@ -31,7 +32,14 @@ class _AddCourseButtonState extends State<AddCourseButton> {
             builder: (context, setDialogState) {
               return AlertDialog(
                 backgroundColor: AppColors.white,
-                title: Text("Add a course"),
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Add a course"),
+
+                    IconButton(onPressed: ()=>Get.back(), icon: Icon(Icons.close), tooltip: "return to ${widget.from} page",)
+                  ],
+                ),
                 content: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

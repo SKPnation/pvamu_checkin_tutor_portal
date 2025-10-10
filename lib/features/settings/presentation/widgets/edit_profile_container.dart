@@ -5,11 +5,16 @@ import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
 import 'package:pvamu_checkin_tutor_portal/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/settings/presentation/widgets/form_fields.dart';
 
-class EditProfileContainer extends StatelessWidget {
+class EditProfileContainer extends StatefulWidget {
   const EditProfileContainer({super.key, required this.settingsController});
 
   final SettingsController settingsController;
 
+  @override
+  State<EditProfileContainer> createState() => _EditProfileContainerState();
+}
+
+class _EditProfileContainerState extends State<EditProfileContainer> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -57,13 +62,13 @@ class EditProfileContainer extends StatelessWidget {
               children: [
                 CustomText(text: "First Name"),
                 SizedBox(height: 8),
-                firstNameField(settingsController, (value){}),
+                firstNameField(widget.settingsController, (value){}),
 
                 SizedBox(height: 20),
 
                 CustomText(text: "Email"),
                 SizedBox(height: 8),
-                lastNameField(settingsController, (value){})
+                lastNameField(widget.settingsController, (value){})
               ],
             )),
             SizedBox(width: 20),
@@ -73,13 +78,13 @@ class EditProfileContainer extends StatelessWidget {
               children: [
                 CustomText(text: "Last Name"),
                 SizedBox(height: 8),
-                emailField(settingsController, (value){}),
+                emailField(widget.settingsController, (value){}),
 
                 SizedBox(height: 20),
 
                 CustomText(text: "Phone number"),
                 SizedBox(height: 8),
-                phoneField(settingsController, (value){})
+                phoneField(widget.settingsController, (value){})
               ],
             ))
           ]),

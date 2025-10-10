@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pvamu_checkin_tutor_portal/core/constants/app_strings.dart';
 import 'package:pvamu_checkin_tutor_portal/features/dashboard/presentation/widgets/add_tutor_button.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/controllers/tutors_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/widgets/tutors_table.dart';
@@ -22,7 +23,7 @@ class TutorsPage extends StatelessWidget {
               SizedBox(
                 height: 60,
                 width: 200,
-                child: AddTutorButton(tutorsController: tutorsController)
+                child: AddTutorButton(tutorsController: tutorsController, from: AppStrings.tutorsTitle)
               ),
 
               SizedBox(height: 40),

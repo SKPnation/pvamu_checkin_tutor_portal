@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_snackbar.dart';
+import 'package:pvamu_checkin_tutor_portal/core/global/custom_text.dart';
+import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/data/models/course_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/domain/repos/courses_repo.dart';
 
@@ -16,13 +19,33 @@ class CoursesRepoImpl extends CoursesRepo {
     try {
       final data = Map<String, dynamic>.from(course.toMap());
 
-      await coursesCollection
-          .doc(course.toMap()['id'])
-          .set(data);
+      var getCourse = await coursesCollection.where('code', isEqualTo: course.code).get();
+      if(getCourse.docs.isEmpty){
+        await coursesCollection
+            .doc(course.toMap()['id'])
+            .set(data);
 
-      Get.back();
+        Get.back();
 
-      CustomSnackBar.successSnackBar(body: "Added new course");
+        CustomSnackBar.successSnackBar(body: "Added new course");
+
+      }else{
+        Get.back();
+
+        Get.dialog(AlertDialog(
+          backgroundColor: AppColors.white,
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CustomText(text: '${course.code} already exists'),
+            ]
+          )
+        ));
+
+      }
+
+
     } catch (e) {
       CustomSnackBar.errorSnackBar("Failed: $e");
     }

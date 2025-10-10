@@ -59,3 +59,26 @@ Future<List<Course>> getAssignedCourses(List<dynamic> coursesRefs) async {
 
   return courses;
 }
+
+Map<String, dynamic> encodeFirestoreForJson(Map<String, dynamic> input) {
+  dynamic encode(dynamic v) {
+    if (v == null) return null;
+
+    if (v is Timestamp) {
+      // pick one: ISO string or millisecondsSinceEpoch
+      return v.toDate().toIso8601String();
+      // return v.millisecondsSinceEpoch;  // alternative
+    }
+    if (v is DateTime) return v.toIso8601String();
+    if (v is GeoPoint) return {'_geo': {'lat': v.latitude, 'lng': v.longitude}};
+    if (v is DocumentReference) return {'_ref': v.path};
+
+    if (v is List) return v.map(encode).toList();
+    if (v is Map) {
+      return v.map((k, val) => MapEntry(k.toString(), encode(val)));
+    }
+    return v;
+  }
+
+  return input.map((k, v) => MapEntry(k, encode(v)));
+}

@@ -16,7 +16,6 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(userDataStore.user);
     return Container(
       padding: const EdgeInsets.only(right: 24, top: 24),
       child: SingleChildScrollView(

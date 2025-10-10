@@ -35,11 +35,9 @@ class CoursesController extends GetxController {
     courseCodeTEC.clear();
 
     getCourses();
-
-
   }
 
-  Future getCourses() async =>
+  Future<List<Course>> getCourses() async =>
     courses.value = await coursesRepo.getCourses();
 
 

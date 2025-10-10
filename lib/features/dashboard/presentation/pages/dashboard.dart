@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pvamu_checkin_tutor_portal/core/constants/app_strings.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_text.dart';
+import 'package:pvamu_checkin_tutor_portal/core/navigation/app_routes.dart';
 import 'package:pvamu_checkin_tutor_portal/core/theme/fonts.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/presentation/controllers/courses_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/dashboard/presentation/controllers/dashboard_controller.dart';
@@ -31,14 +33,20 @@ class Dashboard extends StatelessWidget {
                 Expanded(
                   child: SizedBox(
                     height: 60,
-                    child: AddCourseButton(coursesController: coursesController),
+                    child: AddCourseButton(
+                      coursesController: coursesController,
+                      from: AppStrings.dashboardTitle.toLowerCase(),
+                    ),
                   ),
                 ),
                 SizedBox(width: 16),
                 Expanded(
                   child: SizedBox(
                     height: 60,
-                    child: AddTutorButton(tutorsController: tutorsController),
+                    child: AddTutorButton(
+                      tutorsController: tutorsController,
+                      from: AppStrings.tutorsTitle.toLowerCase(),
+                    ),
                   ),
                 ),
                 SizedBox(width: 16),
@@ -49,6 +57,7 @@ class Dashboard extends StatelessWidget {
                     child: AssignTutorButton(
                       coursesController: coursesController,
                       tutorsController: tutorsController,
+                      from: AppStrings.assignedTutorsTitle.toLowerCase(),
                     ),
                   ),
                 ),

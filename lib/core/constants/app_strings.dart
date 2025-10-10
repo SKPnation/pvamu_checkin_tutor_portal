@@ -18,7 +18,7 @@ class AppStrings{
   static const mustBePvamuEmail = "Must be a PVAMU email address";
 
   static const String slogan = "Excellence Lives Here";
-  static const String appTitle = "CE COMMONS DASHBOARD";
+  static const String appTitle = "CEE COMMONS DASHBOARD";
 
   // static int adminLevel = AdminUser.fromMap(userDataStore.user).level!;
 }

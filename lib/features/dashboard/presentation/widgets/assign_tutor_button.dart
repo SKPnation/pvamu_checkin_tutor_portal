@@ -8,10 +8,11 @@ import 'package:pvamu_checkin_tutor_portal/features/courses/presentation/control
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/controllers/tutors_controller.dart';
 
 class AssignTutorButton extends StatelessWidget {
-  const AssignTutorButton({super.key, required this.coursesController, required this.tutorsController});
+  const AssignTutorButton({super.key, required this.coursesController, required this.tutorsController, this.from});
 
   final CoursesController coursesController;
   final TutorsController tutorsController;
+  final String? from;
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +22,7 @@ class AssignTutorButton extends StatelessWidget {
           AssignTutorDialog(
             coursesController: coursesController,
             tutorsController: tutorsController,
+            from: from,
           ),
         );
       },

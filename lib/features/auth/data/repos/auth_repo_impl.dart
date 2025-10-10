@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pvamu_checkin_tutor_portal/core/data/local/get_store.dart';
+import 'package:pvamu_checkin_tutor_portal/core/utils/functions.dart';
 import 'package:pvamu_checkin_tutor_portal/features/auth/domain/repos/auth_repo.dart';
 import 'package:pvamu_checkin_tutor_portal/features/settings/data/models/admin_user_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/settings/data/repos/admin_users_repo_impl.dart';
@@ -88,6 +90,9 @@ class AuthRepoImpl extends AuthRepo {
 
         userDataStore.user = user;
 
+        //store locally
+        getStore.set(Keys.user, userDataStore.user);
+
         return userCredential;
       }
     }
@@ -104,7 +109,6 @@ class AuthRepoImpl extends AuthRepo {
 
     return userCredential;
   }
-
 
   Future<Map<String, dynamic>> checkIfUserExistsInDB({
     required String email,
@@ -126,7 +130,12 @@ class AuthRepoImpl extends AuthRepo {
 
       docAsJson['id'] = documentSnapshot.id; // Optional: include document ID
 
-      userDataStore.user = docAsJson; // Be careful with global state like this
+      // Keep raw in memory
+      userDataStore.user = docAsJson;
+
+      //but convert to JSON-safe before persisting:
+      final safeToStore = encodeFirestoreForJson(docAsJson);
+      getStore.set(Keys.user, safeToStore);
 
       return docAsJson;
     } else {

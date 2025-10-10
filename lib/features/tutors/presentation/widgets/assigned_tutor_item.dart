@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:pvamu_checkin_tutor_portal/core/constants/app_strings.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_text.dart';
 import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/data/models/course_model.dart';
@@ -97,6 +99,7 @@ class AssignedTutorItem extends StatelessWidget {
                       () => displayActionPopUp(
                         context,
                         tutorsController,
+                        item.courses,
                         assignedTutorActionKey,
                         item.tutor!.id!,
                       ),
@@ -116,6 +119,7 @@ class AssignedTutorItem extends StatelessWidget {
   displayActionPopUp(
     BuildContext context,
     TutorsController tutorsController,
+    List<Course>? courses,
     GlobalKey key,
     String tutorId,
   ) {
@@ -140,8 +144,66 @@ class AssignedTutorItem extends StatelessWidget {
       context: context,
       color: Colors.white,
       position: position,
-      items: const [
-        PopupMenuItem<String>(value: 'un-assign', child: Text('Un-assign')),
+      items: [
+        PopupMenuItem<String>(
+          value: 'un-assign',
+          child: Text('Un-assign'),
+          onTap: () {
+            Get.dialog(
+              AlertDialog(
+                backgroundColor: AppColors.white,
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Un-assign"),
+
+                    IconButton(
+                      onPressed: () => Get.back(),
+                      icon: Icon(Icons.close),
+                      tooltip:
+                          "return to ${AppStrings.assignedTutorsTitle} page",
+                    ),
+                  ],
+                ),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children:
+                      courses!
+                          .map(
+                            (e) => Padding(padding: EdgeInsets.only(bottom: 4), child: Row(
+                              children: [
+                                Container(
+                                    height: 10,
+                                    width: 10,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(100),
+                                      border: Border.all(
+                                        color: AppColors.purple,
+                                        width: 1.5, // thickness of the border
+                                      ),
+                                    ),
+                                    child: Center(child: Container(
+                                      height: 5,
+                                      width: 5,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.purple,
+                                        borderRadius: BorderRadius.circular(100),
+                                      ),
+                                    ),)
+                                ),
+                                SizedBox(width: 4),
+                                CustomText(text: e.name!),
+                              ],
+                            ))
+                          )
+                          .toList(),
+                ),
+              ),
+            );
+          },
+        ),
         PopupMenuItem<String>(value: 'details', child: Text('View Details')),
       ],
     ).then((value) {
