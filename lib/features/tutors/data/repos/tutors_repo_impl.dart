@@ -72,6 +72,8 @@ class TutorsRepoImpl extends TutorsRepo {
           "courses": coursesRefs,
         });
 
+        Get.back();
+
         CustomSnackBar.successSnackBar(body: "Assigned successfully");
       } else {
         final id = assignedCollection.doc().id;
@@ -83,6 +85,9 @@ class TutorsRepoImpl extends TutorsRepo {
         };
 
         await assignedCollection.doc(id).set(data);
+
+        Get.back();
+
         CustomSnackBar.successSnackBar(body: "Assigned successfully");
       }
 

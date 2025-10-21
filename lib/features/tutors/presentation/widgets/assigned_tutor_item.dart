@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pvamu_checkin_tutor_portal/core/constants/app_strings.dart';
+import 'package:pvamu_checkin_tutor_portal/core/global/custom_button.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_text.dart';
 import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/data/models/course_model.dart';
@@ -167,38 +168,74 @@ class AssignedTutorItem extends StatelessWidget {
                 ),
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children:
-                      courses!
-                          .map(
-                            (e) => Padding(padding: EdgeInsets.only(bottom: 4), child: Row(
-                              children: [
-                                Container(
-                                    height: 10,
-                                    width: 10,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(100),
-                                      border: Border.all(
-                                        color: AppColors.purple,
-                                        width: 1.5, // thickness of the border
+                  children: [
+                    Obx(
+                      () => Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children:
+                            courses!.map((e) {
+                              var index = courses.indexOf(e);
+
+                              return Padding(
+                                padding: EdgeInsets.only(bottom: 4),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    tutorsController.selectedCourseIndex.value =
+                                        index.toString();
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        height: 10,
+                                        width: 10,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(
+                                            100,
+                                          ),
+                                          border: Border.all(
+                                            color: AppColors.purple,
+                                            width:
+                                                1.5, // thickness of the border
+                                          ),
+                                        ),
+                                        child:
+                                            tutorsController
+                                                        .selectedCourseIndex
+                                                        .value ==
+                                                    index.toString()
+                                                ? Center(
+                                                  child: Container(
+                                                    height: 5,
+                                                    width: 5,
+                                                    decoration: BoxDecoration(
+                                                      color: AppColors.purple,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            100,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                )
+                                                : SizedBox.shrink(),
                                       ),
-                                    ),
-                                    child: Center(child: Container(
-                                      height: 5,
-                                      width: 5,
-                                      decoration: BoxDecoration(
-                                        color: AppColors.purple,
-                                        borderRadius: BorderRadius.circular(100),
-                                      ),
-                                    ),)
+                                      SizedBox(width: 4),
+                                      CustomText(text: e.name!),
+                                    ],
+                                  ),
                                 ),
-                                SizedBox(width: 4),
-                                CustomText(text: e.name!),
-                              ],
-                            ))
-                          )
-                          .toList(),
+                              );
+                            }).toList(),
+                      ),
+                    ),
+
+                    SizedBox(height: 12),
+                    SizedBox(
+                      width: 360,
+                      child: CustomButton(onPressed: () {}, text: "Un-assign"),
+                    ),
+                  ],
                 ),
               ),
             );

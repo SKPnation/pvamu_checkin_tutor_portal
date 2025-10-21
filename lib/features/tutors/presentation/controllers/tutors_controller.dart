@@ -17,6 +17,8 @@ class TutorsController extends GetxController {
   var tutors = <Tutor>[].obs;
   var isLoading = false.obs;
   var error = ''.obs;
+  var selectedCourseIndex = "-1".obs;
+
 
   Future addTutor() async {
     await tutorsRepo.addTutor(

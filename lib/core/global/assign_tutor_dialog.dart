@@ -26,11 +26,22 @@ class AssignTutorDialog extends StatefulWidget {
 
 class _AssignTutorDialogState extends State<AssignTutorDialog> {
   @override
+  void initState() {
+    widget.coursesController.getCourses();
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return StatefulBuilder(
       builder: (context, setDialogState) {
-        final canAssign = widget.coursesController.selectedCourse?.value.id != null &&
-            (widget.tutorId != null || widget.tutorsController.selectedTutor?.value.id != null);
+        final String? selectedCourseId =
+            widget.coursesController.selectedCourse?.value.id;
+        final String? selectedTutorId =
+            widget.tutorId ?? widget.tutorsController.selectedTutor?.value.id;
+
+        final bool canAssign = selectedCourseId != null && selectedTutorId != null;
 
         return AlertDialog(
           backgroundColor: AppColors.white,
@@ -68,18 +79,18 @@ class _AssignTutorDialogState extends State<AssignTutorDialog> {
           actions: [
             TextButton(onPressed: () => Get.back(), child: const Text('Close')),
             TextButton(
-              onPressed: canAssign
-                  ? () {
-                final courseId = widget.coursesController.selectedCourse!.value.id!;
-                final tutorId = widget.tutorId ?? widget.tutorsController.selectedTutor!.value.id!;
-                widget.tutorsController.assignToCourse(
-                  courseId: courseId,
-                  tutorId: tutorId,
+              onPressed:
+              canAssign
+                  ? () async {
+                await widget.tutorsController.assignToCourse(
+                  courseId: selectedCourseId, // safe now
+                  tutorId: selectedTutorId,
                 );
+                // if (mounted) Get.back();
               }
-                  : null, // disabled until selections exist
+                  : null,
               child: const Text('Assign'),
-            ),
+            )
           ],
         );
       },

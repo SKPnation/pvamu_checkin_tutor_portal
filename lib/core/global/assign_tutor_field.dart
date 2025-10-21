@@ -18,7 +18,7 @@ class _AssignTutorFieldState extends State<AssignTutorField> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: displayWidth(context) / 1.4,
+      width: double.infinity,
       child: FutureBuilder(
         future: widget.tutorsController.getTutors(),
         builder: (context, snapshot) {
@@ -95,12 +95,10 @@ class _AssignTutorFieldState extends State<AssignTutorField> {
             decoration: InputDecoration(
               filled: true,
               fillColor: Colors.white,
-              hintText: 'Select tutor',
+              labelText: 'Select tutor',
               floatingLabelBehavior: FloatingLabelBehavior.always,
               floatingLabelAlignment: FloatingLabelAlignment.start,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
+              border: OutlineInputBorder(),
             ),
           );
         },
