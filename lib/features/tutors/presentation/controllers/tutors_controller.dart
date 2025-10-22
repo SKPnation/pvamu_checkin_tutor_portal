@@ -15,10 +15,13 @@ class TutorsController extends GetxController {
   TutorsRepoImpl tutorsRepo = TutorsRepoImpl();
 
   var tutors = <Tutor>[].obs;
+  final assignedTutors = <AssignedModel>[].obs;
+  final isAssignedLoading = false.obs;
+  final assignedError = ''.obs;
+
   var isLoading = false.obs;
   var error = ''.obs;
   var selectedCourseIndex = "-1".obs;
-
 
   Future addTutor() async {
     await tutorsRepo.addTutor(
@@ -33,18 +36,8 @@ class TutorsController extends GetxController {
     getTutors();
   }
 
-  Future getTutors() async => tutors.value = await tutorsRepo.getTutors();
-
-  Future<List<AssignedModel>> getAssignedTutors() async =>
-      await tutorsRepo.getAssignedTutors();
-
-  Future assignToCourse({
-    required String courseId,
-    required String tutorId,
-  }) async {
-    await tutorsRepo.assign(courseId: courseId, tutorId: tutorId);
-    getTutors();
-  }
+  //--- TUTORS ---
+  Future<void> getTutors() async => tutors.value = await tutorsRepo.getTutors();
 
   Future deactivate({required String tutorId}) async {
     await tutorsRepo.deactivate(tutorId: tutorId);
@@ -55,4 +48,38 @@ class TutorsController extends GetxController {
     await tutorsRepo.delete(tutorId: tutorId);
     getTutors();
   }
+
+  //--- ASSIGNED TUTORS ---
+  Future<void> fetchAssignedTutors() async {
+    isAssignedLoading.value = true;
+    assignedError.value = '';
+    try {
+      final list = await tutorsRepo.getAssignedTutors();
+      assignedTutors.assignAll(list);
+    } catch (e) {
+      assignedError.value = e.toString();
+    } finally {
+      isAssignedLoading.value = false;
+    }
+  }
+
+  Future<void> assignToCourse({
+    required String courseId,
+    required String tutorId,
+  }) async {
+    await tutorsRepo.assign(courseId: courseId, tutorId: tutorId);
+    // refresh the table source, not just tutors
+    await fetchAssignedTutors();
+  }
+
+  Future<void> unAssignToCourse({
+    required String courseId,
+    required String tutorId,
+  }) async {
+    await tutorsRepo.unAssign(courseId: courseId, tutorId: tutorId);
+    // refresh the table source, not just tutors
+    await fetchAssignedTutors();
+  }
+
+
 }

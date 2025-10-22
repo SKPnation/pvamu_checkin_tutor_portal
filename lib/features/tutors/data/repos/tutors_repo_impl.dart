@@ -115,6 +115,68 @@ class TutorsRepoImpl extends TutorsRepo {
   }
 
   @override
+  Future<void> unAssign({
+    required String courseId,
+    required String tutorId,
+  }) async {
+    final tutorRef = FirebaseFirestore.instance.doc('/tutors/$tutorId');
+    final courseRef = FirebaseFirestore.instance.doc('/courses/$courseId');
+
+    try {
+      // 1 Find the "assigned" record for this tutor
+      final querySnapshot =
+      await assignedCollection.where("tutor", isEqualTo: tutorRef).get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final doc = querySnapshot.docs.single;
+        final data = doc.data() as Map<String, dynamic>;
+
+        List<DocumentReference> courseRefs =
+        (data['courses'] as List<dynamic>).cast<DocumentReference>();
+
+        // 2 Remove the course reference from the tutor's "courses" list
+        courseRefs.removeWhere((ref) => ref.path == courseRef.path);
+
+        if (courseRefs.isEmpty) {
+          // if tutor has no more assigned courses, delete the doc
+          await assignedCollection.doc(data['id']).delete();
+        } else {
+          await assignedCollection.doc(data['id']).update({
+            "courses": courseRefs,
+          });
+        }
+      }
+
+      // 3 Remove the tutor from the course's "tutors" array
+      final courseSnapshot = await courseRef.get();
+      if (courseSnapshot.exists) {
+        final data = courseSnapshot.data();
+
+        if (data != null && data['tutors'] != null) {
+          List<DocumentReference> tutors =
+          List<DocumentReference>.from(data['tutors']);
+          tutors.removeWhere((ref) => ref.path == tutorRef.path);
+
+          await courseRef.update({"tutors": tutors});
+        }
+      }
+
+      // 4 Clear selected fields in controllers
+      TutorsController.instance.selectedTutor = null;
+      CoursesController.instance.selectedCourse = null;
+
+      Get.back();
+
+      // 5 Notify success
+      CustomSnackBar.successSnackBar(body: "Tutor unassigned successfully");
+    } catch (e) {
+      print("Failed to unassign: $e");
+      CustomSnackBar.errorSnackBar("Failed to unassign: $e");
+    }
+  }
+
+
+  @override
   Future<List<AssignedModel>> getAssignedTutors() async {
     final querySnapshot = await assignedCollection.get();
     final docs = querySnapshot.docs;
@@ -199,4 +261,6 @@ class TutorsRepoImpl extends TutorsRepo {
       CustomSnackBar.successSnackBar(body: "Deleted successfully");
     }
   }
+
+
 }

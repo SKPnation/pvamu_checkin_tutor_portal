@@ -5,11 +5,25 @@ import 'package:pvamu_checkin_tutor_portal/features/dashboard/presentation/widge
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/controllers/tutors_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/widgets/assigned_tutors_table.dart';
 
-class AssignedTutorsPage extends StatelessWidget {
+class AssignedTutorsPage extends StatefulWidget {
   AssignedTutorsPage({super.key});
 
+  @override
+  State<AssignedTutorsPage> createState() => _AssignedTutorsPageState();
+}
+
+class _AssignedTutorsPageState extends State<AssignedTutorsPage> {
   final tutorsController = TutorsController.instance;
+
   final coursesController = CoursesController.instance;
+
+  @override
+  void initState() {
+    super.initState();
+
+    tutorsController.fetchAssignedTutors();
+  }
+
 
   @override
   Widget build(BuildContext context) {

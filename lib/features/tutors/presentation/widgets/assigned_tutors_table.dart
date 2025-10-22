@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_text.dart';
 import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/assigned_model.dart';
@@ -16,6 +17,12 @@ class _AssignedTutorsTableState extends State<AssignedTutorsTable> {
   final tutorsController = TutorsController.instance;
 
   var columnsArray = ["Assigned Tutor", "Course(s)", "Actions"];
+
+  @override
+  void initState() {
+    tutorsController.fetchAssignedTutors();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,48 +63,44 @@ class _AssignedTutorsTableState extends State<AssignedTutorsTable> {
           ),
           SizedBox(height: 4),
           const Divider(),
-          FutureBuilder(
-            future: tutorsController.getAssignedTutors(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(color: AppColors.purple),
-                  ),
-                );
-              }
+          Obx(() {
+            if (tutorsController.isAssignedLoading.value) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-              if (snapshot.hasError) {
-                return Center(
-                  child: Text(
-                    'Error: ${snapshot.error}',
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                );
-              }
-
-              var assignedTutors = snapshot.data as List<AssignedModel>;
-
-              assignedTutors.sort(
-                (a, b) => b.createdAt!.compareTo(a.createdAt!),
+            if (tutorsController.assignedError.isNotEmpty) {
+              return Center(
+                child: Text(
+                  'Error: ${tutorsController.assignedError.value}',
+                  style: TextStyle(color: Colors.red),
+                ),
               );
+            }
 
-              return Column(
-                children:
-                assignedTutors.map((e) {
-                  var isLastItem = assignedTutors[assignedTutors.length - 1].id == e.id;
+            if (tutorsController.assignedTutors.isEmpty) {
+              return const Center(child: Text('No assignments found'));
+            }
 
-                  return AssignedTutorItem(
-                    item: e,
-                    isLastItem: isLastItem,
-                    tutorsController: tutorsController,
-                  );
-                }).toList(),
-              );
-            },
-          ),
+            return Column(
+              children:
+                  tutorsController.assignedTutors.map((e) {
+                    var isLastItem =
+                        tutorsController
+                            .assignedTutors[tutorsController
+                                    .assignedTutors
+                                    .length -
+                                1]
+                            .id ==
+                        e.id;
+
+                    return AssignedTutorItem(
+                      item: e,
+                      isLastItem: isLastItem,
+                      tutorsController: tutorsController,
+                    );
+                  }).toList(),
+            );
+          }),
         ],
       ),
     );

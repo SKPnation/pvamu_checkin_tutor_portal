@@ -6,6 +6,7 @@ abstract class TutorsRepo{
   Future<List<Tutor>> getTutors();
   Future<List<AssignedModel>> getAssignedTutors();
   Future<void> assign({required String courseId, required String tutorId});
+  Future<void> unAssign({required String courseId, required String tutorId});
   Future<void> deactivate({required String tutorId});
   Future<void> delete({required String tutorId});
 }

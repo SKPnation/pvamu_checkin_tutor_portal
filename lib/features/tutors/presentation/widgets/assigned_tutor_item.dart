@@ -96,14 +96,17 @@ class AssignedTutorItem extends StatelessWidget {
 
                 GestureDetector(
                   key: assignedTutorActionKey,
-                  onTap:
-                      () => displayActionPopUp(
-                        context,
-                        tutorsController,
-                        item.courses,
-                        assignedTutorActionKey,
-                        item.tutor!.id!,
-                      ),
+                  onTap: () async {
+                    displayActionPopUp(
+                      context,
+                      tutorsController,
+                      item.courses,
+                      assignedTutorActionKey,
+                      item.tutor!.id!,
+                    );
+
+
+                  },
                   child: Icon(Icons.more_vert),
                 ),
               ],
@@ -233,7 +236,22 @@ class AssignedTutorItem extends StatelessWidget {
                     SizedBox(height: 12),
                     SizedBox(
                       width: 360,
-                      child: CustomButton(onPressed: () {}, text: "Un-assign"),
+                      child: CustomButton(
+                        onPressed: () async {
+                          //un-assign a tutor to a course
+                          await tutorsController.unAssignToCourse(
+                            courseId:
+                                courses![int.parse(
+                                      tutorsController
+                                          .selectedCourseIndex
+                                          .value,
+                                    )]
+                                    .id!,
+                            tutorId: tutorId,
+                          );
+                        },
+                        text: "Un-assign",
+                      ),
                     ),
                   ],
                 ),
