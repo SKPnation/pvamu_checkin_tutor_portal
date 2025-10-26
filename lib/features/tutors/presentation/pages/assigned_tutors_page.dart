@@ -14,7 +14,6 @@ class AssignedTutorsPage extends StatefulWidget {
 
 class _AssignedTutorsPageState extends State<AssignedTutorsPage> {
   final tutorsController = TutorsController.instance;
-
   final coursesController = CoursesController.instance;
 
   @override

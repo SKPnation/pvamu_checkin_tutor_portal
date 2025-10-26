@@ -19,6 +19,9 @@ class TutorsRepoImpl extends TutorsRepo {
   DocumentReference<Map<String, dynamic>> tutorRef(String tutorId) =>
       FirebaseFirestore.instance.doc('/tutors/$tutorId');
 
+  DocumentReference<Map<String, dynamic>> workScheduleRef(String tutorId) =>
+      FirebaseFirestore.instance.doc('/tutor_availability/$tutorId');
+
   @override
   Future<void> addTutor(tutor) async {
     try {
@@ -125,14 +128,14 @@ class TutorsRepoImpl extends TutorsRepo {
     try {
       // 1 Find the "assigned" record for this tutor
       final querySnapshot =
-      await assignedCollection.where("tutor", isEqualTo: tutorRef).get();
+          await assignedCollection.where("tutor", isEqualTo: tutorRef).get();
 
       if (querySnapshot.docs.isNotEmpty) {
         final doc = querySnapshot.docs.single;
         final data = doc.data() as Map<String, dynamic>;
 
         List<DocumentReference> courseRefs =
-        (data['courses'] as List<dynamic>).cast<DocumentReference>();
+            (data['courses'] as List<dynamic>).cast<DocumentReference>();
 
         // 2 Remove the course reference from the tutor's "courses" list
         courseRefs.removeWhere((ref) => ref.path == courseRef.path);
@@ -153,8 +156,9 @@ class TutorsRepoImpl extends TutorsRepo {
         final data = courseSnapshot.data();
 
         if (data != null && data['tutors'] != null) {
-          List<DocumentReference> tutors =
-          List<DocumentReference>.from(data['tutors']);
+          List<DocumentReference> tutors = List<DocumentReference>.from(
+            data['tutors'],
+          );
           tutors.removeWhere((ref) => ref.path == tutorRef.path);
 
           await courseRef.update({"tutors": tutors});
@@ -174,7 +178,6 @@ class TutorsRepoImpl extends TutorsRepo {
       CustomSnackBar.errorSnackBar("Failed to unassign: $e");
     }
   }
-
 
   @override
   Future<List<AssignedModel>> getAssignedTutors() async {
@@ -254,7 +257,6 @@ class TutorsRepoImpl extends TutorsRepo {
 
       await Future.wait(futures);
 
-
       //5. Delete the "tutor doc" from the "tutors" collection
       await tutorRef(tutorId).delete();
 
@@ -262,5 +264,18 @@ class TutorsRepoImpl extends TutorsRepo {
     }
   }
 
-
+  @override
+  Future<Tutor> getProfile({required String tutorId}) async {
+    DocumentSnapshot<Map<String, dynamic>> profileSnapshot =
+        await tutorRef(tutorId).get();
+    DocumentSnapshot<Map<String, dynamic>> workScheduleSnapshot =
+        await workScheduleRef(tutorId).get();
+    Map<String, dynamic> profile =
+        profileSnapshot.data() as Map<String, dynamic>;
+    Map<String, dynamic> workSchedule =
+        workScheduleSnapshot.data() as Map<String, dynamic>;
+    profile.addAll({"work_schedule": workSchedule});
+    Tutor tutor = Tutor.fromMap(profile);
+    return tutor;
+  }
 }

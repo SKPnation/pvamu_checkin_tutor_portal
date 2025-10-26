@@ -7,6 +7,7 @@ import 'package:pvamu_checkin_tutor_portal/core/utils/functions.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/presentation/controllers/courses_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/controllers/tutors_controller.dart';
+import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/widgets/edit_dialog.dart';
 
 class TutorItem extends StatelessWidget {
   TutorItem({
@@ -169,6 +170,18 @@ class TutorItem extends StatelessWidget {
           },
           value: 'assign',
           child: const Text('Assign'),
+        ),
+        PopupMenuItem(
+          onTap: () {
+            Get.dialog(
+              EditDialog(
+                tutorsController: tutorsController,
+                tutorId: tutorId,
+              ),
+            );
+          },
+          value: 'edit',
+          child: const Text('Edit'),
         ),
         PopupMenuItem(
           onTap: () async{

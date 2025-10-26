@@ -4,6 +4,7 @@ class Tutor {
   final String? id;
   final String? name;
   final String? email;
+  final Map<String, dynamic>? workSchedule;
   final DateTime? createdAt;
   final DateTime? timeIn;
   final DateTime? timeOut;
@@ -13,6 +14,7 @@ class Tutor {
     this.id,
     required this.name,
     required this.email,
+    this.workSchedule,
     required this.createdAt,
     this.blockedAt,
     this.timeIn,
@@ -24,6 +26,7 @@ class Tutor {
       id: map['id'],
       name: map['name'],
       email: map['email'],
+      workSchedule: map['work_schedule'],
       createdAt: (map['created_at'] as Timestamp?)?.toDate(),
       blockedAt: (map['blocked_at'] as Timestamp?)?.toDate(),
       timeIn: (map['time_in'] as Timestamp?)?.toDate(),

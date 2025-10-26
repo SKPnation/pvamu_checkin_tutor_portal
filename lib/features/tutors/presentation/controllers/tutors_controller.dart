@@ -81,5 +81,8 @@ class TutorsController extends GetxController {
     await fetchAssignedTutors();
   }
 
-
+  Future<Tutor> getProfile({required String tutorId}) async {
+    Tutor tutor = await tutorsRepo.getProfile(tutorId: tutorId);
+    return tutor;
+  }
 }
