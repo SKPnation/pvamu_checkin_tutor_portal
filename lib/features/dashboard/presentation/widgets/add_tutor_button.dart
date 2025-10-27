@@ -32,8 +32,12 @@ class AddTutorButton extends StatelessWidget {
                 content: Column(
                   children: [
                     CustomFormField(
-                      hint: "Name",
-                      textEditingController: tutorsController.nameTEC,
+                      hint: "First name",
+                      textEditingController: tutorsController.fNameTEC,
+                    ),
+                    CustomFormField(
+                      hint: "Last name",
+                      textEditingController: tutorsController.lNameTEC,
                     ),
                     CustomFormField(
                       hint: "Email address",

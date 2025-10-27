@@ -33,19 +33,21 @@ class TutorItem extends StatelessWidget {
         Table(
           defaultVerticalAlignment: TableCellVerticalAlignment.middle,
           columnWidths: const {
-            0: FlexColumnWidth(), // Name column
-            1: FlexColumnWidth(), // Email column
-            2: FlexColumnWidth(), // Time In column//
+            0: FlexColumnWidth(), // First name column
+            1: FlexColumnWidth(), // Last name column
+            2: FlexColumnWidth(), // Email column
             3: FlexColumnWidth(), // Time In column//
-            4: FlexColumnWidth(), // Duration column//
-            5: FlexColumnWidth(), // Status column//
-            6: FlexColumnWidth(), // Date Added column//
-            7: FlexColumnWidth(), // Actions column//
+            4: FlexColumnWidth(), // Time In column//
+            5: FlexColumnWidth(), // Duration column//
+            6: FlexColumnWidth(), // Status column//
+            7: FlexColumnWidth(), // Date Added column//
+            8: FlexColumnWidth(), // Actions column// // Status c
           },
           children: [
             TableRow(
               children: [
-                Center(child: CustomText(text: item.name.toString(), size: 12)),
+                Center(child: CustomText(text: item.fName.toString(), size: 12)),
+                Center(child: CustomText(text: item.lName.toString(), size: 12)),
                 Center(
                   child: CustomText(text: item.email.toString(), size: 12),
                 ),

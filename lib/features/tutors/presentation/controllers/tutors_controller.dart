@@ -7,7 +7,8 @@ import 'package:pvamu_checkin_tutor_portal/features/tutors/data/repos/tutors_rep
 class TutorsController extends GetxController {
   static TutorsController get instance => Get.find();
 
-  final nameTEC = TextEditingController();
+  final fNameTEC = TextEditingController();
+  final lNameTEC = TextEditingController();
   final emailAddressTEC = TextEditingController();
 
   Rx<Tutor>? selectedTutor;
@@ -27,7 +28,8 @@ class TutorsController extends GetxController {
     await tutorsRepo.addTutor(
       Tutor(
         id: tutorsRepo.tutorsCollection.doc().id,
-        name: nameTEC.text,
+        fName: fNameTEC.text,
+        lName: lNameTEC.text,
         email: emailAddressTEC.text,
         createdAt: DateTime.now(),
       ),

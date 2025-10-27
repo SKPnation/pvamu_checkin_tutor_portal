@@ -49,13 +49,13 @@ class _AssignTutorFieldState extends State<AssignTutorField> {
           String? selectedTutorId;
 
           if (selectedTutor != null &&
-              selectedTutor.name != null &&
-              selectedTutor.name!.isNotEmpty) {
+              selectedTutor.fName != null &&
+              selectedTutor.fName!.isNotEmpty) {
             // Find course by name in the fetched list
             try {
               selectedTutorId =
                   tutors
-                      .firstWhere((c) => c.name == selectedTutor.name)
+                      .firstWhere((c) => c.fName == selectedTutor.fName)
                       .id;
             } catch (e) {
               // If no course matches, leave selectedCourseId null
@@ -71,7 +71,7 @@ class _AssignTutorFieldState extends State<AssignTutorField> {
             tutors.map((tutor) {
               return DropdownMenuItem<String>(
                 value: tutor.id,
-                child: Text("${tutor.name}"),
+                child: Text("${tutor.fName} ${tutor.lName}"),
               );
             }).toList(),
             onChanged: (String? value) {

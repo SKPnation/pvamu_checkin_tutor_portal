@@ -38,7 +38,6 @@ class _EditDialogState extends State<EditDialog> {
     "sunday",
   ];
 
-
   @override
   Widget build(BuildContext context) {
     return StatefulBuilder(
@@ -130,7 +129,7 @@ class _EditDialogState extends State<EditDialog> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           CustomText(
-                            text: tutor.name!,
+                            text: "${tutor.fName} ${tutor.lName}",
                             size: AppFonts.baseSize,
                           ),
                           SizedBox(height: 2),
@@ -152,12 +151,15 @@ class _EditDialogState extends State<EditDialog> {
                       ),
 
                       GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           setState(() {
                             editMode = !editMode;
                           });
                         },
-                        child: Icon(Icons.edit, color: AppColors.purple),
+                        child: Icon(
+                          editMode ? Icons.remove_red_eye_outlined : Icons.edit,
+                          color: AppColors.purple,
+                        ),
                       ),
                     ],
                   ),
@@ -165,9 +167,9 @@ class _EditDialogState extends State<EditDialog> {
                   SizedBox(height: 8),
 
                   //Work schedule section
-                  editMode ? EditScheduleSection(tutorId: tutor.id!) :
-                  WorkScheduleSection(sortedEntries: entries)
-
+                  editMode
+                      ? EditScheduleSection(tutorId: tutor.id!)
+                      : WorkScheduleSection(sortedEntries: entries),
                 ],
               );
             },

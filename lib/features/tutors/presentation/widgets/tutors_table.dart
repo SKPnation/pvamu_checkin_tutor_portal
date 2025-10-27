@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_text.dart';
 import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/presentation/controllers/courses_controller.dart';
-import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/controllers/tutors_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/widgets/tutor_item.dart';
 
@@ -19,7 +18,8 @@ class _TutorsTableState extends State<TutorsTable> {
   final courseController = CoursesController.instance;
 
   var columnsArray = [
-    "Name",
+    "First Name",
+    "Last Name",
     "Email",
     "Time In",
     "Time Out",
@@ -52,14 +52,15 @@ class _TutorsTableState extends State<TutorsTable> {
           SizedBox(height: 4),
           Table(
             columnWidths: const {
-              0: FlexColumnWidth(), // Name column
-              1: FlexColumnWidth(), // Email column
-              2: FlexColumnWidth(), // Time In column//
+              0: FlexColumnWidth(), // First name column
+              1: FlexColumnWidth(), // Last name column
+              2: FlexColumnWidth(), // Email column
               3: FlexColumnWidth(), // Time In column//
-              4: FlexColumnWidth(), // Duration column//
-              5: FlexColumnWidth(), // Status column//
-              6: FlexColumnWidth(), // Date Added column//
-              7: FlexColumnWidth(), // Actions column// // Status column
+              4: FlexColumnWidth(), // Time In column//
+              5: FlexColumnWidth(), // Duration column//
+              6: FlexColumnWidth(), // Status column//
+              7: FlexColumnWidth(), // Date Added column//
+              8: FlexColumnWidth(), // Actions column// // Status column
             },
             children: [
               TableRow(

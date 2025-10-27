@@ -41,7 +41,7 @@ class AssignedTutorItem extends StatelessWidget {
               children: [
                 Center(
                   child: CustomText(
-                    text: item.tutor == null ? "--" : item.tutor?.name,
+                    text: item.tutor == null ? "--" : "${item.tutor?.fName} ${item.tutor?.lName}",
                     size: 12,
                   ),
                 ),
