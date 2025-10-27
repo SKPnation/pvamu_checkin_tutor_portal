@@ -28,15 +28,15 @@ class _EditDialogState extends State<EditDialog> {
 
   bool editMode = false;
 
-  final List<String> weekdayOrder = [
-    "monday",
-    "tuesday",
-    "wednesday",
-    "thursday",
-    "friday",
-    "saturday",
-    "sunday",
-  ];
+  // final List<String> weekdayOrder = [
+  //   "monday",
+  //   "tuesday",
+  //   "wednesday",
+  //   "thursday",
+  //   "friday",
+  //   "saturday",
+  //   "sunday",
+  // ];
 
   @override
   Widget build(BuildContext context) {

@@ -102,7 +102,6 @@ class Student {
       data['course'] = CoursesRepoImpl().coursesCollection.doc(course!.id);
     }
     if (tutor?.id != null) {
-      // ✅ Fix: use tutors collection, not students collection
       data['tutor'] = TutorsRepoImpl().tutorsCollection.doc(tutor!.id);
     }
 
