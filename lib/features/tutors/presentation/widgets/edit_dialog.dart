@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:pvamu_checkin_tutor_portal/core/global/custom_snackbar.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_text.dart';
 import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
 import 'package:pvamu_checkin_tutor_portal/core/theme/fonts.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/controllers/tutors_controller.dart';
+import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/widgets/edit_schedule.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/widgets/work_schedule.dart';
 
 class EditDialog extends StatefulWidget {
@@ -21,7 +23,10 @@ class EditDialog extends StatefulWidget {
 }
 
 class _EditDialogState extends State<EditDialog> {
+  final tutorController = TutorsController.instance;
   var sortedEntries = <MapEntry<String, dynamic>>[];
+
+  bool editMode = false;
 
   final List<String> weekdayOrder = [
     "monday",
@@ -32,6 +37,7 @@ class _EditDialogState extends State<EditDialog> {
     "saturday",
     "sunday",
   ];
+
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +108,7 @@ class _EditDialogState extends State<EditDialog> {
                   });
               return Column(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(height: 8),
 
@@ -123,7 +129,10 @@ class _EditDialogState extends State<EditDialog> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          CustomText(text: tutor.name!, size: AppFonts.baseSize,),
+                          CustomText(
+                            text: tutor.name!,
+                            size: AppFonts.baseSize,
+                          ),
                           SizedBox(height: 2),
                           CustomText(text: tutor.email!),
                         ],
@@ -133,14 +142,32 @@ class _EditDialogState extends State<EditDialog> {
 
                   SizedBox(height: 24),
 
-                  CustomText(text: "Work schedule", size: AppFonts.baseSize+4),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      CustomText(
+                        text: "Work schedule",
+                        size: AppFonts.baseSize + 4,
+                      ),
+
+                      GestureDetector(
+                        onTap: (){
+                          setState(() {
+                            editMode = !editMode;
+                          });
+                        },
+                        child: Icon(Icons.edit, color: AppColors.purple),
+                      ),
+                    ],
+                  ),
 
                   SizedBox(height: 8),
 
                   //Work schedule section
-                  WorkScheduleSection(
-                    sortedEntries: entries,
-                  ),
+                  editMode ? EditScheduleSection(tutorId: tutor.id!) :
+                  WorkScheduleSection(sortedEntries: entries)
+
                 ],
               );
             },

@@ -15,6 +15,8 @@ class TutorsRepoImpl extends TutorsRepo {
       .collection('tutors');
   final CollectionReference assignedCollection = FirebaseFirestore.instance
       .collection('assigned');
+  final CollectionReference availabilityCollection = FirebaseFirestore.instance
+      .collection('tutor_availability');
 
   DocumentReference<Map<String, dynamic>> tutorRef(String tutorId) =>
       FirebaseFirestore.instance.doc('/tutors/$tutorId');
@@ -277,5 +279,19 @@ class TutorsRepoImpl extends TutorsRepo {
     profile.addAll({"work_schedule": workSchedule});
     Tutor tutor = Tutor.fromMap(profile);
     return tutor;
+  }
+
+  @override
+  Future<void> setSchedule(Map<String, dynamic> fields, String tutorId) async{
+    final data = Map<String, dynamic>.from(fields);
+    final docRef = availabilityCollection.doc(tutorId);
+
+    final docSnapshot = await docRef.get();
+
+    if (docSnapshot.exists) {
+      await docRef.update(data);
+    } else {
+      await docRef.set(data);
+    }
   }
 }

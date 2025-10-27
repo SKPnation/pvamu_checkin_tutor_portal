@@ -85,4 +85,21 @@ class TutorsController extends GetxController {
     Tutor tutor = await tutorsRepo.getProfile(tutorId: tutorId);
     return tutor;
   }
+
+  Future setSchedule(
+      String selectedDay,
+      TimeOfDay startTime,
+      TimeOfDay endTime,
+      String tutorId
+      ) async{
+    selectedDay = selectedDay.toLowerCase();
+    final start = startTime.format(Get.context!); // e.g. "9:30 AM"
+    final end = endTime.format(Get.context!);
+
+    var input = {
+      selectedDay : "$start - $end"
+    };
+
+    await tutorsRepo.setSchedule(input, tutorId);
+  }
 }
