@@ -1,11 +1,9 @@
 [build]
-base    = "/opt/build/repo"
 publish = "build/web"
 command = """
 git clone -b 3.35.6 --depth 1 https://github.com/flutter/flutter.git flutter || true
 export PATH=$PWD/flutter/bin:$PATH
 flutter config --enable-web
-flutter --version
 flutter pub get
-flutter build web --release -v
+flutter build web --release
 """
