@@ -98,7 +98,11 @@ class _StudentLogsTableState extends State<StudentLogsTable> {
               }
 
               var students = snapshot.data as List<Student>;
-              students.sort((a, b) => b.timeIn!.compareTo(a.timeIn!));
+              students.sort((a,b) {
+                final A = a.timeIn ?? DateTime.fromMillisecondsSinceEpoch(0);
+                final B = b.timeIn ?? DateTime.fromMillisecondsSinceEpoch(0);
+                return B.compareTo(A);
+              });
 
               return Column(
                 children: students.asMap().entries.map((entry) {
@@ -124,7 +128,7 @@ class _StudentLogsTableState extends State<StudentLogsTable> {
                           TableRow(
                             children: [
                               //name
-                              Center(child: CustomText(text: item.name ?? '', size: 12)),
+                              Center(child: CustomText(text: "${item.name}", size: 12)),
                               //email
                               Center(child: CustomText(text: item.email ?? '', size: 12)),
 
@@ -141,20 +145,26 @@ class _StudentLogsTableState extends State<StudentLogsTable> {
                                 ),
                               ),
                               //time in
-                              Center(child: CustomText(text: "${formatTime(item.timeIn)}\n${formatDate(item.timeIn)}", textAlign: TextAlign.center, size: 12)),
+                              Center(child: CustomText(
+                                text: item.timeIn == null
+                                    ? "--"
+                                    : "${formatTime(item.timeIn)}\n${formatDate(item.timeIn)}",
+                                textAlign: TextAlign.center,
+                                size: 12,
+                              )),
 
                               //time out
-                              Center(
-                                child: CustomText(
-                                  text:
-                                  item.timeOut == null ? "--" : "${formatTime(item.timeOut)}\n${formatDate(item.timeOut)}",
-                                  size: 12,
-                                ),
-                              ),
+                              Center(child: CustomText(
+                                text: item.timeOut == null
+                                    ? "--"
+                                    : "${formatTime(item.timeOut)}\n${formatDate(item.timeOut)}",
+                                textAlign: TextAlign.center,
+                                size: 12,
+                              )),
 
                               //duration
                               Center(child: CustomText(
-                                text: item.timeOut == null
+                                text: (item.timeOut == null || item.timeIn == null)
                                     ? "--"
                                     : formatDuration(item.timeOut!.difference(item.timeIn!)),
                                 size: 12,

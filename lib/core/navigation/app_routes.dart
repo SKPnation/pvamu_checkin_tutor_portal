@@ -21,13 +21,17 @@ abstract class AppPages {
 
   // static final bool isLoggedIn = getStore.get('isLoggedIn') ?? false;
 
-
-  static final String initial = FirebaseAuth.instance.currentUser != null
-      ? Routes.rootRoute
-      : Routes.authRoute;
+  static final String initial =
+      FirebaseAuth.instance.currentUser != null
+          ? Routes.rootRoute
+          : Routes.authRoute;
 
   static final pages = [
-    GetPage(name: Routes.rootRoute, page: () => SiteLayout(), middlewares: [AuthMiddleware()]),
+    GetPage(
+      name: Routes.rootRoute,
+      page: () => SiteLayout(),
+      middlewares: [AuthMiddleware()],
+    ),
     GetPage(name: Routes.authRoute, page: () => AuthPage()),
     //remember to add middleware
   ];
@@ -37,7 +41,7 @@ abstract class AppPages {
     CoursesPage(),
     TutorsPage(),
     AssignedTutorsPage(),
-    SettingsPage()
+    SettingsPage(),
   ];
 }
 
@@ -84,7 +88,6 @@ abstract class Routes {
   static const authRoute = "/authentication";
 
   static const rootRoute = "/";
-
 }
 
 class MenuItem {

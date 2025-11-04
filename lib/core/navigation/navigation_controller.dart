@@ -9,6 +9,6 @@ class NavigationController extends GetxController{
     return navigatorKey.currentState!.pushNamed(routeName);
   }
 
-  goBack() => navigatorKey.currentState!.pop();
+  // goBack() => navigatorKey.currentState!.pop();
 
 }

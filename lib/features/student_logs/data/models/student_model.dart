@@ -29,82 +29,60 @@ class Student {
     this.timeOut,
   });
 
-  // --- Helpers ---------------------------------------------------------------
+  // -------------------- parsing helper --------------------
+  static DateTime? _asDate(dynamic v) {
+    if (v == null) return null;
+    if (v is Timestamp) return v.toDate();
+    if (v is String) return DateTime.tryParse(v);
+    return null;
+  }
 
-  // Narrow a dynamic to a typed DocumentReference with safety.
-  static DocumentReference<Map<String, dynamic>>? _asMapRef(dynamic v) {
+  static DocumentReference<Map<String,dynamic>>? _asRef(dynamic v) {
     if (v is DocumentReference) {
-      // Narrow Object? -> Map<String, dynamic> via converter
-      return v.withConverter<Map<String, dynamic>>(
-        fromFirestore: (snap, _) => snap.data() ?? <String, dynamic>{},
-        toFirestore: (data, _) => data,
+      return v.withConverter(
+        fromFirestore: (s,_)=>s.data()??{},
+        toFirestore: (d,_)=>d,
       );
     }
     return null;
   }
 
-  static DateTime? _tsToDate(dynamic v) => (v is Timestamp) ? v.toDate() : null;
+  static Future<Student> fromMapAsync(Map<String,dynamic> map,String docId) async {
 
-  // --- Async mapper (safe) ---------------------------------------------------
-
-  static Future<Student> fromMapAsync(
-      Map<String, dynamic> map,
-      String docId,
-      ) async {
-    // Safe timestamp reads
-    final createdAt = _tsToDate(map['created_at']);
-    final timeIn    = _tsToDate(map['time_in']);
-    final timeOut   = _tsToDate(map['time_out']);
-
-    // Safe refs (may be null or missing)
-    final courseRef = _asMapRef(map['course']);
-    final tutorRef  = _asMapRef(map['tutor']);
-
-    // Fetch related docs only if refs exist
     Course? course;
-    if (courseRef != null) {
-      course = await getCourse(courseRef);
-    }
+    final cRef = _asRef(map['course']);
+    if (cRef != null) course = await getCourse(cRef);
 
     Tutor? tutor;
-    if (tutorRef != null) {
-      tutor = await getTutor(tutorRef);
-    }
+    final tRef = _asRef(map['tutor']);
+    if (tRef != null) tutor = await getTutor(tRef);
 
     return Student(
       id: docId,
-      // Prefer canonical "name" if present, fall back to lowercased alias
-      name: (map['name'] as String?) ?? (map['name_lower'] as String?) ?? '',
-      email: map['email'] as String? ?? '',
-      createdAt: createdAt,
-      timeIn: timeIn,
-      timeOut: timeOut,
+      name: map['name'] ?? map['name_lower'] ?? '',
+      email: map['email'] ?? '',
+      createdAt: _asDate(map['created_at']),
+      timeIn:    _asDate(map['time_in']),
+      timeOut:   _asDate(map['time_out']),
       course: course,
       tutor: tutor,
     );
   }
 
-  // --- Serializer (safe) -----------------------------------------------------
+  // -------------------- serialization --------------------
+  Map<String,dynamic> toMap({bool forFirestore=true}) {
 
-  Map<String, dynamic> toMap() {
-    final data = <String, dynamic>{};
-
-    if (id != null) data['id'] = id;
-    if (name != null) data['name'] = name;
-    if (email != null) data['email'] = email;
-
-    if (createdAt != null) data['created_at'] = Timestamp.fromDate(createdAt!);
-    if (timeIn != null)    data['time_in']    = Timestamp.fromDate(timeIn!);
-    if (timeOut != null)   data['time_out']   = Timestamp.fromDate(timeOut!);
-
-    // Only write refs if we actually have linked models & ids
-    if (course?.id != null) {
-      data['course'] = CoursesRepoImpl().coursesCollection.doc(course!.id);
-    }
-    if (tutor?.id != null) {
-      data['tutor'] = TutorsRepoImpl().tutorsCollection.doc(tutor!.id);
-    }
-
-    return data;
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      // DATE SAFE FOR BOTH firestore & getStorage
+      'created_at': createdAt?.toIso8601String(),
+      'time_in':    timeIn?.toIso8601String(),
+      'time_out':   timeOut?.toIso8601String(),
+      // firestore only (string id stored)
+      'course': course?.id,
+      'tutor': tutor?.id,
+    };
   }
 }
