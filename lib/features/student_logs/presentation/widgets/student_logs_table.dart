@@ -161,7 +161,6 @@ class _StudentLogsTableState extends State<StudentLogsTable> {
                                 textAlign: TextAlign.center,
                                 size: 12,
                               )),
-
                               //duration
                               Center(child: CustomText(
                                 text: (item.timeOut == null || item.timeIn == null)
