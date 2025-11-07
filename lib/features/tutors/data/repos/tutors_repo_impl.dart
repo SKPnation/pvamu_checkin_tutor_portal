@@ -55,69 +55,78 @@ class TutorsRepoImpl extends TutorsRepo {
     required String courseId,
     required String tutorId,
   }) async {
-    final tutorRef = FirebaseFirestore.instance.doc('/tutors/$tutorId');
-    final courseRef = FirebaseFirestore.instance.doc('/courses/$courseId');
+    final db = FirebaseFirestore.instance;
+
+    final tutorRef  = db.doc('tutors/$tutorId');
+    final courseRef = db.doc('courses/$courseId');
 
     try {
-      final querySnapshot =
-          await assignedCollection.where("tutor", isEqualTo: tutorRef).get();
+      // 1) Find (or create) the "assigned" doc for this tutor
+      final snap = await assignedCollection.where('tutor', isEqualTo: tutorRef).limit(1).get();
 
-      var coursesRefs = <DocumentReference>[];
+      // 2) If it exists, check if this course is already in the list
+      if (snap.docs.isNotEmpty) {
+        final doc = snap.docs.first;
+        final data = doc.data() as Map<String, dynamic>;
+        final List courses = (data['courses'] as List?) ?? const [];
 
-      if (querySnapshot.docs.isNotEmpty) {
-        var mapObject =
-            querySnapshot.docs.single.data() as Map<String, dynamic>;
-
-        coursesRefs =
-            (mapObject['courses'] as List<dynamic>).cast<DocumentReference>();
-
-        coursesRefs.add(courseRef);
-
-        await assignedCollection.doc(mapObject['id']).update({
-          "courses": coursesRefs,
+        final alreadyAssigned = courses.any((c) {
+          if (c is DocumentReference) return c.path == courseRef.path;
+          return false;
         });
 
-        Get.back();
+        if (alreadyAssigned) {
+          Get.back();
+          CustomSnackBar.errorSnackBar("Tutor already assigned to this course");
+          return;
+        }
 
+        // 3) Batch update: add course to tutor's assigned.courses AND add tutor to course.tutors
+        final batch = db.batch();
+        batch.update(doc.reference, {
+          'courses': FieldValue.arrayUnion([courseRef]),
+          'updated_at': FieldValue.serverTimestamp(),
+        });
+        batch.update(courseRef, {
+          'tutors': FieldValue.arrayUnion([tutorRef]),
+          'updated_at': FieldValue.serverTimestamp(),
+        });
+
+        await batch.commit();
+        Get.back();
         CustomSnackBar.successSnackBar(body: "Assigned successfully");
       } else {
-        final id = assignedCollection.doc().id;
-        final data = <String, dynamic>{
-          "id": id,
-          "courses": [courseRef],
-          "tutor": tutorRef,
-          "created_at": DateTime.now(),
-        };
+        // Create new assigned doc for this tutor
+        final newId = assignedCollection.doc().id;
+        final newRef = assignedCollection.doc(newId);
 
-        await assignedCollection.doc(id).set(data);
+        final batch = db.batch();
+        batch.set(newRef, {
+          'id'         : newId,
+          'tutor'      : tutorRef,
+          'courses'    : [courseRef],
+          'created_at' : FieldValue.serverTimestamp(),
+          'updated_at' : FieldValue.serverTimestamp(),
+        });
+        batch.update(courseRef, {
+          'tutors'     : FieldValue.arrayUnion([tutorRef]),
+          'updated_at' : FieldValue.serverTimestamp(),
+        });
 
+        await batch.commit();
         Get.back();
-
         CustomSnackBar.successSnackBar(body: "Assigned successfully");
       }
 
-      final docSnapshot = await courseRef.get();
-
-      List<DocumentReference> tutors = [];
-      if (docSnapshot.exists) {
-        final data = docSnapshot.data();
-        if (data != null && data['tutors'] != null) {
-          tutors = List<DocumentReference>.from(data['tutors']);
-        }
-      }
-
-      tutors.add(tutorRef);
-
-      await courseRef.update({"tutors": tutors});
-
+      // Optional: clear selections
       TutorsController.instance.selectedTutor = null;
       CoursesController.instance.selectedCourse = null;
     } catch (e) {
       print("Failed: $e");
       CustomSnackBar.errorSnackBar("Failed: $e");
-      // Handle failure here
     }
   }
+
 
   @override
   Future<void> unAssign({
@@ -282,7 +291,7 @@ class TutorsRepoImpl extends TutorsRepo {
   }
 
   @override
-  Future<void> setSchedule(Map<String, dynamic> fields, String tutorId) async{
+  Future<void> setSchedule(Map<String, dynamic> fields, String tutorId) async {
     final data = Map<String, dynamic>.from(fields);
     final docRef = availabilityCollection.doc(tutorId);
 

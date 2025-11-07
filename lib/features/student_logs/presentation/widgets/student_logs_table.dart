@@ -134,13 +134,13 @@ class _StudentLogsTableState extends State<StudentLogsTable> {
 
                               //course name
                               Center(
-                                child: CustomText(text: item.course?.name ?? '', size: 12),
+                                child: CustomText(text: item.course?.name ?? "--", size: 12),
                               ),
 
                               //tutor name
                               Center(
                                 child: CustomText(
-                                  text: "${item.tutor?.fName} ${item.tutor?.lName}" ,
+                                  text: "${item.tutor?.fName ?? "--"} ${item.tutor?.lName ?? "--"}" ,
                                   size: 12,
                                 ),
                               ),
