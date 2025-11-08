@@ -28,16 +28,6 @@ class _EditDialogState extends State<EditDialog> {
 
   bool editMode = false;
 
-  // final List<String> weekdayOrder = [
-  //   "monday",
-  //   "tuesday",
-  //   "wednesday",
-  //   "thursday",
-  //   "friday",
-  //   "saturday",
-  //   "sunday",
-  // ];
-
   @override
   Widget build(BuildContext context) {
     return StatefulBuilder(
@@ -105,6 +95,7 @@ class _EditDialogState extends State<EditDialog> {
 
                     return ai.compareTo(bi);
                   });
+
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,

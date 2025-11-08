@@ -281,11 +281,14 @@ class TutorsRepoImpl extends TutorsRepo {
         await tutorRef(tutorId).get();
     DocumentSnapshot<Map<String, dynamic>> workScheduleSnapshot =
         await workScheduleRef(tutorId).get();
+
     Map<String, dynamic> profile =
         profileSnapshot.data() as Map<String, dynamic>;
-    Map<String, dynamic> workSchedule =
-        workScheduleSnapshot.data() as Map<String, dynamic>;
+
+    final Map<String, dynamic>? workSchedule = workScheduleSnapshot.data();
+
     profile.addAll({"work_schedule": workSchedule});
+
     Tutor tutor = Tutor.fromMap(profile);
     return tutor;
   }
