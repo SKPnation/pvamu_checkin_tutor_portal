@@ -39,8 +39,9 @@ dependencies:
   get: any #state management, dependency injection and GetMaterial widgets
   get_storage: ^2.0.3 #Local cache
 
-  firebase_core: ^4.0.0
-  cloud_firestore: ^6.0.0
+
+  firebase_core: ^4.2.1
+  cloud_firestore: ^6.1.0
   firebase_auth: ^6.0.1
 
   google_fonts: ^6.3.2 #allows you to easily use any of the 977 fonts (and their variants) from fonts.google.com in your Flutter app.

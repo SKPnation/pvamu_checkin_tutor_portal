@@ -242,16 +242,12 @@ class TutorsRepoImpl extends TutorsRepo {
   @override
   Future<void> delete({required String tutorId}) async {
     final querySnapshot =
-        await assignedCollection
-            .where("tutor", isEqualTo: tutorRef(tutorId))
+        await tutorRef(tutorId)
             .get();
 
-    if (querySnapshot.size != 0) {
-      //1. Get assigned tutor doc reference
-      final assignedRef = querySnapshot.docs.first.reference;
-
+    if (querySnapshot.exists) {
       //2. Delete the assigned doc
-      await assignedRef.delete();
+      await tutorRef(tutorId).delete();
 
       // 3. Find all "courses" docs where 'tutors' array contains this tutorRef
       final coursesQuery =
