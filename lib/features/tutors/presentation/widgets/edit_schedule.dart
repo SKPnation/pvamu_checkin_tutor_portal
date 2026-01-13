@@ -40,10 +40,6 @@ class _EditScheduleSectionState extends State<EditScheduleSection> {
   void setAvailability(String tutorId) async{
     if (selectedDay != null && startTime != null && endTime != null) {
       await tutorController.setSchedule(selectedDay!, startTime!, endTime!, tutorId);
-      CustomSnackBar.successSnackBar(
-        body:
-        "Availability set for $selectedDay from ${startTime!.format(context)} to ${endTime!.format(context)}",
-      );
     }
   }
 
@@ -107,7 +103,11 @@ class _EditScheduleSectionState extends State<EditScheduleSection> {
           width: 200,
           child: CustomButton(
             bgColor: AppColors.gold,
-            onPressed: ()=> setAvailability(widget.tutorId),
+            onPressed: (){
+              setAvailability(widget.tutorId);
+
+              setState(() {});
+            },
             child: CustomText(text: "Set", color: AppColors.white),
           ),
         ),

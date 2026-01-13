@@ -1,12 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pvamu_checkin_tutor_portal/core/utils/functions.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/data/models/course_model.dart';
-import 'package:pvamu_checkin_tutor_portal/features/courses/data/repos/courses_repo_impl.dart';
-import 'package:pvamu_checkin_tutor_portal/features/student_logs/data/repos/student_repo_impl.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_model.dart';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:pvamu_checkin_tutor_portal/features/tutors/data/repos/tutors_repo_impl.dart';
 
 class Student {
   final String? id;

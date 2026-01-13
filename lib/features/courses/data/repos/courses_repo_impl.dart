@@ -56,7 +56,7 @@ class CoursesRepoImpl extends CoursesRepo {
     final querySnapshot = await coursesCollection.get();
     List<Course> courses =
     querySnapshot.docs.map((doc) {
-      return Course.fromMap(doc.data() as Map<String, dynamic>);
+      return Course.fromMap(doc.data() as Map<String, dynamic>, doc.id);
     }).toList();
 
     return courses;

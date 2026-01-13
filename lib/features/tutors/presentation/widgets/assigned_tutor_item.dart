@@ -7,6 +7,7 @@ import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/data/models/course_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/assigned_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/controllers/tutors_controller.dart';
+import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/widgets/edit_dialog.dart';
 
 class AssignedTutorItem extends StatelessWidget {
   AssignedTutorItem({
@@ -41,7 +42,10 @@ class AssignedTutorItem extends StatelessWidget {
               children: [
                 Center(
                   child: CustomText(
-                    text: item.tutor == null ? "--" : "${item.tutor?.fName} ${item.tutor?.lName}",
+                    text:
+                        item.tutor == null
+                            ? "--"
+                            : "${item.tutor?.fName} ${item.tutor?.lName}",
                     size: 12,
                   ),
                 ),
@@ -104,8 +108,6 @@ class AssignedTutorItem extends StatelessWidget {
                       assignedTutorActionKey,
                       item.tutor!.id!,
                     );
-
-
                   },
                   child: Icon(Icons.more_vert),
                 ),
@@ -259,7 +261,15 @@ class AssignedTutorItem extends StatelessWidget {
             );
           },
         ),
-        PopupMenuItem<String>(value: 'details', child: Text('View Details')),
+        PopupMenuItem<String>(
+          onTap: () {
+            Get.dialog(
+              EditDialog(tutorsController: tutorsController, tutorId: tutorId),
+            );
+          },
+          value: 'details',
+          child: Text('View Details'),
+        ),
       ],
     ).then((value) {
       // if (value == 'un-assign') tutorsController.unAssignTutor(tutorId);

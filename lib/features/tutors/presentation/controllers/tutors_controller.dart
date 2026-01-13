@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pvamu_checkin_tutor_portal/core/global/custom_snackbar.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/assigned_model.dart';
+import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_logs_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/repos/tutors_repo_impl.dart';
 
@@ -19,6 +21,7 @@ class TutorsController extends GetxController {
   final assignedTutors = <AssignedModel>[].obs;
   final isAssignedLoading = false.obs;
   final assignedError = ''.obs;
+  final editMode = false.obs;
 
   var isLoading = false.obs;
   var error = ''.obs;
@@ -89,19 +92,42 @@ class TutorsController extends GetxController {
   }
 
   Future setSchedule(
-      String selectedDay,
-      TimeOfDay startTime,
-      TimeOfDay endTime,
-      String tutorId
-      ) async{
+    String selectedDay,
+    TimeOfDay startTime,
+    TimeOfDay endTime,
+    String tutorId,
+  ) async {
     selectedDay = selectedDay.toLowerCase();
     final start = startTime.format(Get.context!); // e.g. "9:30 AM"
     final end = endTime.format(Get.context!);
 
-    var input = {
-      selectedDay : "$start - $end"
-    };
+    var input = {selectedDay: "$start - $end"};
 
     await tutorsRepo.setSchedule(input, tutorId);
+
+    await getSelectedTutorProfile(tutorId);
+
+    editMode.value = !editMode.value;
+
+    CustomSnackBar.successSnackBar(
+      body:
+          "Availability set for $selectedDay "
+          "from ${startTime.format(Get.context!)} "
+          "to ${endTime.format(Get.context!)}",
+    );
   }
+
+  getSelectedTutorProfile(String tutorId) async {
+    Tutor tutor = await getProfile(tutorId: tutorId);
+    if (selectedTutor == null) {
+      selectedTutor = Rx<Tutor>(
+        tutor,
+      );
+    } else {
+      selectedTutor!.value = tutor;
+    }
+  }
+
+  Future<List<TutorLoginHistory>> getTutorLogs() async =>
+      await tutorsRepo.getTutorLogs();
 }

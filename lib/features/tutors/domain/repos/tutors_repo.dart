@@ -1,4 +1,5 @@
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/assigned_model.dart';
+import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_logs_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_model.dart';
 
 abstract class TutorsRepo{
@@ -11,4 +12,6 @@ abstract class TutorsRepo{
   Future<void> deactivate({required String tutorId});
   Future<void> delete({required String tutorId});
   Future<void> setSchedule(Map<String, dynamic> fields, String tutorId);
+  Future<List<TutorLoginHistory>> getTutorLogs(); //for new user
+
 }

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/data/models/course_model.dart';
+import 'package:pvamu_checkin_tutor_portal/features/students/data/models/student_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_model.dart';
 
 String formatTime(DateTime? time) {
@@ -30,20 +31,37 @@ Future<Course> getCourse(DocumentReference docRef) async {
   final courseSnap = await docRef.get();
   return Course.fromMap(
     courseSnap.data() as Map<String, dynamic>,
+    courseSnap.id,
   );
+}
+
+Future<Course> getCourseFromStudent(DocumentReference docRef) async {
+  final studentSnap = await docRef.get();
+  final studentData = studentSnap.data() as Map<String, dynamic>;
+
+  final studentDoc = await Student.fromMapAsync(studentData, studentSnap.id);
+
+  final course = studentDoc.course!;
+  return course;
 }
 
 Future<Tutor> getTutor(DocumentReference docRef) async {
   final tutorSnap = await docRef.get();
-  return Tutor.fromMap(
-    tutorSnap.data() as Map<String, dynamic>,
+  return Tutor.fromMap(tutorSnap.data() as Map<String, dynamic>);
+}
+
+Future<Student> getStudent(DocumentReference docRef) async {
+  final studentSnap = await docRef.get();
+  return Student.fromMapAsync(
+    studentSnap.data() as Map<String, dynamic>,
+    docRef.id,
   );
 }
 
 Future<List<Course>> getAssignedCourses(List<dynamic> coursesRefs) async {
   List<Course> courses = [];
 
-  for(var ref in coursesRefs){
+  for (var ref in coursesRefs) {
     if (ref is DocumentReference) {
       final courseSnap = await ref.get();
       if (courseSnap.exists) {
@@ -51,7 +69,7 @@ Future<List<Course>> getAssignedCourses(List<dynamic> coursesRefs) async {
           Course.fromMap({
             'id': courseSnap.id,
             ...courseSnap.data() as Map<String, dynamic>,
-          }),
+          }, courseSnap.id),
         );
       }
     }
@@ -70,7 +88,10 @@ Map<String, dynamic> encodeFirestoreForJson(Map<String, dynamic> input) {
       // return v.millisecondsSinceEpoch;  // alternative
     }
     if (v is DateTime) return v.toIso8601String();
-    if (v is GeoPoint) return {'_geo': {'lat': v.latitude, 'lng': v.longitude}};
+    if (v is GeoPoint)
+      return {
+        '_geo': {'lat': v.latitude, 'lng': v.longitude},
+      };
     if (v is DocumentReference) return {'_ref': v.path};
 
     if (v is List) return v.map(encode).toList();

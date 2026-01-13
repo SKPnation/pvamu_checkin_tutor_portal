@@ -4,6 +4,7 @@ import 'package:pvamu_checkin_tutor_portal/core/global/custom_snackbar.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/data/models/course_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/presentation/controllers/courses_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/assigned_model.dart';
+import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_logs_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/domain/repos/tutors_repo.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/controllers/tutors_controller.dart';
@@ -17,6 +18,8 @@ class TutorsRepoImpl extends TutorsRepo {
       .collection('assigned');
   final CollectionReference availabilityCollection = FirebaseFirestore.instance
       .collection('tutor_availability');
+  final CollectionReference<Map<String, dynamic>> loginHistoryCollection =
+      FirebaseFirestore.instance.collection('tutor_login_history');
 
   DocumentReference<Map<String, dynamic>> tutorRef(String tutorId) =>
       FirebaseFirestore.instance.doc('/tutors/$tutorId');
@@ -57,12 +60,16 @@ class TutorsRepoImpl extends TutorsRepo {
   }) async {
     final db = FirebaseFirestore.instance;
 
-    final tutorRef  = db.doc('tutors/$tutorId');
+    final tutorRef = db.doc('tutors/$tutorId');
     final courseRef = db.doc('courses/$courseId');
 
     try {
       // 1) Find (or create) the "assigned" doc for this tutor
-      final snap = await assignedCollection.where('tutor', isEqualTo: tutorRef).limit(1).get();
+      final snap =
+          await assignedCollection
+              .where('tutor', isEqualTo: tutorRef)
+              .limit(1)
+              .get();
 
       // 2) If it exists, check if this course is already in the list
       if (snap.docs.isNotEmpty) {
@@ -102,15 +109,15 @@ class TutorsRepoImpl extends TutorsRepo {
 
         final batch = db.batch();
         batch.set(newRef, {
-          'id'         : newId,
-          'tutor'      : tutorRef,
-          'courses'    : [courseRef],
-          'created_at' : FieldValue.serverTimestamp(),
-          'updated_at' : FieldValue.serverTimestamp(),
+          'id': newId,
+          'tutor': tutorRef,
+          'courses': [courseRef],
+          'created_at': FieldValue.serverTimestamp(),
+          'updated_at': FieldValue.serverTimestamp(),
         });
         batch.update(courseRef, {
-          'tutors'     : FieldValue.arrayUnion([tutorRef]),
-          'updated_at' : FieldValue.serverTimestamp(),
+          'tutors': FieldValue.arrayUnion([tutorRef]),
+          'updated_at': FieldValue.serverTimestamp(),
         });
 
         await batch.commit();
@@ -126,7 +133,6 @@ class TutorsRepoImpl extends TutorsRepo {
       CustomSnackBar.errorSnackBar("Failed: $e");
     }
   }
-
 
   @override
   Future<void> unAssign({
@@ -214,7 +220,10 @@ class TutorsRepoImpl extends TutorsRepo {
           courseSnapshots
               .where((snap) => snap.exists)
               .map(
-                (snap) => Course.fromMap(snap.data() as Map<String, dynamic>),
+                (snap) => Course.fromMap(
+                  snap.data() as Map<String, dynamic>,
+                  snap.id,
+                ),
               )
               .toList();
 
@@ -241,9 +250,7 @@ class TutorsRepoImpl extends TutorsRepo {
 
   @override
   Future<void> delete({required String tutorId}) async {
-    final querySnapshot =
-        await tutorRef(tutorId)
-            .get();
+    final querySnapshot = await tutorRef(tutorId).get();
 
     if (querySnapshot.exists) {
       //2. Delete the assigned doc
@@ -301,5 +308,16 @@ class TutorsRepoImpl extends TutorsRepo {
     } else {
       await docRef.set(data);
     }
+  }
+
+  @override
+  Future<List<TutorLoginHistory>> getTutorLogs() async {
+    final querySnapshot = await loginHistoryCollection.get();
+
+    return await Future.wait(
+      querySnapshot.docs.map((doc) async {
+        return TutorLoginHistory.fromMap(doc.data(), doc.id);
+      }),
+    );
   }
 }

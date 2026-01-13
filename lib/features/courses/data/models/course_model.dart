@@ -15,7 +15,8 @@ class Course {
     required this.createdAt,
   });
 
-  factory Course.fromMap(Map<String, dynamic> map) {
+  factory Course.fromMap(Map<String, dynamic> map, String docId)
+ {
     return Course(
       id: map['id'],
       code: map['code'] ?? '',

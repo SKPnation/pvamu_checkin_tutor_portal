@@ -7,8 +7,7 @@ import 'package:pvamu_checkin_tutor_portal/features/courses/presentation/control
 import 'package:pvamu_checkin_tutor_portal/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/site_layout/presentation/controllers/menu_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/site_layout/presentation/widgets/large_screen.dart';
-import 'package:pvamu_checkin_tutor_portal/features/site_layout/presentation/widgets/top_nav.dart';
-import 'package:pvamu_checkin_tutor_portal/features/student_logs/presentation/controllers/student_logs_controller.dart';
+import 'package:pvamu_checkin_tutor_portal/features/students/presentation/controllers/student_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/controllers/tutors_controller.dart';
 
 class SiteLayout extends StatelessWidget {
@@ -27,7 +26,7 @@ class SiteLayout extends StatelessWidget {
   final dashboardController = Get.put(DashboardController(), permanent: true);
   final coursesController = Get.put(CoursesController(), permanent: true);
   final tutorsController = Get.put(TutorsController(), permanent: true);
-  final studentLogsController = Get.put(StudentLogsController(), permanent: true);
+  final studentLogsController = Get.put(StudentsController(), permanent: true);
 
 
   @override

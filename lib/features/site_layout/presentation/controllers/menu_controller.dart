@@ -27,7 +27,9 @@ class MenController extends GetxController{
   Widget returnIconFor(String itemName){
     switch(itemName){
       case Routes.dashboardDisplayName:
-        return _customIcon(Icons.home, itemName);
+        return _customIcon(Icons.dashboard, itemName);
+      case Routes.studentsDisplayName:
+        return _customIcon(Icons.people, itemName);
       case Routes.coursesDisplayName:
         return _customIcon(Icons.book, itemName);
       case Routes.tutorsDisplayName:
@@ -47,6 +49,8 @@ class MenController extends GetxController{
     switch(activePageRoute.value){
       case Routes.dashboardRoute:
         return Routes.dashboardDisplayName;
+      case Routes.studentsRoute:
+        return Routes.studentsDisplayName;
       case Routes.coursesRoute:
         return Routes.coursesDisplayName;
       case Routes.tutorsRoute:

@@ -5,7 +5,7 @@ import 'package:pvamu_checkin_tutor_portal/features/courses/presentation/control
 import 'package:pvamu_checkin_tutor_portal/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/site_layout/presentation/controllers/menu_controller.dart';
-import 'package:pvamu_checkin_tutor_portal/features/student_logs/presentation/controllers/student_logs_controller.dart';
+import 'package:pvamu_checkin_tutor_portal/features/students/presentation/controllers/student_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/controllers/tutors_controller.dart';
 
 class AllControllerBinding extends Bindings{
@@ -13,7 +13,7 @@ class AllControllerBinding extends Bindings{
   void dependencies() {
     Get.lazyPut(() => DashboardController());
     Get.lazyPut(() => CoursesController());
-    Get.lazyPut(() => StudentLogsController());
+    Get.lazyPut(() => StudentsController());
     Get.lazyPut(() => TutorsController());
     Get.lazyPut(() => AuthController());
     Get.lazyPut(() => SettingsController());

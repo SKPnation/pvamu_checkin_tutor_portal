@@ -10,6 +10,7 @@ import 'package:pvamu_checkin_tutor_portal/core/data/local/get_store.dart';
 import 'package:pvamu_checkin_tutor_portal/core/navigation/auth_middleware.dart';
 import 'package:pvamu_checkin_tutor_portal/features/auth/presentation/pages/auth_page.dart';
 import 'package:pvamu_checkin_tutor_portal/features/settings/presentation/pages/settings_page.dart';
+import 'package:pvamu_checkin_tutor_portal/features/students/presentation/pages/students_page.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/pages/assigned_tutors_page.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/presentation/pages/courses_page.dart';
 import 'package:pvamu_checkin_tutor_portal/features/dashboard/presentation/pages/dashboard.dart';
@@ -38,6 +39,7 @@ abstract class AppPages {
 
   static final List<Widget> menuPages = [
     Dashboard(),
+    StudentsPage(),
     CoursesPage(),
     TutorsPage(),
     AssignedTutorsPage(),
@@ -49,6 +51,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
     case Routes.dashboardRoute:
       return _getPageRoute(Dashboard());
+    case Routes.studentsRoute:
+      return _getPageRoute(StudentsPage());
     case Routes.coursesRoute:
       return _getPageRoute(CoursesPage());
     case Routes.tutorsRoute:
@@ -71,6 +75,9 @@ abstract class Routes {
 
   static const dashboardDisplayName = AppStrings.dashboardTitle;
   static const dashboardRoute = "/dashboard";
+
+  static const studentsDisplayName = AppStrings.studentsTitle;
+  static const studentsRoute = "/students";
 
   static const coursesDisplayName = AppStrings.coursesTitle;
   static const coursesRoute = "/courses";
@@ -99,6 +106,7 @@ class MenuItem {
 
 List<MenuItem> sideMenuItemRoutes = [
   MenuItem(Routes.dashboardDisplayName, Routes.dashboardRoute),
+  MenuItem(Routes.studentsDisplayName, Routes.studentsRoute),
   MenuItem(Routes.coursesDisplayName, Routes.coursesRoute),
   MenuItem(Routes.tutorsDisplayName, Routes.tutorsRoute),
   MenuItem(Routes.assignedTutorsDisplayName, Routes.assignedTutorsRoute),
