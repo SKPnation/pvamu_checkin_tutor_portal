@@ -128,7 +128,7 @@ class _StudentLogsTableState extends State<StudentLogsTable> {
                             TableRow(
                               children: [
                                 //name
-                                Center(child: CustomText(text: "${item.studentId}", size: 12)),
+                                Center(child: Padding(padding: EdgeInsets.only(left: 16), child: CustomText(text: "${item.studentId}", size: 12))),
                                 //email
                                 Center(child: CustomText(text: item.studentName ?? '', size: 12)),
                                 //email

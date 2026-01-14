@@ -5,7 +5,11 @@ import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_mod
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/controllers/tutors_controller.dart';
 
 class AssignTutorField extends StatefulWidget {
-  const AssignTutorField({super.key, required this.tutorsController, this.onChanged});
+  const AssignTutorField({
+    super.key,
+    required this.tutorsController,
+    this.onChanged,
+  });
 
   final TutorsController tutorsController;
   final Function()? onChanged;
@@ -27,9 +31,7 @@ class _AssignTutorFieldState extends State<AssignTutorField> {
               child: SizedBox(
                 height: 20,
                 width: 20,
-                child: CircularProgressIndicator(
-                  color: Color(0xFF43A95D),
-                ),
+                child: CircularProgressIndicator(color: Color(0xFF43A95D)),
               ),
             );
           }
@@ -54,9 +56,7 @@ class _AssignTutorFieldState extends State<AssignTutorField> {
             // Find course by name in the fetched list
             try {
               selectedTutorId =
-                  tutors
-                      .firstWhere((c) => c.fName == selectedTutor.fName)
-                      .id;
+                  tutors.firstWhere((c) => c.fName == selectedTutor.fName).id;
             } catch (e) {
               // If no course matches, leave selectedCourseId null
               selectedTutorId = null;
@@ -68,25 +68,17 @@ class _AssignTutorFieldState extends State<AssignTutorField> {
           return DropdownButtonFormField<String>(
             value: selectedTutorId,
             items:
-            tutors.map((tutor) {
-              return DropdownMenuItem<String>(
-                value: tutor.id,
-                child: Text("${tutor.fName} ${tutor.lName}"),
-              );
-            }).toList(),
+                tutors.map((tutor) {
+                  return DropdownMenuItem<String>(
+                    value: tutor.id,
+                    child: Text("${tutor.fName} ${tutor.lName}"),
+                  );
+                }).toList(),
             onChanged: (String? value) {
               setState(() {
                 if (value != null) {
-                  final tutor = tutors.firstWhere(
-                        (tutor) => tutor.id == value,
-                  );
-                  if (widget.tutorsController.selectedTutor == null) {
-                    widget.tutorsController.selectedTutor = Rx<Tutor>(
-                      tutor,
-                    );
-                  } else {
-                    widget.tutorsController.selectedTutor!.value = tutor;
-                  }
+                  final tutor = tutors.firstWhere((tutor) => tutor.id == value);
+                  widget.tutorsController.selectedTutor.value = tutor;
                 }
               });
 

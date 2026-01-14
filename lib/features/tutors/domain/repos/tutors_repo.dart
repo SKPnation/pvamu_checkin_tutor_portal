@@ -10,6 +10,7 @@ abstract class TutorsRepo{
   Future<void> assign({required String courseId, required String tutorId});
   Future<void> unAssign({required String courseId, required String tutorId});
   Future<void> deactivate({required String tutorId});
+  Future<void> activate({required String tutorId});
   Future<void> delete({required String tutorId});
   Future<void> setSchedule(Map<String, dynamic> fields, String tutorId);
   Future<List<TutorLoginHistory>> getTutorLogs(); //for new user

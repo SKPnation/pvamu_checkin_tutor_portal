@@ -13,13 +13,15 @@ class TutorsController extends GetxController {
   final lNameTEC = TextEditingController();
   final emailAddressTEC = TextEditingController();
 
-  Rx<Tutor>? selectedTutor;
+  // Rx<Tutor>? selectedTutor;
+  final Rxn<Tutor> selectedTutor = Rxn<Tutor>(); //
 
   TutorsRepoImpl tutorsRepo = TutorsRepoImpl();
 
   var tutors = <Tutor>[].obs;
   final assignedTutors = <AssignedModel>[].obs;
   final isAssignedLoading = false.obs;
+  final profileLoading = false.obs;
   final assignedError = ''.obs;
   final editMode = false.obs;
 
@@ -46,6 +48,11 @@ class TutorsController extends GetxController {
 
   Future deactivate({required String tutorId}) async {
     await tutorsRepo.deactivate(tutorId: tutorId);
+    getTutors();
+  }
+
+  Future activate({required String tutorId}) async {
+    await tutorsRepo.activate(tutorId: tutorId);
     getTutors();
   }
 
@@ -118,14 +125,11 @@ class TutorsController extends GetxController {
   }
 
   getSelectedTutorProfile(String tutorId) async {
+    profileLoading.value = true;
     Tutor tutor = await getProfile(tutorId: tutorId);
-    if (selectedTutor == null) {
-      selectedTutor = Rx<Tutor>(
-        tutor,
-      );
-    } else {
-      selectedTutor!.value = tutor;
-    }
+    selectedTutor.value = tutor;
+
+    profileLoading.value = false;
   }
 
   Future<List<TutorLoginHistory>> getTutorLogs() async =>

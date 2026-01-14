@@ -126,7 +126,7 @@ class TutorsRepoImpl extends TutorsRepo {
       }
 
       // Optional: clear selections
-      TutorsController.instance.selectedTutor = null;
+      TutorsController.instance.selectedTutor.value = null;
       CoursesController.instance.selectedCourse = null;
     } catch (e) {
       print("Failed: $e");
@@ -183,7 +183,7 @@ class TutorsRepoImpl extends TutorsRepo {
       }
 
       // 4 Clear selected fields in controllers
-      TutorsController.instance.selectedTutor = null;
+      TutorsController.instance.selectedTutor.value = null;
       CoursesController.instance.selectedCourse = null;
 
       Get.back();
@@ -239,13 +239,6 @@ class TutorsRepoImpl extends TutorsRepo {
     }
 
     return assignedTutors;
-  }
-
-  @override
-  Future<void> deactivate({required String tutorId}) async {
-    final data = <String, dynamic>{"blocked_at": DateTime.now()};
-
-    await tutorsCollection.doc(tutorId).update(data);
   }
 
   @override
@@ -319,5 +312,19 @@ class TutorsRepoImpl extends TutorsRepo {
         return TutorLoginHistory.fromMap(doc.data(), doc.id);
       }),
     );
+  }
+
+  @override
+  Future<void> activate({required String tutorId}) async{
+    final data = <String, dynamic>{"blocked_at": null};
+
+    await tutorsCollection.doc(tutorId).update(data);
+  }
+
+  @override
+  Future<void> deactivate({required String tutorId}) async {
+    final data = <String, dynamic>{"blocked_at": DateTime.now()};
+
+    await tutorsCollection.doc(tutorId).update(data);
   }
 }

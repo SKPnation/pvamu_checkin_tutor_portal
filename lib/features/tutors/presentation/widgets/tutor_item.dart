@@ -7,6 +7,7 @@ import 'package:pvamu_checkin_tutor_portal/core/utils/functions.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/presentation/controllers/courses_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/controllers/tutors_controller.dart';
+import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/widgets/delete_dialog.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/widgets/edit_dialog.dart';
 
 class TutorItem extends StatelessWidget {
@@ -46,8 +47,12 @@ class TutorItem extends StatelessWidget {
           children: [
             TableRow(
               children: [
-                Center(child: CustomText(text: item.fName.toString(), size: 12)),
-                Center(child: CustomText(text: item.lName.toString(), size: 12)),
+                Center(
+                  child: CustomText(text: item.fName.toString(), size: 12),
+                ),
+                Center(
+                  child: CustomText(text: item.lName.toString(), size: 12),
+                ),
                 Center(
                   child: CustomText(text: item.email.toString(), size: 12),
                 ),
@@ -81,8 +86,14 @@ class TutorItem extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      item.blockedAt != null ? Flexible(child: CustomText(text: "Deactivated", color: AppColors.red)) :
-                      item.timeIn == null && item.timeOut == null
+                      item.blockedAt != null
+                          ? Flexible(
+                            child: CustomText(
+                              text: "Deactivated",
+                              color: AppColors.red,
+                            ),
+                          )
+                          : item.timeIn == null && item.timeOut == null
                           ? SizedBox()
                           : Container(
                             height: 8,
@@ -98,8 +109,9 @@ class TutorItem extends StatelessWidget {
                       const SizedBox(width: 4),
                       CustomText(
                         text:
-                        item.blockedAt != null ? "" :
-                            (item.timeIn == null && item.timeOut == null)
+                            item.blockedAt != null
+                                ? ""
+                                : (item.timeIn == null && item.timeOut == null)
                                 ? "--"
                                 : (item.timeIn != null && item.timeOut == null)
                                 ? "Signed In"
@@ -123,7 +135,7 @@ class TutorItem extends StatelessWidget {
                         context,
                         TutorsController.instance,
                         actionKey,
-                        item.id!,
+                        item,
                       ),
                   child: Icon(Icons.more_vert),
                 ),
@@ -141,7 +153,7 @@ class TutorItem extends StatelessWidget {
     BuildContext context,
     TutorsController tutorsController,
     GlobalKey key,
-    String tutorId,
+    Tutor tutor,
   ) {
     // Get the RenderBox and its position
     final RenderBox renderBox =
@@ -166,7 +178,7 @@ class TutorItem extends StatelessWidget {
               AssignTutorDialog(
                 coursesController: coursesController,
                 tutorsController: tutorsController,
-                tutorId: tutorId,
+                tutorId: tutor.id,
               ),
             );
           },
@@ -178,7 +190,7 @@ class TutorItem extends StatelessWidget {
             Get.dialog(
               EditDialog(
                 tutorsController: tutorsController,
-                tutorId: tutorId,
+                tutorId: tutor.id!,
               ),
             );
           },
@@ -186,16 +198,24 @@ class TutorItem extends StatelessWidget {
           child: const Text('Edit'),
         ),
         PopupMenuItem(
-          onTap: () async{
-            await tutorsController.deactivate(tutorId: tutorId);
+          onTap: () async {
+            if (tutor.blockedAt == null) {
+              await tutorsController.deactivate(tutorId: tutor.id!);
+            } else {
+              await tutorsController.activate(tutorId: tutor.id!);
+            }
           },
-          value: 'block',
-          child: const Text('Block'),
+          value: tutor.blockedAt == null ? 'block' : "Unblock",
+          child: Text(tutor.blockedAt == null ? 'block' : "Unblock"),
         ),
         PopupMenuItem(
-          onTap: () async{
-            await tutorsController.delete(tutorId: tutorId);
-            tutorsController.getTutors();
+          onTap: () async {
+            Get.dialog(
+              DeleteDialog(
+                tutorsController: tutorsController,
+                tutorId: tutor.id!,
+              ),
+            );
           },
           value: 'delete',
           child: Text('Delete'),

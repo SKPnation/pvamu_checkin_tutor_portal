@@ -31,18 +31,15 @@ class _EditDialogState extends State<EditDialog> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     return Obx(() {
-      // selectedTutor is Rx<Tutor>? in your current setup
-      final rxTutor = widget.tutorsController.selectedTutor;
+      final Tutor? tutor = widget.tutorsController.selectedTutor.value;
 
-      if (rxTutor == null) {
+      if (tutor == null) {
         return const Center(child: CircularProgressIndicator());
       }
 
-      final Tutor tutor = rxTutor.value;
-
-      // 1) Known weekday order
       const weekdayOrder = <String>[
         'monday',
         'tuesday',
@@ -53,37 +50,27 @@ class _EditDialogState extends State<EditDialog> {
         'sunday',
       ];
 
-      // 2) Get a non-null schedule map (string->dynamic)
       final Map<String, dynamic> schedule =
           (tutor.workSchedule as Map?)?.map(
-                (k, v) => MapEntry(k.toString(), v),
+            (k, v) => MapEntry(k.toString(), v),
           ) ??
-              <String, dynamic>{};
+          <String, dynamic>{};
 
-      // 3) Build & sort safely
-      final entries = schedule.entries.toList()
-        ..sort((a, b) {
-          final ak = a.key.toLowerCase();
-          final bk = b.key.toLowerCase();
-
-          int ai = weekdayOrder.indexOf(ak);
-          int bi = weekdayOrder.indexOf(bk);
-
-          if (ai == -1) ai = 999;
-          if (bi == -1) bi = 999;
-
-          return ai.compareTo(bi);
-        });
+      final entries =
+          schedule.entries.toList()..sort((a, b) {
+            int ai = weekdayOrder.indexOf(a.key.toLowerCase());
+            int bi = weekdayOrder.indexOf(b.key.toLowerCase());
+            if (ai == -1) ai = 999;
+            if (bi == -1) bi = 999;
+            return ai.compareTo(bi);
+          });
 
       return AlertDialog(
         backgroundColor: AppColors.white,
         title: CustomText(text: "Profile"),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 8),
-
             Row(
               children: [
                 CircleAvatar(
@@ -95,9 +82,7 @@ class _EditDialogState extends State<EditDialog> {
                     color: Colors.white,
                   ),
                 ),
-
                 const SizedBox(width: 8),
-
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -111,21 +96,14 @@ class _EditDialogState extends State<EditDialog> {
                 ),
               ],
             ),
-
             const SizedBox(height: 24),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CustomText(
-                  text: "Work schedule",
-                  size: AppFonts.baseSize + 4,
-                ),
+                CustomText(text: "Work schedule", size: AppFonts.baseSize + 4),
                 GestureDetector(
-                  onTap: () {
-                    widget.tutorsController.editMode.value =
-                    !widget.tutorsController.editMode.value;
-                  },
+                  onTap: () => widget.tutorsController.editMode.toggle(),
                   child: Icon(
                     widget.tutorsController.editMode.value
                         ? Icons.remove_red_eye_outlined
@@ -135,30 +113,10 @@ class _EditDialogState extends State<EditDialog> {
                 ),
               ],
             ),
-
             const SizedBox(height: 8),
 
-            ///display schedule
-            // if (entries.isEmpty)
-            //   const Text("No schedule")
-            // else
-            //   Column(
-            //     children: entries.map((e) {
-            //       return Row(
-            //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //         children: [
-            //           Text(e.key),
-            //           Text(e.value.toString()),
-            //         ],
-            //       );
-            //     }).toList(),
-            //   ),
-
-            SizedBox(height: 8),
-
-            //Work schedule section
             widget.tutorsController.editMode.value
-                ? EditScheduleSection(tutorId: tutor.id!)
+                ? EditScheduleSection(tutorId: tutor.id ?? "")
                 : WorkScheduleSection(sortedEntries: entries),
           ],
         ),

@@ -39,7 +39,7 @@ class _AssignTutorDialogState extends State<AssignTutorDialog> {
         final String? selectedCourseId =
             widget.coursesController.selectedCourse?.value.id;
         final String? selectedTutorId =
-            widget.tutorId ?? widget.tutorsController.selectedTutor?.value.id;
+            widget.tutorId ?? widget.tutorsController.selectedTutor.value!.id;
 
         final bool canAssign = selectedCourseId != null && selectedTutorId != null;
 
@@ -109,17 +109,17 @@ class _AssignTutorDialogState extends State<AssignTutorDialog> {
         setState(() {});
       };
     } else if (widget.coursesController.selectedCourse != null &&
-        widget.tutorsController.selectedTutor != null) {
+        widget.tutorsController.selectedTutor.value != null) {
       return () async {
         await widget.tutorsController.assignToCourse(
           courseId: widget.coursesController.selectedCourse!.value.id!,
-          tutorId: widget.tutorsController.selectedTutor!.value.id!,
+          tutorId: widget.tutorsController.selectedTutor.value!.id!,
         );
 
         setState(() {});
       };
     } else if (widget.coursesController.selectedCourse == null ||
-        (widget.tutorsController.selectedTutor == null &&
+        (widget.tutorsController.selectedTutor.value == null &&
             widget.tutorId == null)) {
       return null;
     }
