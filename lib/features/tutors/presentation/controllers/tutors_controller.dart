@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_snackbar.dart';
+import 'package:pvamu_checkin_tutor_portal/core/utils/helpers/web_image_upload.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/assigned_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_logs_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_model.dart';
@@ -134,4 +135,29 @@ class TutorsController extends GetxController {
 
   Future<List<TutorLoginHistory>> getTutorLogs() async =>
       await tutorsRepo.getTutorLogs();
+
+  Future<void> updateProfilePicture(String tutorId) async {
+    final bytes = await WebImageUploader.pickImageBytesWeb();
+    if (bytes == null) return;
+
+
+    final url = await WebImageUploader.uploadImage(
+      bytes: bytes,
+      folder: 'tutors_profile_photos',
+    );
+
+    print('Uploaded URL: $url');
+
+    await tutorsRepo.updateProfilePicture(tutorId: tutorId, url: url!);
+
+    await getSelectedTutorProfile(tutorId);
+  }
+
+  Future<void> deleteProfilePicture(
+    String tutorId,
+    String profilePhotoUrl,
+  ) async {
+    await tutorsRepo.deleteProfilePicture(tutorId, profilePhotoUrl);
+    await getSelectedTutorProfile(tutorId);
+  }
 }

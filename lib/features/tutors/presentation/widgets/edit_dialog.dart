@@ -1,3 +1,4 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_snackbar.dart';
@@ -65,6 +66,7 @@ class _EditDialogState extends State<EditDialog> {
             return ai.compareTo(bi);
           });
 
+      print("Profile Photo URL: ${tutor.profilePhotoUrl}");
       return AlertDialog(
         backgroundColor: AppColors.white,
         title: CustomText(text: "Profile"),
@@ -73,13 +75,117 @@ class _EditDialogState extends State<EditDialog> {
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  radius: 32,
-                  backgroundColor: Colors.grey[300],
-                  child: const Icon(
-                    Icons.person,
-                    size: 32,
-                    color: Colors.white,
+                GestureDetector(
+                  onTap: () {
+                    tutor.profilePhotoUrl != null &&
+                            tutor.profilePhotoUrl!.isNotEmpty
+                        ? Get.dialog(
+                          AlertDialog(
+                            content:
+                                tutor.profilePhotoUrl != null &&
+                                        tutor.profilePhotoUrl!.isNotEmpty
+                                    ? Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(16),
+                                      child: Image.network(
+                                        tutor.profilePhotoUrl!,
+                                        fit: BoxFit.cover,
+
+                                        // Show spinner while loading
+                                        loadingBuilder: (context, child, loadingProgress) {
+                                          if (loadingProgress == null) return child;
+                                          return const SizedBox(
+                                            width: 120,
+                                            height: 120,
+                                            child: Center(
+                                              child: CircularProgressIndicator(strokeWidth: 2),
+                                            ),
+                                          );
+                                        },
+
+                                        // Prevent crashes on web (CORS / network / 403)
+                                        errorBuilder: (context, error, stackTrace) {
+                                          debugPrint("Profile image load error: $error");
+                                          return const SizedBox(
+                                            width: 120,
+                                            height: 120,
+                                            child: Icon(
+                                              Icons.person,
+                                              size: 48,
+                                              color: Colors.grey,
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 8,
+                                      right: 8,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          widget.tutorsController.deleteProfilePicture(
+                                            tutor.id!,
+                                            tutor.profilePhotoUrl!,
+                                          );
+                                          Get.back();
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.all(4),
+                                          height: 50,
+                                          width: 50,
+                                          decoration: BoxDecoration(
+                                            color: Colors.black54,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.delete,
+                                            size: 30,
+                                            color: AppColors.red,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                                    : const Icon(
+                                      Icons.person,
+                                      size: 100,
+                                      color: Colors.grey,
+                                    ),
+                          ),
+                        )
+                        : widget.tutorsController.updateProfilePicture(
+                          tutor.id!,
+                        );
+                  },
+                  child: CircleAvatar(
+                    radius: 32,
+                    backgroundColor: Colors.grey[300],
+                    child:
+                        tutor.profilePhotoUrl != null &&
+                                tutor.profilePhotoUrl!.isNotEmpty
+                            ? ClipOval(
+                              child: Image.network(
+                                tutor.profilePhotoUrl!,
+                                width: 64,
+                                height: 64,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stack) {
+                                  debugPrint("Image load error: $error");
+                                  return const Icon(
+                                    Icons.person,
+                                    size: 32,
+                                    color: Colors.white,
+                                  );
+                                },
+                              ),
+                            )
+                            : const Icon(
+                              Icons.person,
+                              size: 32,
+                              color: Colors.white,
+                            ),
                   ),
                 ),
                 const SizedBox(width: 8),

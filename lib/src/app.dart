@@ -21,7 +21,7 @@ class _AppState extends State<App> {
         apiKey: "AIzaSyD--sT_bY-9dXT2dgAhymsAEPCEdFYh7BM",
         authDomain: "pvamu-student-sign-in.firebaseapp.com",
         projectId: "pvamu-student-sign-in",
-        storageBucket: "pvamu-student-sign-in.appspot.com", // 🔥 Fix typo here
+        storageBucket: 'pvamu-student-sign-in.firebasestorage.app',
         messagingSenderId: "757260583433",
         appId: "1:757260583433:web:627fe15ebb56e11865eed8",
         measurementId: "G-K99SQFSL9H",

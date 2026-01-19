@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Tutor {
   final String? id;
+  final String? profilePhotoUrl;
   final String? fName;
   final String? lName;
   final String? email;
@@ -13,6 +14,7 @@ class Tutor {
 
   Tutor({
     this.id,
+    this.profilePhotoUrl,
     required this.fName,
     required this.lName,
     required this.email,
@@ -26,6 +28,7 @@ class Tutor {
   factory Tutor.fromMap(Map<String, dynamic> map) {
     return Tutor(
       id: map['id'],
+      profilePhotoUrl: map['profile_photo_url'],
       fName: map['f_name'],
       lName: map['l_name'],
       email: map['email'],
@@ -40,6 +43,7 @@ class Tutor {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'profile_photo_url': profilePhotoUrl,
       'f_name': fName,
       'l_name': lName,
       'email': email,

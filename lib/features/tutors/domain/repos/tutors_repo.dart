@@ -1,18 +1,35 @@
+import 'dart:typed_data';
+
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/assigned_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_logs_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_model.dart';
 
-abstract class TutorsRepo{
+abstract class TutorsRepo {
   Future<void> getProfile({required String tutorId});
-  Future<void> addTutor(Tutor tutor);
-  Future<List<Tutor>> getTutors();
-  Future<List<AssignedModel>> getAssignedTutors();
-  Future<void> assign({required String courseId, required String tutorId});
-  Future<void> unAssign({required String courseId, required String tutorId});
-  Future<void> deactivate({required String tutorId});
-  Future<void> activate({required String tutorId});
-  Future<void> delete({required String tutorId});
-  Future<void> setSchedule(Map<String, dynamic> fields, String tutorId);
-  Future<List<TutorLoginHistory>> getTutorLogs(); //for new user
 
+  Future<void> addTutor(Tutor tutor);
+
+  Future<List<Tutor>> getTutors();
+
+  Future<List<AssignedModel>> getAssignedTutors();
+
+  Future<void> assign({required String courseId, required String tutorId});
+
+  Future<void> unAssign({required String courseId, required String tutorId});
+
+  Future<void> deactivate({required String tutorId});
+
+  Future<void> activate({required String tutorId});
+
+  Future<void> delete({required String tutorId});
+
+  Future<void> setSchedule(Map<String, dynamic> fields, String tutorId);
+
+  Future<List<TutorLoginHistory>> getTutorLogs(); //for new user
+  Future<void> updateProfilePicture({
+    required String tutorId,
+    required String url,
+  });
+
+  Future<void> deleteProfilePicture(String tutorId, String profilePhotoUrl);
 }

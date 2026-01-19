@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/data/models/course_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/students/data/models/student_model.dart';
@@ -102,4 +103,15 @@ Map<String, dynamic> encodeFirestoreForJson(Map<String, dynamic> input) {
   }
 
   return input.map((k, v) => MapEntry(k, encode(v)));
+}
+
+Future<void> deleteFromStorageByUrl(String downloadUrl) async {
+  try {
+    final ref = FirebaseStorage.instance.refFromURL(downloadUrl);
+    await ref.delete();
+    print('File deleted successfully');
+  } catch (e) {
+    print('Delete failed: $e');
+    rethrow;
+  }
 }

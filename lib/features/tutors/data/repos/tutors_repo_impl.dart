@@ -1,6 +1,10 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_snackbar.dart';
+import 'package:pvamu_checkin_tutor_portal/core/utils/functions.dart';
+import 'package:pvamu_checkin_tutor_portal/core/utils/helpers/web_image_upload.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/data/models/course_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/presentation/controllers/courses_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/assigned_model.dart';
@@ -315,7 +319,7 @@ class TutorsRepoImpl extends TutorsRepo {
   }
 
   @override
-  Future<void> activate({required String tutorId}) async{
+  Future<void> activate({required String tutorId}) async {
     final data = <String, dynamic>{"blocked_at": null};
 
     await tutorsCollection.doc(tutorId).update(data);
@@ -326,5 +330,24 @@ class TutorsRepoImpl extends TutorsRepo {
     final data = <String, dynamic>{"blocked_at": DateTime.now()};
 
     await tutorsCollection.doc(tutorId).update(data);
+  }
+
+  @override
+  Future<void> updateProfilePicture({
+    required String tutorId,
+    required String url,
+  }) async {
+    final data = <String, dynamic>{"profile_photo_url": url};
+
+    await tutorsCollection.doc(tutorId).update(data);
+  }
+
+  @override
+  Future<void> deleteProfilePicture(String tutorId, String profilePhotoUrl) {
+    deleteFromStorageByUrl(profilePhotoUrl);
+
+    final data = <String, dynamic>{"profile_photo_url": null};
+
+    return tutorsCollection.doc(tutorId).update(data);
   }
 }
