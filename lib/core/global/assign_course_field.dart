@@ -127,6 +127,7 @@ class _AssignCourseFieldState extends State<AssignCourseField> {
         final selectedId = cc.selectedCourse?.value.id;
 
         return DropdownButtonFormField<String?>(
+          dropdownColor: Colors.white,
           isExpanded: true,
           value: selectedId, // null when nothing selected
           items: items,

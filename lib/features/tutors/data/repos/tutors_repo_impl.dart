@@ -350,4 +350,11 @@ class TutorsRepoImpl extends TutorsRepo {
 
     return tutorsCollection.doc(tutorId).update(data);
   }
+
+  @override
+  Future<void> deleteSlot({required MapEntry<String, dynamic> slot, required String? tutorId}) async{
+    await workScheduleRef(tutorId!).update({
+      slot.key: FieldValue.delete(),
+    });
+  }
 }

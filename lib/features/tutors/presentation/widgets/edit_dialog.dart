@@ -66,7 +66,6 @@ class _EditDialogState extends State<EditDialog> {
             return ai.compareTo(bi);
           });
 
-      print("Profile Photo URL: ${tutor.profilePhotoUrl}");
       return AlertDialog(
         backgroundColor: AppColors.white,
         title: CustomText(text: "Profile"),
@@ -223,7 +222,7 @@ class _EditDialogState extends State<EditDialog> {
 
             widget.tutorsController.editMode.value
                 ? EditScheduleSection(tutorId: tutor.id ?? "")
-                : WorkScheduleSection(sortedEntries: entries),
+                : WorkScheduleSection(sortedEntries: entries, tutorController: widget.tutorsController),
           ],
         ),
       );

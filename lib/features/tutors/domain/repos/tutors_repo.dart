@@ -17,6 +17,8 @@ abstract class TutorsRepo {
 
   Future<void> unAssign({required String courseId, required String tutorId});
 
+  Future<void> deleteSlot({required MapEntry<String, dynamic> slot, required String? tutorId});
+
   Future<void> deactivate({required String tutorId});
 
   Future<void> activate({required String tutorId});

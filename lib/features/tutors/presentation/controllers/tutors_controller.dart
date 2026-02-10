@@ -160,4 +160,15 @@ class TutorsController extends GetxController {
     await tutorsRepo.deleteProfilePicture(tutorId, profilePhotoUrl);
     await getSelectedTutorProfile(tutorId);
   }
+
+  void deleteSlot({required MapEntry<String, dynamic> slot, String? tutorId}) async{
+    await tutorsRepo.deleteSlot(slot: slot, tutorId:tutorId);
+
+    await getSelectedTutorProfile(tutorId!);
+
+    CustomSnackBar.successSnackBar(
+      body:
+      "${slot.key} slot removed",
+    );
+  }
 }

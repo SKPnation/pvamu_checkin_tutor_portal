@@ -66,6 +66,7 @@ class _AssignTutorFieldState extends State<AssignTutorField> {
           }
 
           return DropdownButtonFormField<String>(
+            dropdownColor: Colors.white,
             value: selectedTutorId,
             items:
                 tutors.map((tutor) {
