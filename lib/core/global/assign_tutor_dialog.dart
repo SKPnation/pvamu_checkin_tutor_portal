@@ -39,7 +39,7 @@ class _AssignTutorDialogState extends State<AssignTutorDialog> {
         final String? selectedCourseId =
             widget.coursesController.selectedCourse?.value.id;
         final String? selectedTutorId =
-            widget.tutorId ?? widget.tutorsController.selectedTutor.value!.id;
+            widget.tutorId ?? widget.tutorsController.selectedTutor.value?.id;
 
         final bool canAssign = selectedCourseId != null && selectedTutorId != null;
 
