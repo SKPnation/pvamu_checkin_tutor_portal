@@ -6,6 +6,7 @@ import 'package:pvamu_checkin_tutor_portal/features/dashboard/presentation/contr
 import 'package:pvamu_checkin_tutor_portal/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/site_layout/presentation/controllers/menu_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/students/presentation/controllers/student_controller.dart';
+import 'package:pvamu_checkin_tutor_portal/features/time_summary/presentation/controllers/time_summary_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/controllers/tutors_controller.dart';
 
 class AllControllerBinding extends Bindings{
@@ -16,6 +17,7 @@ class AllControllerBinding extends Bindings{
     Get.lazyPut(() => StudentsController());
     Get.lazyPut(() => TutorsController());
     Get.lazyPut(() => AuthController());
+    Get.lazyPut(() => TimeSummaryController());
     Get.lazyPut(() => SettingsController());
     Get.lazyPut(() => NavigationController());
     Get.lazyPut(() => MenController());

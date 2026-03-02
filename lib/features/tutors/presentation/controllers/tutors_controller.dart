@@ -64,6 +64,7 @@ class TutorsController extends GetxController {
 
   //--- ASSIGNED TUTORS ---
   Future<void> fetchAssignedTutors() async {
+    await Future.delayed(Duration.zero); // or Future.microtask((){})
     isAssignedLoading.value = true;
     assignedError.value = '';
     try {

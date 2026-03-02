@@ -6,7 +6,7 @@ import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/controll
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/widgets/assigned_tutors_table.dart';
 
 class AssignedTutorsPage extends StatefulWidget {
-  AssignedTutorsPage({super.key});
+  const AssignedTutorsPage({super.key});
 
   @override
   State<AssignedTutorsPage> createState() => _AssignedTutorsPageState();

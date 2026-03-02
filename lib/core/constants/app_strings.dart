@@ -7,6 +7,7 @@ class AppStrings{
   static const String coursesTitle = "Courses";
   static const String tutorsTitle = "Tutors";
   static const String assignedTutorsTitle = "Assigned Tutors";
+  static const String timeSummaryDisplayTitle = "Time Summary";
   static const String settingsDisplayTitle = "Settings";
   static const String logoutTitle = "Log out";
 
