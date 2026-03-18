@@ -4,7 +4,6 @@ import 'package:pvamu_checkin_tutor_portal/core/utils/helpers/size_helpers.dart'
 import 'package:pvamu_checkin_tutor_portal/features/time_summary/data/models/time_summary_metrics.dart';
 import 'package:pvamu_checkin_tutor_portal/features/time_summary/presentation/controllers/time_summary_controller.dart';
 import 'package:pvamu_checkin_tutor_portal/features/time_summary/presentation/widgets/export_csv_btn.dart';
-import 'package:pvamu_checkin_tutor_portal/features/time_summary/presentation/widgets/export_pdf_btn.dart';
 import 'package:pvamu_checkin_tutor_portal/features/time_summary/presentation/widgets/summary_card.dart';
 import 'package:pvamu_checkin_tutor_portal/features/time_summary/presentation/widgets/trends_chart.dart';
 
@@ -48,18 +47,7 @@ class _TimeSummaryPageState extends State<TimeSummaryPage> {
           const Divider(),
           const SizedBox(height: 16),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: const [
-                  SizedBox(height: 40, width: 180, child: ExportCsvButton()),
-                  SizedBox(width: 12),
-                  SizedBox(height: 40, width: 180, child: ExportPdfButton()),
-                ],
-              ),
-            ],
-          ),
+          SizedBox(height: 40, width: 180, child: ExportCsvButton(timeSummaryCtrl: timeSummaryCtrl)),
 
           const SizedBox(height: 32),
 

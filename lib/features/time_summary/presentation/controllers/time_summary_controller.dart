@@ -4,8 +4,10 @@ import 'package:get/get.dart';
 import 'package:pvamu_checkin_tutor_portal/features/time_summary/data/models/time_summary_metrics.dart';
 import 'package:pvamu_checkin_tutor_portal/features/time_summary/data/repos/time_summary_repo_impl.dart';
 import 'package:pvamu_checkin_tutor_portal/features/time_summary/domain/repos/time_summary_repo.dart';
-import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_logs_model.dart';
-import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/controllers/tutors_controller.dart';
+import 'dart:convert';
+import 'dart:html' as html;
+import 'package:csv/csv.dart';
+import 'package:intl/intl.dart';
 
 enum TimeSummaryPreset { last7Days, last30Days, last1Year, custom }
 
@@ -57,8 +59,8 @@ class TimeSummaryController extends GetxController {
       tutorRollUps.assignAll(res.topTutors);
 
       // Top tutors (if included in response)
-      if (res.topTutors != null) {
-        tutorRollUps.assignAll(res.topTutors!);
+      if (res.topTutors.isNotEmpty) {
+        tutorRollUps.assignAll(res.topTutors);
       } else {
         // If you don't return topTutors, keep existing list (or clear)
         tutorRollUps.clear();
@@ -136,5 +138,61 @@ class TimeSummaryController extends GetxController {
           endInclusive: DateTime(e.year, e.month, e.day, 23, 59, 59),
         );
     }
+  }
+
+  Future<void> exportTutorRollUpsCsv() async {
+    try {
+      final rows = <List<dynamic>>[
+        [
+          'Tutor Name',
+          'Email',
+          'Total Hours',
+          'Sign-ins',
+          'Avg Duration',
+          'Last Active',
+        ],
+      ];
+
+      for (final t in tutorRollUps) {
+        rows.add([
+          t.tutorName ?? '',
+          t.tutorEmail ?? '',
+          t.hours.toStringAsFixed(1),
+          t.signIns,
+          _formatDurationCsv(t.avgDuration),
+          _formatDateCsv(t.lastActive),
+        ]);
+      }
+
+      final csv = const ListToCsvConverter().convert(rows);
+
+      final bytes = utf8.encode(csv);
+      final blob = html.Blob([bytes], 'text/csv;charset=utf-8');
+      final url = html.Url.createObjectUrlFromBlob(blob);
+
+      final fileName =
+          'time_summary_tutors_${DateFormat('yyyyMMdd').format(currentRange.start)}_${DateFormat('yyyyMMdd').format(currentRange.endInclusive)}.csv';
+
+      html.AnchorElement(href: url)
+        ..setAttribute('download', fileName)
+        ..click();
+
+      html.Url.revokeObjectUrl(url);
+    } catch (e) {
+      error.value = 'Failed to export CSV: $e';
+    }
+  }
+
+  String _formatDurationCsv(Duration? d) {
+    if (d == null) return '';
+    final hours = d.inHours;
+    final minutes = d.inMinutes.remainder(60);
+    final seconds = d.inSeconds.remainder(60);
+    return '${hours}h ${minutes}m ${seconds}s';
+  }
+
+  String _formatDateCsv(DateTime? dt) {
+    if (dt == null) return '';
+    return DateFormat('MM/dd/yyyy').format(dt);
   }
 }

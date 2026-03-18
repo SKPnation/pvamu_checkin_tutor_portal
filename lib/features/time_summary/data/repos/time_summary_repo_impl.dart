@@ -1,5 +1,6 @@
 import 'package:fl_chart/src/chart/base/axis_chart/axis_chart_data.dart';
 import 'package:pvamu_checkin_tutor_portal/features/students/data/models/student_logs_model.dart';
+import 'package:pvamu_checkin_tutor_portal/features/time_summary/data/models/time_summary_export_data.dart';
 import 'package:pvamu_checkin_tutor_portal/features/time_summary/data/models/time_summary_metrics.dart';
 import 'package:pvamu_checkin_tutor_portal/features/time_summary/data/models/time_summary_response.dart';
 import 'package:pvamu_checkin_tutor_portal/features/time_summary/domain/repos/time_summary_repo.dart';
@@ -141,5 +142,37 @@ class TimeSummaryRepoImpl implements TimeSummaryRepo {
     final d0 = DateTime(start.year, start.month, start.day);
     final d1 = DateTime(dt.year, dt.month, dt.day);
     return d1.difference(d0).inDays;
+  }
+
+  @override
+  Future<TimeSummaryExportData> getExportData({required DateRangeX range, bool includeOngoing = false}) async {
+    final studentQuery = studentHistoryCollection
+        .where('time_in', isGreaterThanOrEqualTo: Timestamp.fromDate(range.start))
+        .where('time_in', isLessThanOrEqualTo: Timestamp.fromDate(range.endInclusive));
+
+    final tutorQuery = tutorHistoryCollection
+        .where('time_in', isGreaterThanOrEqualTo: Timestamp.fromDate(range.start))
+        .where('time_in', isLessThanOrEqualTo: Timestamp.fromDate(range.endInclusive));
+
+    final results = await Future.wait([
+      studentQuery.get(),
+      tutorQuery.get(),
+    ]);
+
+    final studentSnap = results[0];
+    final tutorSnap = results[1];
+
+    final studentLogs = await Future.wait(
+      studentSnap.docs.map((doc) => StudentLoginHistory.fromMapAsync(doc.data(), doc.id)),
+    );
+
+    final tutorLogs = tutorSnap.docs
+        .map((doc) => TutorLoginHistory.fromMap(doc.data(), doc.id))
+        .toList();
+
+    return TimeSummaryExportData(
+      studentLogs: studentLogs,
+      tutorLogs: tutorLogs,
+    );
   }
 }
