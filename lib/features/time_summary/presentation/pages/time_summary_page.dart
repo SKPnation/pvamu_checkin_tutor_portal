@@ -47,7 +47,16 @@ class _TimeSummaryPageState extends State<TimeSummaryPage> {
           const Divider(),
           const SizedBox(height: 16),
 
-          SizedBox(height: 40, width: 180, child: ExportCsvButton(timeSummaryCtrl: timeSummaryCtrl)),
+          SizedBox(
+            height: 40,
+            width: 180,
+            child: ExportCsvButton(
+              text: "Export CSV",
+              onPressed: () {
+                timeSummaryCtrl.exportTutorRollUpsCsv();
+              },
+            ),
+          ),
 
           const SizedBox(height: 32),
 
@@ -58,7 +67,8 @@ class _TimeSummaryPageState extends State<TimeSummaryPage> {
 
           // KPI section (dynamic)
           Obx(() {
-            if (timeSummaryCtrl.isLoading.value && timeSummaryCtrl.kpis.value == null) {
+            if (timeSummaryCtrl.isLoading.value &&
+                timeSummaryCtrl.kpis.value == null) {
               return const Padding(
                 padding: EdgeInsets.symmetric(vertical: 28),
                 child: Center(child: CircularProgressIndicator()),
@@ -133,8 +143,6 @@ class _TimeSummaryPageState extends State<TimeSummaryPage> {
 
           // Detailed Table
           buildDataTable(context),
-
-
         ],
       ),
     );
@@ -159,7 +167,8 @@ class _TimeSummaryPageState extends State<TimeSummaryPage> {
           _buildFilterTab(
             'Last 30 days',
             isActive: active == TimeSummaryPreset.last30Days,
-            onTap: () => timeSummaryCtrl.setPreset(TimeSummaryPreset.last30Days),
+            onTap:
+                () => timeSummaryCtrl.setPreset(TimeSummaryPreset.last30Days),
           ),
           const SizedBox(width: 8),
           _buildFilterTab(
@@ -183,7 +192,10 @@ class _TimeSummaryPageState extends State<TimeSummaryPage> {
               );
 
               if (picked != null) {
-                await timeSummaryCtrl.setCustomRange(start: picked.start, end: picked.end);
+                await timeSummaryCtrl.setCustomRange(
+                  start: picked.start,
+                  end: picked.end,
+                );
               }
             },
             borderRadius: BorderRadius.circular(8),
@@ -208,10 +220,12 @@ class _TimeSummaryPageState extends State<TimeSummaryPage> {
           // Optional toggle: include ongoing sessions
           Row(
             children: [
-              Obx(() => Switch(
-                value: timeSummaryCtrl.includeOngoing.value,
-                onChanged: (v) => timeSummaryCtrl.toggleIncludeOngoing(v),
-              )),
+              Obx(
+                () => Switch(
+                  value: timeSummaryCtrl.includeOngoing.value,
+                  onChanged: (v) => timeSummaryCtrl.toggleIncludeOngoing(v),
+                ),
+              ),
               const SizedBox(width: 6),
               const Text('Include ongoing', style: TextStyle(fontSize: 12)),
             ],
@@ -222,10 +236,10 @@ class _TimeSummaryPageState extends State<TimeSummaryPage> {
   }
 
   Widget _buildFilterTab(
-      String label, {
-        required bool isActive,
-        required VoidCallback onTap,
-      }) {
+    String label, {
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(20),
@@ -258,7 +272,9 @@ class _TimeSummaryPageState extends State<TimeSummaryPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -266,11 +282,16 @@ class _TimeSummaryPageState extends State<TimeSummaryPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Trends', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              Obx(() => Text(
-                _formatRange(currentRangePreview()),
-                style: const TextStyle(color: Colors.grey, fontSize: 12),
-              )),
+              const Text(
+                'Trends',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              Obx(
+                () => Text(
+                  _formatRange(currentRangePreview()),
+                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -311,7 +332,9 @@ class _TimeSummaryPageState extends State<TimeSummaryPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -321,10 +344,12 @@ class _TimeSummaryPageState extends State<TimeSummaryPage> {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
-          Obx(() => Text(
-            _formatRange(ctrl.currentRange),
-            style: const TextStyle(color: Colors.grey, fontSize: 12),
-          )),
+          Obx(
+            () => Text(
+              _formatRange(ctrl.currentRange),
+              style: const TextStyle(color: Colors.grey, fontSize: 12),
+            ),
+          ),
           const SizedBox(height: 16),
 
           Obx(() {
@@ -354,15 +379,13 @@ class _TimeSummaryPageState extends State<TimeSummaryPage> {
 
             return Column(
               children: [
-
-                ...top
-                .map(
-                (t) => buildTopTutorRow(
-              t.tutorName ?? '—',
-              '${t.hours.toStringAsFixed(1)} hrs',
-              '${t.signIns}',
-            ),
-            )
+                ...top.map(
+                  (t) => buildTopTutorRow(
+                    t.tutorName ?? '—',
+                    '${t.hours.toStringAsFixed(1)} hrs',
+                    '${t.signIns}',
+                  ),
+                ),
               ],
             );
           }),
@@ -392,6 +415,7 @@ class _TimeSummaryPageState extends State<TimeSummaryPage> {
       ),
     );
   }
+
   // -------------------------
   // TABLE (placeholder for now)
   // -------------------------
@@ -441,42 +465,44 @@ class _TimeSummaryPageState extends State<TimeSummaryPage> {
             DataColumn(label: Text('Last Active')),
             DataColumn(label: Text('Action')),
           ],
-          rows: ctrl.tutorRollUps.map((tutor) {
-            return DataRow(
-              cells: [
-                DataCell(Text(tutor.tutorName ?? '—')),
-                DataCell(Text('${tutor.hours.toStringAsFixed(1)} hrs')),
-                DataCell(Text('${tutor.signIns}')),
-                DataCell(Text(formatDuration(tutor.totalHours))),
-                DataCell(Text(formatDate(tutor.lastActive))),
-                DataCell(
-                  ElevatedButton(
-                    onPressed: () {
-                      // TODO: Navigate to tutor detail page
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF514D66),
+          rows:
+              ctrl.tutorRollUps.map((tutor) {
+                return DataRow(
+                  cells: [
+                    DataCell(Text(tutor.tutorName ?? '—')),
+                    DataCell(Text('${tutor.hours.toStringAsFixed(1)} hrs')),
+                    DataCell(Text('${tutor.signIns}')),
+                    DataCell(Text(formatDuration(tutor.totalHours))),
+                    DataCell(Text(formatDate(tutor.lastActive))),
+                    DataCell(
+                      ElevatedButton(
+                        onPressed: () {
+                          // TODO: Navigate to tutor detail page
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF514D66),
+                        ),
+                        child: const Text(
+                          'View details',
+                          style: TextStyle(color: Colors.white, fontSize: 12),
+                        ),
+                      ),
                     ),
-                    child: const Text(
-                      'View details',
-                      style: TextStyle(color: Colors.white, fontSize: 12),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          }).toList(),
+                  ],
+                );
+              }).toList(),
         );
       }),
     );
   }
+
   DataRow buildDataRow(
-      String name,
-      String hours,
-      String signs,
-      String avg,
-      String last,
-      ) {
+    String name,
+    String hours,
+    String signs,
+    String avg,
+    String last,
+  ) {
     return DataRow(
       cells: [
         DataCell(Text(name)),
@@ -534,6 +560,7 @@ class _TimeSummaryPageState extends State<TimeSummaryPage> {
 class LegendItem extends StatelessWidget {
   final Color color;
   final String label;
+
   const LegendItem({super.key, required this.color, required this.label});
 
   @override
@@ -545,7 +572,10 @@ class LegendItem extends StatelessWidget {
         Container(
           width: 12,
           height: 12,
-          decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(3)),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(3),
+          ),
         ),
         const SizedBox(width: 6),
         Text(label, style: const TextStyle(fontSize: 14)),
@@ -573,12 +603,11 @@ class ErrorBox extends StatelessWidget {
         children: [
           const Icon(Icons.error_outline, color: Colors.red),
           const SizedBox(width: 12),
-          Expanded(child: Text(message, style: const TextStyle(color: Colors.red))),
-          const SizedBox(width: 12),
-          ElevatedButton(
-            onPressed: onRetry,
-            child: const Text('Retry'),
+          Expanded(
+            child: Text(message, style: const TextStyle(color: Colors.red)),
           ),
+          const SizedBox(width: 12),
+          ElevatedButton(onPressed: onRetry, child: const Text('Retry')),
         ],
       ),
     );
@@ -587,6 +616,7 @@ class ErrorBox extends StatelessWidget {
 
 class EmptyBox extends StatelessWidget {
   final String message;
+
   const EmptyBox({required this.message});
 
   @override
@@ -602,7 +632,9 @@ class EmptyBox extends StatelessWidget {
         children: [
           const Icon(Icons.inbox_outlined, color: Colors.grey),
           const SizedBox(width: 12),
-          Expanded(child: Text(message, style: const TextStyle(color: Colors.grey))),
+          Expanded(
+            child: Text(message, style: const TextStyle(color: Colors.grey)),
+          ),
         ],
       ),
     );

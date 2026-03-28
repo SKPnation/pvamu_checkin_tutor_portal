@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,13 +9,14 @@ import 'dart:convert';
 import 'dart:html' as html;
 import 'package:csv/csv.dart';
 import 'package:intl/intl.dart';
+import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_logs_model.dart';
 
 enum TimeSummaryPreset { last7Days, last30Days, last1Year, custom }
 
 class TimeSummaryController extends GetxController {
   static TimeSummaryController get instance => Get.find();
 
-  final TimeSummaryRepo repo = TimeSummaryRepoImpl();
+   TimeSummaryRepo repo = TimeSummaryRepoImpl();
 
   // ---------------------------
   // State
@@ -140,6 +142,7 @@ class TimeSummaryController extends GetxController {
     }
   }
 
+  ///EXPORT TUTOR ROLL UPS TO CSV
   Future<void> exportTutorRollUpsCsv() async {
     try {
       final rows = <List<dynamic>>[
@@ -183,12 +186,136 @@ class TimeSummaryController extends GetxController {
     }
   }
 
+
+  ///TO EXPORT TUTOR LOGS TO CSV
+  Future<void> exportTutorLogsToCSV() async {
+    try {
+      error.value = '';
+
+      final range = currentRange;
+
+      final snapshot =
+          await TimeSummaryRepoImpl().tutorHistoryCollection
+              .where(
+                'created_at',
+                isGreaterThanOrEqualTo: Timestamp.fromDate(range.start),
+              )
+              .where(
+                'created_at',
+                isLessThanOrEqualTo: Timestamp.fromDate(range.endInclusive),
+              )
+              .orderBy('created_at', descending: true)
+              .get();
+
+      final logs =
+          snapshot.docs
+              .map((doc) => TutorLoginHistory.fromMap(doc.data(), doc.id))
+              .toList();
+
+      final rows = <List<dynamic>>[
+        [
+          'Date',
+          'Tutor ID',
+          'Tutor Name',
+          'Email',
+          'Time In',
+          'Time Out',
+          'Session Duration',
+          'Capped Session Duration'
+        ],
+      ];
+
+      DateTime? lastPrintedDate;
+
+      for (final log in logs) {
+        final sessionDate = log.timeIn ?? log.createdAt;
+        final duration = _calculateSessionDuration(log.timeIn, log.timeOut);
+        final cappedDuration = _calculateCappedSessionDuration(log.timeIn, log.timeOut);
+
+        final isNewDateGroup =
+            sessionDate != null &&
+            (lastPrintedDate == null ||
+                !_isSameDate(lastPrintedDate, sessionDate));
+
+        if (isNewDateGroup) {
+          rows.add([]);
+          rows.add([
+            DateFormat('MM/dd/yyyy').format(sessionDate),
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            ''
+          ]);
+          lastPrintedDate = sessionDate;
+        }
+
+        rows.add([
+          '',
+          log.tutorId ?? '',
+          log.tutorName ?? '',
+          log.tutorEmail ?? '',
+          _formatDateTimeCsv(log.timeIn),
+          _formatDateTimeCsv(log.timeOut),
+          _formatDurationCsv(duration),
+          _formatDurationCsv(cappedDuration)
+        ]);
+      }
+
+      final csv = const ListToCsvConverter().convert(rows);
+
+      final bytes = utf8.encode(csv);
+      final blob = html.Blob([bytes], 'text/csv;charset=utf-8');
+      final url = html.Url.createObjectUrlFromBlob(blob);
+
+      final fileName =
+          'tutor_logs_${DateFormat('yyyyMMdd').format(range.start)}_${DateFormat('yyyyMMdd').format(range.endInclusive)}.csv';
+
+      html.AnchorElement(href: url)
+        ..setAttribute('download', fileName)
+        ..click();
+
+      html.Url.revokeObjectUrl(url);
+    } catch (e) {
+      error.value = 'Failed to export tutor logs CSV: $e';
+    }
+  }
+
   String _formatDurationCsv(Duration? d) {
     if (d == null) return '';
     final hours = d.inHours;
     final minutes = d.inMinutes.remainder(60);
     final seconds = d.inSeconds.remainder(60);
     return '${hours}h ${minutes}m ${seconds}s';
+  }
+
+  Duration? _calculateSessionDuration(DateTime? timeIn, DateTime? timeOut) {
+    if (timeIn == null || timeOut == null) return null;
+    if (timeOut.isBefore(timeIn)) return null;
+    return timeOut.difference(timeIn);
+  }
+
+  Duration? _calculateCappedSessionDuration(DateTime? timeIn, DateTime? timeOut) {
+    if (timeIn == null) return null;
+
+    final end = timeOut ?? DateTime.now();
+    if (end.isBefore(timeIn)) return null;
+
+    final rawDuration = end.difference(timeIn);
+    const maxDuration = Duration(hours: 5);
+
+    return rawDuration > maxDuration ? maxDuration : rawDuration;
+  }
+
+  String _formatDateTimeCsv(DateTime? dt) {
+    if (dt == null) return '';
+    return DateFormat('MM/dd/yyyy hh:mm a').format(dt);
+  }
+
+  bool _isSameDate(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
   String _formatDateCsv(DateTime? dt) {

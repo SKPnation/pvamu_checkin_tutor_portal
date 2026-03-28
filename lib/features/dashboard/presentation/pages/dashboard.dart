@@ -12,6 +12,8 @@ import 'package:pvamu_checkin_tutor_portal/features/dashboard/presentation/widge
 import 'package:pvamu_checkin_tutor_portal/features/dashboard/presentation/widgets/view_type_item_widget.dart';
 import 'package:pvamu_checkin_tutor_portal/features/students/presentation/widgets/student_logs_table.dart';
 import 'package:pvamu_checkin_tutor_portal/features/students/presentation/widgets/tutor_logs_table.dart';
+import 'package:pvamu_checkin_tutor_portal/features/time_summary/presentation/controllers/time_summary_controller.dart';
+import 'package:pvamu_checkin_tutor_portal/features/time_summary/presentation/widgets/export_csv_btn.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/controllers/tutors_controller.dart';
 
 class Dashboard extends StatelessWidget {
@@ -20,6 +22,7 @@ class Dashboard extends StatelessWidget {
   final dashboardController = DashboardController.instance;
   final coursesController = CoursesController.instance;
   final tutorsController = TutorsController.instance;
+  final timeSummaryCtrl = TimeSummaryController.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +65,18 @@ class Dashboard extends StatelessWidget {
                       tutorsController: tutorsController,
                       from: AppStrings.assignedTutorsTitle.toLowerCase(),
                     ),
+                  ),
+                ),
+                SizedBox(width: 16),
+
+                Expanded(
+                  child: SizedBox(
+                    height: 60,
+                    child: ExportCsvButton(
+                      text: "Export Tutor Logs",
+                      onPressed: (){
+                      timeSummaryCtrl.exportTutorLogsToCSV();
+                    }, ),
                   ),
                 ),
               ],

@@ -219,7 +219,7 @@ class TutorItem extends StatelessWidget {
           },
           value: 'delete',
           child: Text('Delete'),
-        ),
+        )
       ],
     );
   }

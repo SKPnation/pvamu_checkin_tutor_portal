@@ -172,4 +172,7 @@ class TutorsController extends GetxController {
       "${slot.key} slot removed",
     );
   }
+
+
+
 }
