@@ -2,16 +2,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pvamu_checkin_tutor_portal/features/time_summary/data/models/time_summary_export_data.dart';
 import 'package:pvamu_checkin_tutor_portal/features/time_summary/data/models/time_summary_metrics.dart';
 import 'package:pvamu_checkin_tutor_portal/features/time_summary/data/repos/time_summary_repo_impl.dart';
 import 'package:pvamu_checkin_tutor_portal/features/time_summary/domain/repos/time_summary_repo.dart';
 import 'dart:convert';
 import 'dart:html' as html;
 import 'package:csv/csv.dart';
+import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xlsio;
 import 'package:intl/intl.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_logs_model.dart';
 
-enum TimeSummaryPreset { last7Days, last30Days, last1Year, custom }
+enum TimeSummaryPreset { last7Days, last2Weeks, last30Days, last1Year, custom }
 
 class TimeSummaryController extends GetxController {
   static TimeSummaryController get instance => Get.find();
@@ -127,6 +129,8 @@ class TimeSummaryController extends GetxController {
     switch (preset.value) {
       case TimeSummaryPreset.last7Days:
         return DateRangeX.last7Days();
+      case TimeSummaryPreset.last2Weeks:
+        return DateRangeX.last2Weeks();
       case TimeSummaryPreset.last30Days:
         return DateRangeX.last30Days();
       case TimeSummaryPreset.last1Year:
@@ -143,135 +147,200 @@ class TimeSummaryController extends GetxController {
   }
 
   ///EXPORT TUTOR ROLL UPS TO CSV
-  Future<void> exportTutorRollUpsCsv() async {
-    try {
-      final rows = <List<dynamic>>[
-        [
-          'Tutor Name',
-          'Email',
-          'Total Hours',
-          'Sign-ins',
-          'Avg Duration',
-          'Last Active',
-        ],
-      ];
+  // Future<void> exportTutorRollUpsCsv() async {
+  //   try {
+  //     final rows = <List<dynamic>>[
+  //       [
+  //         'Tutor Name',
+  //         'Email',
+  //         'Total Hours',
+  //         'Sign-ins',
+  //         'Avg Duration',
+  //         'Last Active',
+  //       ],
+  //     ];
+  //
+  //     for (final t in tutorRollUps) {
+  //       rows.add([
+  //         t.tutorName ?? '',
+  //         t.tutorEmail ?? '',
+  //         t.hours.toStringAsFixed(1),
+  //         t.signIns,
+  //         _formatDurationCsv(t.avgDuration),
+  //         _formatDateCsv(t.lastActive),
+  //       ]);
+  //     }
+  //
+  //     final csv = const ListToCsvConverter().convert(rows);
+  //
+  //     final bytes = utf8.encode(csv);
+  //     final blob = html.Blob([bytes], 'text/csv;charset=utf-8');
+  //     final url = html.Url.createObjectUrlFromBlob(blob);
+  //
+  //     final fileName =
+  //         'time_summary_tutors_${DateFormat('yyyyMMdd').format(currentRange.start)}_${DateFormat('yyyyMMdd').format(currentRange.endInclusive)}.csv';
+  //
+  //     html.AnchorElement(href: url)
+  //       ..setAttribute('download', fileName)
+  //       ..click();
+  //
+  //     html.Url.revokeObjectUrl(url);
+  //   } catch (e) {
+  //     error.value = 'Failed to export CSV: $e';
+  //   }
+  // }
 
-      for (final t in tutorRollUps) {
-        rows.add([
-          t.tutorName ?? '',
-          t.tutorEmail ?? '',
-          t.hours.toStringAsFixed(1),
-          t.signIns,
-          _formatDurationCsv(t.avgDuration),
-          _formatDateCsv(t.lastActive),
-        ]);
-      }
-
-      final csv = const ListToCsvConverter().convert(rows);
-
-      final bytes = utf8.encode(csv);
-      final blob = html.Blob([bytes], 'text/csv;charset=utf-8');
-      final url = html.Url.createObjectUrlFromBlob(blob);
-
-      final fileName =
-          'time_summary_tutors_${DateFormat('yyyyMMdd').format(currentRange.start)}_${DateFormat('yyyyMMdd').format(currentRange.endInclusive)}.csv';
-
-      html.AnchorElement(href: url)
-        ..setAttribute('download', fileName)
-        ..click();
-
-      html.Url.revokeObjectUrl(url);
-    } catch (e) {
-      error.value = 'Failed to export CSV: $e';
-    }
-  }
-
-
-  ///TO EXPORT TUTOR LOGS TO CSV
-  Future<void> exportTutorLogsToCSV() async {
+  Future<void> exportTutorLogsToExcel() async {
     try {
       error.value = '';
 
       final range = currentRange;
 
-      final snapshot =
-          await TimeSummaryRepoImpl().tutorHistoryCollection
-              .where(
-                'created_at',
-                isGreaterThanOrEqualTo: Timestamp.fromDate(range.start),
-              )
-              .where(
-                'created_at',
-                isLessThanOrEqualTo: Timestamp.fromDate(range.endInclusive),
-              )
-              .orderBy('created_at', descending: true)
-              .get();
+      final snapshot = await TimeSummaryRepoImpl()
+          .tutorHistoryCollection
+          .where(
+        'created_at',
+        isGreaterThanOrEqualTo: Timestamp.fromDate(range.start),
+      )
+          .where(
+        'created_at',
+        isLessThanOrEqualTo: Timestamp.fromDate(range.endInclusive),
+      )
+          .orderBy('created_at', descending: true)
+          .get();
 
-      final logs =
-          snapshot.docs
-              .map((doc) => TutorLoginHistory.fromMap(doc.data(), doc.id))
-              .toList();
+      final rawLogs = snapshot.docs
+          .map((doc) => TutorLoginHistory.fromMap(doc.data(), doc.id))
+          .toList();
 
-      final rows = <List<dynamic>>[
-        [
-          'Date',
-          'Tutor ID',
-          'Tutor Name',
-          'Email',
-          'Time In',
-          'Time Out',
-          'Session Duration',
-          'Capped Session Duration'
-        ],
+      final logs = dedupeTutorLogs(rawLogs);
+
+      final totalHoursByTutor = <String, TutorExportTotal>{};
+
+      for (final log in logs) {
+        final tutorId = log.tutorId ?? log.tutorRef?.id;
+        if (tutorId == null || tutorId.isEmpty) continue;
+
+        final cappedDuration = _calculateCappedSessionDuration(
+          log.timeIn,
+          log.timeOut,
+        );
+
+        if (totalHoursByTutor.containsKey(tutorId)) {
+          totalHoursByTutor[tutorId]!.total += cappedDuration ?? Duration.zero;
+        } else {
+          totalHoursByTutor[tutorId] = TutorExportTotal(
+            tutorId: tutorId,
+            tutorName: log.tutorName ?? '',
+            tutorEmail: log.tutorEmail ?? '',
+            total: cappedDuration ?? Duration.zero,
+          );
+        }
+      }
+
+      final workbook = xlsio.Workbook();
+      final sheet = workbook.worksheets[0];
+      sheet.name = 'Tutor Logs';
+
+      final headers = [
+        'Date',
+        'Tutor ID',
+        'Tutor Name',
+        'Email',
+        'Time In',
+        'Time Out',
+        'Actual Duration',
+        'Billable Duration (Max 5 hrs)',
+        'Total Hours (Capped)',
       ];
 
+      for (int i = 0; i < headers.length; i++) {
+        final cell = sheet.getRangeByIndex(1, i + 1);
+        cell.setText(headers[i]);
+        cell.cellStyle.bold = true;
+        cell.cellStyle.borders.all.lineStyle = xlsio.LineStyle.thin;
+      }
+
+      int row = 2;
       DateTime? lastPrintedDate;
 
       for (final log in logs) {
         final sessionDate = log.timeIn ?? log.createdAt;
         final duration = _calculateSessionDuration(log.timeIn, log.timeOut);
-        final cappedDuration = _calculateCappedSessionDuration(log.timeIn, log.timeOut);
+        final cappedDuration = _calculateCappedSessionDuration(
+          log.timeIn,
+          log.timeOut,
+        );
+
+        final tutorId = log.tutorId ?? log.tutorRef?.id ?? '';
 
         final isNewDateGroup =
             sessionDate != null &&
-            (lastPrintedDate == null ||
-                !_isSameDate(lastPrintedDate, sessionDate));
+                (lastPrintedDate == null ||
+                    !_isSameDate(lastPrintedDate, sessionDate));
 
         if (isNewDateGroup) {
-          rows.add([]);
-          rows.add([
+          sheet.getRangeByIndex(row, 1).setText(
             DateFormat('MM/dd/yyyy').format(sessionDate),
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            ''
-          ]);
+          );
+          applyRowBorders(sheet, row, 1, 9);
           lastPrintedDate = sessionDate;
+          row++;
         }
 
-        rows.add([
-          '',
-          log.tutorId ?? '',
-          log.tutorName ?? '',
-          log.tutorEmail ?? '',
-          _formatDateTimeCsv(log.timeIn),
-          _formatDateTimeCsv(log.timeOut),
-          _formatDurationCsv(duration),
-          _formatDurationCsv(cappedDuration)
-        ]);
+        sheet.getRangeByIndex(row, 1).setText('');
+        sheet.getRangeByIndex(row, 2).setText(tutorId);
+        sheet.getRangeByIndex(row, 3).setText(log.tutorName ?? '');
+        sheet.getRangeByIndex(row, 4).setText(log.tutorEmail ?? '');
+        sheet.getRangeByIndex(row, 5).setText(_formatDateTimeCsv(log.timeIn));
+        sheet.getRangeByIndex(row, 6).setText(_formatDateTimeCsv(log.timeOut));
+        sheet.getRangeByIndex(row, 7).setText(_formatDurationCsv(duration));
+        sheet.getRangeByIndex(row, 8).setText(_formatDurationCsv(cappedDuration));
+        sheet.getRangeByIndex(row, 9).setText('');
+
+        applyRowBorders(sheet, row, 1, 9);
+        row++;
       }
 
-      final csv = const ListToCsvConverter().convert(rows);
+      row++;
 
-      final bytes = utf8.encode(csv);
-      final blob = html.Blob([bytes], 'text/csv;charset=utf-8');
+      final sortedTotals = totalHoursByTutor.values.toList()
+        ..sort((a, b) => b.total.compareTo(a.total));
+
+      for (final t in sortedTotals) {
+        sheet.getRangeByIndex(row, 1).setText('');
+        sheet.getRangeByIndex(row, 2).setText('');
+        sheet.getRangeByIndex(row, 3).setText(t.tutorName);
+        sheet.getRangeByIndex(row, 4).setText(t.tutorEmail);
+        sheet.getRangeByIndex(row, 5).setText('');
+        sheet.getRangeByIndex(row, 6).setText('');
+        sheet.getRangeByIndex(row, 7).setText('');
+        sheet.getRangeByIndex(row, 8).setText('');
+        sheet.getRangeByIndex(
+          row,
+          9,
+        ).setNumber(double.parse((t.total.inMinutes / 60.0).toStringAsFixed(0)));
+
+        final totalRow = sheet.getRangeByIndex(row, 3, row, 9);
+        totalRow.cellStyle.backColor = '#FFF200';
+        totalRow.cellStyle.borders.all.lineStyle = xlsio.LineStyle.thin;
+
+        row++;
+      }
+
+      sheet.getRangeByIndex(1, 1, row - 1, 9).autoFitColumns();
+
+      final bytes = workbook.saveAsStream();
+      workbook.dispose();
+
+      final blob = html.Blob(
+        [bytes],
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      );
       final url = html.Url.createObjectUrlFromBlob(blob);
 
       final fileName =
-          'tutor_logs_${DateFormat('yyyyMMdd').format(range.start)}_${DateFormat('yyyyMMdd').format(range.endInclusive)}.csv';
+          'tutor_logs_${DateFormat('yyyyMMdd').format(range.start)}_${DateFormat('yyyyMMdd').format(range.endInclusive)}.xlsx';
 
       html.AnchorElement(href: url)
         ..setAttribute('download', fileName)
@@ -279,8 +348,70 @@ class TimeSummaryController extends GetxController {
 
       html.Url.revokeObjectUrl(url);
     } catch (e) {
-      error.value = 'Failed to export tutor logs CSV: $e';
+      error.value = 'Failed to export tutor logs Excel file: $e';
     }
+  }
+
+  void applyRowBorders(
+      xlsio.Worksheet sheet,
+      int row,
+      int startCol,
+      int endCol,
+      ) {
+    final range = sheet.getRangeByIndex(row, startCol, row, endCol);
+    range.cellStyle.borders.all.lineStyle = xlsio.LineStyle.thin;
+  }
+
+  //Remove duplicate rows
+  List<TutorLoginHistory> dedupeTutorLogs(List<TutorLoginHistory> logs) {
+    logs.sort((a, b) {
+      final aTime = a.createdAt ?? a.timeIn ?? DateTime(1970);
+      final bTime = b.createdAt ?? b.timeIn ?? DateTime(1970);
+      return bTime.compareTo(aTime);
+    });
+
+    final unique = <TutorLoginHistory>[];
+    final lastSeenByTutor = <String, DateTime>{};
+
+    for (final log in logs) {
+      final tutorId = log.tutorId ?? log.tutorRef?.id;
+      final stamp = log.createdAt ?? log.timeIn;
+
+      if (tutorId == null || stamp == null) {
+        unique.add(log);
+        continue;
+      }
+
+      final lastSeen = lastSeenByTutor[tutorId];
+      if (lastSeen != null && lastSeen.difference(stamp).inSeconds.abs() <= 60) {
+        continue;
+      }
+
+      lastSeenByTutor[tutorId] = stamp;
+      unique.add(log);
+    }
+
+    return unique;
+  }
+
+  Duration? _calculateSessionDuration(DateTime? timeIn, DateTime? timeOut) {
+    if (timeIn == null || timeOut == null) return null;
+    if (timeOut.isBefore(timeIn)) return null;
+    return timeOut.difference(timeIn);
+  }
+
+  Duration? _calculateCappedSessionDuration(DateTime? timeIn, DateTime? timeOut) {
+    if (timeIn == null || timeOut == null) return null;
+    if (timeOut.isBefore(timeIn)) return null;
+
+    final rawDuration = timeOut.difference(timeIn);
+    const maxDuration = Duration(hours: 5);
+
+    return rawDuration > maxDuration ? maxDuration : rawDuration;
+  }
+
+  bool _isSameDate(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
   String _formatDurationCsv(Duration? d) {
@@ -291,35 +422,8 @@ class TimeSummaryController extends GetxController {
     return '${hours}h ${minutes}m ${seconds}s';
   }
 
-  Duration? _calculateSessionDuration(DateTime? timeIn, DateTime? timeOut) {
-    if (timeIn == null || timeOut == null) return null;
-    if (timeOut.isBefore(timeIn)) return null;
-    return timeOut.difference(timeIn);
-  }
-
-  Duration? _calculateCappedSessionDuration(DateTime? timeIn, DateTime? timeOut) {
-    if (timeIn == null) return null;
-
-    final end = timeOut ?? DateTime.now();
-    if (end.isBefore(timeIn)) return null;
-
-    final rawDuration = end.difference(timeIn);
-    const maxDuration = Duration(hours: 5);
-
-    return rawDuration > maxDuration ? maxDuration : rawDuration;
-  }
-
   String _formatDateTimeCsv(DateTime? dt) {
     if (dt == null) return '';
     return DateFormat('MM/dd/yyyy hh:mm a').format(dt);
-  }
-
-  bool _isSameDate(DateTime a, DateTime b) {
-    return a.year == b.year && a.month == b.month && a.day == b.day;
-  }
-
-  String _formatDateCsv(DateTime? dt) {
-    if (dt == null) return '';
-    return DateFormat('MM/dd/yyyy').format(dt);
   }
 }

@@ -50,6 +50,7 @@ dependencies:
   image_picker: ^1.2.1
   image_picker_for_web: ^3.1.1
   csv: ^6.0.0
+  syncfusion_flutter_xlsio: ^33.1.45
 
 dev_dependencies:
   flutter_test:

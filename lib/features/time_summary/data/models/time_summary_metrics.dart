@@ -53,6 +53,13 @@ class DateRangeX {
     return DateRangeX(start: DateTime(start.year, start.month, start.day), endInclusive: end);
   }
 
+  factory DateRangeX.last2Weeks() {
+    final now = DateTime.now();
+    final end = DateTime(now.year, now.month, now.day, 23, 59, 59);
+    final start = end.subtract(const Duration(days: 13));
+    return DateRangeX(start: DateTime(start.year, start.month, start.day), endInclusive: end);
+  }
+
   factory DateRangeX.last30Days() {
     final now = DateTime.now();
     final end = DateTime(now.year, now.month, now.day, 23, 59, 59);
@@ -144,10 +151,8 @@ class TutorHoursRollup {
   final String tutorId;
   final String? tutorName;
   final String? tutorEmail;
-
   final Duration totalHours;
   final int signIns;
-
   final Duration? avgDuration;
   final DateTime? lastActive;
 
@@ -168,46 +173,56 @@ class TutorHoursRollup {
     required DateRangeX range,
     bool includeOngoing = false,
   }) {
-    final map = <String, _TutorAgg>{};
+    final dedupedLogs = dedupeTutorLogs(tutorLogins);
 
-    for (final t in tutorLogins) {
-      if (!range.contains(t.timeIn)) continue;
+    final map = <String, TutorAgg>{};
+
+    for (final t in dedupedLogs) {
+      final sessionDate = t.timeIn ?? t.createdAt;
+      if (sessionDate == null || !range.contains(sessionDate)) continue;
 
       final id = t.tutorId ?? t.tutorRef?.id;
       if (id == null || id.isEmpty) continue;
 
       map.putIfAbsent(
         id,
-            () => _TutorAgg(
+            () => TutorAgg(
           name: t.tutorName,
           email: t.tutorEmail,
         ),
       );
 
       final agg = map[id]!;
+
+      final capped = _cappedDuration(
+        timeIn: t.timeIn,
+        timeOut: t.timeOut,
+        includeOngoing: includeOngoing,
+      );
+
+      if (capped == null || capped <= Duration.zero) continue;
+
       agg.count++;
+      agg.dur += capped;
 
-      final d = t.duration(includeOngoing: includeOngoing);
-      if (d != null) agg.dur += d;
-
-      // track last active using timeIn (or timeOut if you prefer)
-      final candidate = t.timeIn;
-      if (candidate != null) {
-        if (agg.lastActive == null || candidate.isAfter(agg.lastActive!)) {
-          agg.lastActive = candidate;
-        }
+      final candidate = t.timeIn ?? t.createdAt;
+      if (candidate != null &&
+          (agg.lastActive == null || candidate.isAfter(agg.lastActive!))) {
+        agg.lastActive = candidate;
       }
 
-      // Keep latest snapshot values if present
       agg.name ??= t.tutorName;
       agg.email ??= t.tutorEmail;
     }
 
     final list = map.entries.map((e) {
       final agg = e.value;
+
       final avg = agg.count == 0
           ? null
-          : Duration(minutes: (agg.dur.inMinutes / agg.count).round());
+          : Duration(
+        minutes: (agg.dur.inMinutes / agg.count).round(),
+      );
 
       return TutorHoursRollup(
         tutorId: e.key,
@@ -223,14 +238,66 @@ class TutorHoursRollup {
     list.sort((a, b) => b.totalHours.compareTo(a.totalHours));
     return list;
   }
+
+  static Duration? _cappedDuration({
+    required DateTime? timeIn,
+    required DateTime? timeOut,
+    required bool includeOngoing,
+  }) {
+    if (timeIn == null) return null;
+
+    final end = timeOut ?? (includeOngoing ? DateTime.now() : null);
+    if (end == null || end.isBefore(timeIn)) return null;
+
+    final raw = end.difference(timeIn);
+    const maxDuration = Duration(hours: 5);
+
+    return raw > maxDuration ? maxDuration : raw;
+  }
+
+  static List<TutorLoginHistory> dedupeTutorLogs(List<TutorLoginHistory> logs) {
+    logs.sort((a, b) {
+      final aTime = a.createdAt ?? a.timeIn ?? DateTime(1970);
+      final bTime = b.createdAt ?? b.timeIn ?? DateTime(1970);
+      return bTime.compareTo(aTime);
+    });
+
+    final unique = <TutorLoginHistory>[];
+    final lastSeenByTutor = <String, DateTime>{};
+
+    for (final log in logs) {
+      final tutorId = log.tutorId ?? log.tutorRef?.id;
+      final stamp = log.createdAt ?? log.timeIn;
+
+      if (tutorId == null || stamp == null) {
+        unique.add(log);
+        continue;
+      }
+
+      final lastSeen = lastSeenByTutor[tutorId];
+      if (lastSeen != null &&
+          lastSeen.difference(stamp).inSeconds.abs() <= 60) {
+        continue;
+      }
+
+      lastSeenByTutor[tutorId] = stamp;
+      unique.add(log);
+    }
+
+    return unique;
+  }
 }
 
-class _TutorAgg {
-  Duration dur = Duration.zero;
-  int count = 0;
+class TutorAgg {
   String? name;
   String? email;
+  int count = 0;
+  Duration dur = Duration.zero;
   DateTime? lastActive;
 
-  _TutorAgg({this.name, this.email});
+  TutorAgg({
+    this.name,
+    this.email,
+  });
 }
+

@@ -10,3 +10,17 @@ class TimeSummaryExportData {
     required this.tutorLogs,
   });
 }
+
+class TutorExportTotal {
+  final String tutorId;
+  final String tutorName;
+  final String tutorEmail;
+  Duration total;
+
+  TutorExportTotal({
+    required this.tutorId,
+    required this.tutorName,
+    required this.tutorEmail,
+    required this.total,
+  });
+}

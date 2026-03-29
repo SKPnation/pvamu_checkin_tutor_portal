@@ -9,6 +9,8 @@ import 'package:pvamu_checkin_tutor_portal/features/time_summary/presentation/wi
 
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/controllers/tutors_controller.dart';
+import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/widgets/edit_dialog.dart';
 
 // assumes you already have these:
 // - TimeSummaryController (from earlier)
@@ -28,6 +30,7 @@ class TimeSummaryPage extends StatefulWidget {
 
 class _TimeSummaryPageState extends State<TimeSummaryPage> {
   final timeSummaryCtrl = TimeSummaryController.instance;
+  final tutorsController = TutorsController.instance;
 
   @override
   void initState() {
@@ -51,9 +54,9 @@ class _TimeSummaryPageState extends State<TimeSummaryPage> {
             height: 40,
             width: 180,
             child: ExportCsvButton(
-              text: "Export CSV",
+              text: "Export to .xlsx",
               onPressed: () {
-                timeSummaryCtrl.exportTutorRollUpsCsv();
+                timeSummaryCtrl.exportTutorLogsToExcel();
               },
             ),
           ),
@@ -162,6 +165,12 @@ class _TimeSummaryPageState extends State<TimeSummaryPage> {
             'Last 7 days',
             isActive: active == TimeSummaryPreset.last7Days,
             onTap: () => timeSummaryCtrl.setPreset(TimeSummaryPreset.last7Days),
+          ),
+          const SizedBox(width: 8),
+          _buildFilterTab(
+            'Last 2 weeks',
+            isActive: active == TimeSummaryPreset.last2Weeks,
+            onTap: () => timeSummaryCtrl.setPreset(TimeSummaryPreset.last2Weeks),
           ),
           const SizedBox(width: 8),
           _buildFilterTab(
@@ -459,38 +468,39 @@ class _TimeSummaryPageState extends State<TimeSummaryPage> {
         return DataTable(
           columns: const [
             DataColumn(label: Text('Tutor Name')),
-            DataColumn(label: Text('Total Hours')),
+            DataColumn(label: Text('Total Hours (Capped)')),
             DataColumn(label: Text('Sign-ins')),
-            DataColumn(label: Text('Avg Duration')),
+            DataColumn(label: Text('Avg Duration (Capped)')),
             DataColumn(label: Text('Last Active')),
             DataColumn(label: Text('Action')),
           ],
-          rows:
-              ctrl.tutorRollUps.map((tutor) {
-                return DataRow(
-                  cells: [
-                    DataCell(Text(tutor.tutorName ?? '—')),
-                    DataCell(Text('${tutor.hours.toStringAsFixed(1)} hrs')),
-                    DataCell(Text('${tutor.signIns}')),
-                    DataCell(Text(formatDuration(tutor.totalHours))),
-                    DataCell(Text(formatDate(tutor.lastActive))),
-                    DataCell(
-                      ElevatedButton(
-                        onPressed: () {
-                          // TODO: Navigate to tutor detail page
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF514D66),
-                        ),
-                        child: const Text(
-                          'View details',
-                          style: TextStyle(color: Colors.white, fontSize: 12),
-                        ),
-                      ),
+          rows: ctrl.tutorRollUps.map((tutor) {
+            return DataRow(
+              cells: [
+                DataCell(Text(tutor.tutorName ?? '—')),
+                DataCell(Text('${tutor.hours.toStringAsFixed(1)} hrs')),
+                DataCell(Text('${tutor.signIns}')),
+                DataCell(Text(formatDuration(tutor.avgDuration!))),
+                DataCell(Text(formatDate(tutor.lastActive))),
+                DataCell(
+                  ElevatedButton(
+                    onPressed: () {
+                      Get.dialog(
+                        EditDialog(tutorsController: tutorsController, tutorId: tutor.tutorId),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF514D66),
                     ),
-                  ],
-                );
-              }).toList(),
+                    child: const Text(
+                      'View details',
+                      style: TextStyle(color: Colors.white, fontSize: 12),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }).toList(),
         );
       }),
     );
@@ -533,6 +543,8 @@ class _TimeSummaryPageState extends State<TimeSummaryPage> {
     switch (timeSummaryCtrl.preset.value) {
       case TimeSummaryPreset.last7Days:
         return DateRangeX.last7Days();
+      case TimeSummaryPreset.last2Weeks:
+        return DateRangeX.last2Weeks();
       case TimeSummaryPreset.last30Days:
         return DateRangeX.last30Days();
       case TimeSummaryPreset.last1Year:
