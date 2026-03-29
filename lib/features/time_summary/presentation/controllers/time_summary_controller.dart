@@ -146,50 +146,6 @@ class TimeSummaryController extends GetxController {
     }
   }
 
-  ///EXPORT TUTOR ROLL UPS TO CSV
-  // Future<void> exportTutorRollUpsCsv() async {
-  //   try {
-  //     final rows = <List<dynamic>>[
-  //       [
-  //         'Tutor Name',
-  //         'Email',
-  //         'Total Hours',
-  //         'Sign-ins',
-  //         'Avg Duration',
-  //         'Last Active',
-  //       ],
-  //     ];
-  //
-  //     for (final t in tutorRollUps) {
-  //       rows.add([
-  //         t.tutorName ?? '',
-  //         t.tutorEmail ?? '',
-  //         t.hours.toStringAsFixed(1),
-  //         t.signIns,
-  //         _formatDurationCsv(t.avgDuration),
-  //         _formatDateCsv(t.lastActive),
-  //       ]);
-  //     }
-  //
-  //     final csv = const ListToCsvConverter().convert(rows);
-  //
-  //     final bytes = utf8.encode(csv);
-  //     final blob = html.Blob([bytes], 'text/csv;charset=utf-8');
-  //     final url = html.Url.createObjectUrlFromBlob(blob);
-  //
-  //     final fileName =
-  //         'time_summary_tutors_${DateFormat('yyyyMMdd').format(currentRange.start)}_${DateFormat('yyyyMMdd').format(currentRange.endInclusive)}.csv';
-  //
-  //     html.AnchorElement(href: url)
-  //       ..setAttribute('download', fileName)
-  //       ..click();
-  //
-  //     html.Url.revokeObjectUrl(url);
-  //   } catch (e) {
-  //     error.value = 'Failed to export CSV: $e';
-  //   }
-  // }
-
   Future<void> exportTutorLogsToExcel() async {
     try {
       error.value = '';
@@ -280,10 +236,25 @@ class TimeSummaryController extends GetxController {
                     !_isSameDate(lastPrintedDate, sessionDate));
 
         if (isNewDateGroup) {
-          sheet.getRangeByIndex(row, 1).setText(
-            DateFormat('MM/dd/yyyy').format(sessionDate),
-          );
-          applyRowBorders(sheet, row, 1, 9);
+          final dateText = DateFormat('MM/dd/yyyy').format(sessionDate);
+
+          // Set the date text
+          sheet.getRangeByIndex(row, 1).setText(dateText);
+
+          final dateRow = sheet.getRangeByIndex(row, 1, row, 9);
+
+          // 🔥 Dark background
+          dateRow.cellStyle.backColor = '#D3D3D3';
+
+          // 🔥 White text
+          dateRow.cellStyle.fontColor = '#000000';
+
+          // Optional: bold
+          dateRow.cellStyle.bold = true;
+
+          // Keep borders
+          dateRow.cellStyle.borders.all.lineStyle = xlsio.LineStyle.thin;
+
           lastPrintedDate = sessionDate;
           row++;
         }
