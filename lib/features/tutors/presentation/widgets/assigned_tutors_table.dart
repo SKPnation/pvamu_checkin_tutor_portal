@@ -16,7 +16,7 @@ class AssignedTutorsTable extends StatefulWidget {
 class _AssignedTutorsTableState extends State<AssignedTutorsTable> {
   final tutorsController = TutorsController.instance;
 
-  var columnsArray = ["Assigned Tutor", "Course(s)", "Actions"];
+  var columnsArray = ["Assigned Tutor", "Schedule", "Course(s)", "Actions"];
 
   @override
   void initState() {
@@ -40,24 +40,28 @@ class _AssignedTutorsTableState extends State<AssignedTutorsTable> {
           SizedBox(height: 4),
           Table(
             columnWidths: const {
-              0: FlexColumnWidth(), // Name column
-              1: FlexColumnWidth(), // Course(s) column
-              2: FlexColumnWidth(), // Status column//
+              0: FlexColumnWidth(2),
+              1: FlexColumnWidth(1.2),
+              2: FlexColumnWidth(2),
+              3: FlexColumnWidth(1),// Status column//
             },
             children: [
               TableRow(
-                children:
-                    columnsArray
-                        .map(
-                          (e) => Center(
-                            child: CustomText(
-                              text: e.toUpperCase(),
-                              size: 12,
-                              weight: FontWeight.bold,
-                            ),
-                          ),
-                        )
-                        .toList(),
+                children: columnsArray
+                    .map(
+                      (e) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: CustomText(
+                        text: e.toUpperCase(),
+                        size: 12,
+                        weight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                )
+                    .toList(),
               ),
             ],
           ),

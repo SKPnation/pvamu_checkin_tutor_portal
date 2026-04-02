@@ -4,6 +4,7 @@ import 'package:pvamu_checkin_tutor_portal/core/constants/app_strings.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_button.dart';
 import 'package:pvamu_checkin_tutor_portal/core/global/custom_text.dart';
 import 'package:pvamu_checkin_tutor_portal/core/theme/colors.dart';
+import 'package:pvamu_checkin_tutor_portal/core/utils/helpers/size_helpers.dart';
 import 'package:pvamu_checkin_tutor_portal/features/courses/data/models/course_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/assigned_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/presentation/controllers/tutors_controller.dart';
@@ -22,6 +23,7 @@ class AssignedTutorItem extends StatelessWidget {
 
   final assignedTutorActionKey = GlobalKey();
   final assignedTutorViewKey = GlobalKey();
+  final assignedTutorViewScheduleKey = GlobalKey();
 
   final TutorsController tutorsController;
 
@@ -31,85 +33,132 @@ class AssignedTutorItem extends StatelessWidget {
       children: [
         Table(
           defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-          columnWidths: {
-            0: FlexColumnWidth(), // Name column
-            1: FlexColumnWidth(), // Course(s)
-            2: FlexColumnWidth(), // Status
-            // 3: FlexColumnWidth(), // Actions
+          columnWidths: const {
+            0: FlexColumnWidth(2),
+            1: FlexColumnWidth(1.2),
+            2: FlexColumnWidth(2),
+            3: FlexColumnWidth(1),
           },
           children: [
             TableRow(
               children: [
-                Center(
-                  child: CustomText(
-                    text:
-                        item.tutor == null
-                            ? "--"
-                            : "${item.tutor?.fName} ${item.tutor?.lName}",
-                    size: 12,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: CustomText(
+                      text: item.tutor == null
+                          ? "--"
+                          : "${item.tutor?.fName} ${item.tutor?.lName}",
+                      size: 12,
+                    ),
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CustomText(
-                      text:
-                          "${item.courses?.length} course${item.courses!.length > 1 ? "s" : ""}",
-                    ),
-                    SizedBox(width: 4),
-                    GestureDetector(
-                      key: assignedTutorViewKey,
-                      onTap:
-                          () => displayCoursesPopUp(
-                            context,
-                            item.courses,
-                            assignedTutorViewKey,
-                            item.tutor!.id!,
-                          ),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: GestureDetector(
+                      key: assignedTutorViewScheduleKey,
+                      onTap: () => Get.dialog(
+                        EditDialog(
+                          tutorsController: tutorsController,
+                          tutorId: item.tutor!.id!,
+                        ),
+                      ),
                       child: Container(
-                        width: 50,
+                        width: 70,
+                        padding: const EdgeInsets.symmetric(vertical: 6),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(100),
                           color: AppColors.gold,
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.15),
-                              // softer, semi-transparent shadow
                               blurRadius: 6,
-                              // smoothness
                               spreadRadius: 1,
-                              // subtle spread
-                              offset: const Offset(
-                                0,
-                                3,
-                              ), // shadow position (x, y)
+                              offset: const Offset(0, 3),
                             ),
                           ],
                         ),
-                        child: Center(
-                          child: CustomText(
-                            text: "view",
-                            color: AppColors.white,
-                            weight: FontWeight.bold,
-                          ),
+                        alignment: Alignment.center,
+                        child: CustomText(
+                          text: "view",
+                          color: AppColors.white,
+                          weight: FontWeight.bold,
                         ),
                       ),
                     ),
-                  ],
+                  ),
                 ),
 
-                GestureDetector(
-                  key: assignedTutorActionKey,
-                  onTap: () async {
-                    displayActionPopUp(
-                      context,
-                      tutorsController,
-                      item.courses,
-                      assignedTutorActionKey,
-                      item.tutor!.id!,
-                    );
-                  },
-                  child: Icon(Icons.more_vert),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CustomText(
+                          text:
+                          "${item.courses?.length} course${item.courses!.length > 1 ? "s" : ""}",
+                        ),
+                        const SizedBox(width: 8),
+                        GestureDetector(
+                          key: assignedTutorViewKey,
+                          onTap: () => displayCoursesPopUp(
+                            context,
+                            item.courses,
+                            assignedTutorViewKey,
+                            item.tutor!.id!,
+                          ),
+                          child: Container(
+                            width: 50,
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              color: AppColors.gold,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.15),
+                                  blurRadius: 6,
+                                  spreadRadius: 1,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            alignment: Alignment.center,
+                            child: CustomText(
+                              text: "view",
+                              color: AppColors.white,
+                              weight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: GestureDetector(
+                      key: assignedTutorActionKey,
+                      onTap: () async {
+                        displayActionPopUp(
+                          context,
+                          tutorsController,
+                          item.courses,
+                          assignedTutorActionKey,
+                          item.tutor!.id!,
+                        );
+                      },
+                      child: const Icon(Icons.more_vert),
+                    ),
+                  ),
                 ),
               ],
             ),
