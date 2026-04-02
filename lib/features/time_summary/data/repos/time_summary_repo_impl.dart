@@ -1,4 +1,5 @@
 import 'package:fl_chart/src/chart/base/axis_chart/axis_chart_data.dart';
+import 'package:pvamu_checkin_tutor_portal/core/utils/helpers/duration_cap_helpers.dart';
 import 'package:pvamu_checkin_tutor_portal/features/students/data/models/student_logs_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/time_summary/data/models/time_summary_export_data.dart';
 import 'package:pvamu_checkin_tutor_portal/features/time_summary/data/models/time_summary_metrics.dart';
@@ -23,6 +24,7 @@ class TimeSummaryRepoImpl implements TimeSummaryRepo {
   final CollectionReference<Map<String, dynamic>> tutorHistoryCollection =
   FirebaseFirestore.instance.collection('tutor_login_history');
 
+  @override
   Future<TimeSummaryResponse> getTimeSummary({
     required DateRangeX range,
     bool includeOngoing = false,
@@ -113,19 +115,30 @@ class TimeSummaryRepoImpl implements TimeSummaryRepo {
   }
 
   @override
-  List<FlSpot> buildSpotsFromTutors(List<TutorLoginHistory> logs, {required DateRangeX range, required bool includeOngoing, required bool monthly}) {
+  List<FlSpot> buildSpotsFromTutors(
+      List<TutorLoginHistory> logs, {
+        required DateRangeX range,
+        required bool includeOngoing,
+        required bool monthly,
+      }) {
     final Map<int, double> buckets = {};
 
-    for (final t in logs) {
+    final dedupedLogs = TutorHoursRollup.dedupeTutorLogs(logs);
+
+    for (final t in dedupedLogs) {
       final dt = t.timeIn;
       if (dt == null) continue;
       if (!range.contains(dt)) continue;
 
-      final d = t.duration(includeOngoing: includeOngoing);
+      final d = calculateTutorBusinessCappedDuration(
+        timeIn: t.timeIn,
+        timeOut: t.timeOut,
+        includeOngoing: includeOngoing,
+      );
       if (d == null) continue;
 
       final hours = d.inMinutes / 60.0;
-      final key = monthly ? (dt.month) : dayIndex(dt, range.start);
+      final key = monthly ? dt.month : dayIndex(dt, range.start);
       buckets[key] = (buckets[key] ?? 0) + hours;
     }
 

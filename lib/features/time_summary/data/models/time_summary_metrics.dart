@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:pvamu_checkin_tutor_portal/core/utils/helpers/duration_cap_helpers.dart';
 import 'package:pvamu_checkin_tutor_portal/features/students/data/models/student_logs_model.dart';
 import 'package:pvamu_checkin_tutor_portal/features/tutors/data/models/tutor_logs_model.dart';
 
@@ -111,8 +112,13 @@ class TimeSummaryKpis {
     required DateRangeX range,
     bool includeOngoing = false,
   }) {
-    final filteredStudents = studentLogins.where((e) => range.contains(e.timeIn)).toList();
-    final filteredTutors = tutorLogins.where((e) => range.contains(e.timeIn)).toList();
+    final filteredStudents =
+    studentLogins.where((e) => range.contains(e.timeIn)).toList();
+
+    final filteredTutors =
+    TutorHoursRollup.dedupeTutorLogs(
+      tutorLogins.where((e) => range.contains(e.timeIn)).toList(),
+    );
 
     Duration sumStudent = Duration.zero;
     for (final s in filteredStudents) {
@@ -122,7 +128,11 @@ class TimeSummaryKpis {
 
     Duration sumTutor = Duration.zero;
     for (final t in filteredTutors) {
-      final d = t.duration(includeOngoing: includeOngoing);
+      final d = calculateTutorBusinessCappedDuration(
+        timeIn: t.timeIn,
+        timeOut: t.timeOut,
+        includeOngoing: includeOngoing,
+      );
       if (d != null) sumTutor += d;
     }
 
@@ -194,7 +204,7 @@ class TutorHoursRollup {
 
       final agg = map[id]!;
 
-      final capped = _cappedDuration(
+      final capped = _businessCappedDuration(
         timeIn: t.timeIn,
         timeOut: t.timeOut,
         includeOngoing: includeOngoing,
@@ -239,24 +249,47 @@ class TutorHoursRollup {
     return list;
   }
 
-  static Duration? _cappedDuration({
+  static DateTime? _clampTimeOutTo5Pm(DateTime? timeIn, DateTime? timeOut) {
+    if (timeIn == null) return null;
+
+    final end = timeOut;
+    if (end == null) return null;
+
+    final latestAllowed = DateTime(
+      timeIn.year,
+      timeIn.month,
+      timeIn.day,
+      17,
+      0,
+      0,
+    );
+
+    return end.isAfter(latestAllowed) ? latestAllowed : end;
+  }
+
+  static Duration? _businessCappedDuration({
     required DateTime? timeIn,
     required DateTime? timeOut,
     required bool includeOngoing,
   }) {
     if (timeIn == null) return null;
 
-    final end = timeOut ?? (includeOngoing ? DateTime.now() : null);
-    if (end == null || end.isBefore(timeIn)) return null;
+    final rawEnd = timeOut ?? (includeOngoing ? DateTime.now() : null);
+    if (rawEnd == null) return null;
 
-    final raw = end.difference(timeIn);
+    final effectiveEnd = _clampTimeOutTo5Pm(timeIn, rawEnd);
+    if (effectiveEnd == null || effectiveEnd.isBefore(timeIn)) return null;
+
+    final raw = effectiveEnd.difference(timeIn);
     const maxDuration = Duration(hours: 5);
 
     return raw > maxDuration ? maxDuration : raw;
   }
 
   static List<TutorLoginHistory> dedupeTutorLogs(List<TutorLoginHistory> logs) {
-    logs.sort((a, b) {
+    final sortedLogs = [...logs];
+
+    sortedLogs.sort((a, b) {
       final aTime = a.createdAt ?? a.timeIn ?? DateTime(1970);
       final bTime = b.createdAt ?? b.timeIn ?? DateTime(1970);
       return bTime.compareTo(aTime);
@@ -265,7 +298,7 @@ class TutorHoursRollup {
     final unique = <TutorLoginHistory>[];
     final lastSeenByTutor = <String, DateTime>{};
 
-    for (final log in logs) {
+    for (final log in sortedLogs) {
       final tutorId = log.tutorId ?? log.tutorRef?.id;
       final stamp = log.createdAt ?? log.timeIn;
 

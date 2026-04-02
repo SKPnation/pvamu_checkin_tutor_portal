@@ -177,7 +177,7 @@ class TimeSummaryController extends GetxController {
         final tutorId = log.tutorId ?? log.tutorRef?.id;
         if (tutorId == null || tutorId.isEmpty) continue;
 
-        final cappedDuration = _calculateCappedSessionDuration(
+        final cappedDuration = _calculateBusinessCappedDuration(
           log.timeIn,
           log.timeOut,
         );
@@ -223,7 +223,7 @@ class TimeSummaryController extends GetxController {
       for (final log in logs) {
         final sessionDate = log.timeIn ?? log.createdAt;
         final duration = _calculateSessionDuration(log.timeIn, log.timeOut);
-        final cappedDuration = _calculateCappedSessionDuration(
+        final cappedDuration = _calculateBusinessCappedDuration(
           log.timeIn,
           log.timeOut,
         );
@@ -323,6 +323,166 @@ class TimeSummaryController extends GetxController {
     }
   }
 
+  Future<void> exportSpecificTutorLogsToExcel(String tutorId) async {
+    try {
+      error.value = '';
+
+      final range = currentRange;
+
+      final snapshot = await TimeSummaryRepoImpl()
+          .tutorHistoryCollection
+          .where('tutor_id', isEqualTo: tutorId)
+          .where(
+        'created_at',
+        isGreaterThanOrEqualTo: Timestamp.fromDate(range.start),
+      )
+          .where(
+        'created_at',
+        isLessThanOrEqualTo: Timestamp.fromDate(range.endInclusive),
+      )
+          .orderBy('created_at', descending: true)
+          .get();
+
+      final rawLogs = snapshot.docs
+          .map((doc) => TutorLoginHistory.fromMap(doc.data(), doc.id))
+          .where((log) => (log.tutorId ?? log.tutorRef?.id) == tutorId)
+          .toList();
+
+      final logs = dedupeTutorLogs(rawLogs);
+
+      if (logs.isEmpty) {
+        error.value = 'No logs found for this tutor in the selected period.';
+        return;
+      }
+
+      final workbook = xlsio.Workbook();
+      final sheet = workbook.worksheets[0];
+      sheet.name = 'Tutor Logs';
+
+      final headers = [
+        'Date',
+        'Tutor ID',
+        'Tutor Name',
+        'Email',
+        'Time In',
+        'Time Out',
+        'Actual Duration',
+        'Billable Duration (Max 5 hrs)',
+        'Total Hours (Capped)',
+      ];
+
+      for (int i = 0; i < headers.length; i++) {
+        final cell = sheet.getRangeByIndex(1, i + 1);
+        cell.setText(headers[i]);
+        cell.cellStyle.bold = true;
+        cell.cellStyle.borders.all.lineStyle = xlsio.LineStyle.thin;
+      }
+
+      int row = 2;
+      DateTime? lastPrintedDate;
+      Duration totalCapped = Duration.zero;
+
+      final sortedLogs = [...logs]..sort((a, b) {
+        final aTime = a.timeIn ?? a.createdAt ?? DateTime(1970);
+        final bTime = b.timeIn ?? b.createdAt ?? DateTime(1970);
+        return bTime.compareTo(aTime);
+      });
+
+      for (final log in sortedLogs) {
+        final sessionDate = log.timeIn ?? log.createdAt;
+        final duration = _calculateSessionDuration(log.timeIn, log.timeOut);
+        final cappedDuration = _calculateBusinessCappedDuration(
+          log.timeIn,
+          log.timeOut,
+        );
+
+        if (cappedDuration != null) {
+          totalCapped += cappedDuration;
+        }
+
+        final currentTutorId = log.tutorId ?? log.tutorRef?.id ?? '';
+
+        final isNewDateGroup =
+            sessionDate != null &&
+                (lastPrintedDate == null ||
+                    !_isSameDate(lastPrintedDate!, sessionDate));
+
+        if (isNewDateGroup) {
+          final dateText = DateFormat('MM/dd/yyyy').format(sessionDate);
+
+          sheet.getRangeByIndex(row, 1).setText(dateText);
+
+          final dateRow = sheet.getRangeByIndex(row, 1, row, 9);
+          dateRow.cellStyle.backColor = '#D3D3D3';
+          dateRow.cellStyle.fontColor = '#000000';
+          dateRow.cellStyle.bold = true;
+          dateRow.cellStyle.borders.all.lineStyle = xlsio.LineStyle.thin;
+
+          lastPrintedDate = sessionDate;
+          row++;
+        }
+
+        sheet.getRangeByIndex(row, 1).setText('');
+        sheet.getRangeByIndex(row, 2).setText(currentTutorId);
+        sheet.getRangeByIndex(row, 3).setText(log.tutorName ?? '');
+        sheet.getRangeByIndex(row, 4).setText(log.tutorEmail ?? '');
+        sheet.getRangeByIndex(row, 5).setText(_formatDateTimeCsv(log.timeIn));
+        sheet.getRangeByIndex(row, 6).setText(_formatDateTimeCsv(log.timeOut));
+        sheet.getRangeByIndex(row, 7).setText(_formatDurationCsv(duration));
+        sheet.getRangeByIndex(row, 8).setText(_formatDurationCsv(cappedDuration));
+        sheet.getRangeByIndex(row, 9).setText('');
+
+        applyRowBorders(sheet, row, 1, 9);
+        row++;
+      }
+
+      row++;
+
+      final firstLog = sortedLogs.first;
+      final tutorName = firstLog.tutorName ?? '';
+      final tutorEmail = firstLog.tutorEmail ?? '';
+
+      sheet.getRangeByIndex(row, 1).setText('');
+      sheet.getRangeByIndex(row, 2).setText('');
+      sheet.getRangeByIndex(row, 3).setText(tutorName);
+      sheet.getRangeByIndex(row, 4).setText(tutorEmail);
+      sheet.getRangeByIndex(row, 5).setText('');
+      sheet.getRangeByIndex(row, 6).setText('');
+      sheet.getRangeByIndex(row, 7).setText('');
+      sheet.getRangeByIndex(row, 8).setText('');
+      sheet
+          .getRangeByIndex(row, 9)
+          .setNumber(double.parse((totalCapped.inMinutes / 60.0).toStringAsFixed(0)));
+
+      final totalRow = sheet.getRangeByIndex(row, 3, row, 9);
+      totalRow.cellStyle.backColor = '#FFF200';
+      totalRow.cellStyle.borders.all.lineStyle = xlsio.LineStyle.thin;
+
+      sheet.getRangeByIndex(1, 1, row, 9).autoFitColumns();
+
+      final bytes = workbook.saveAsStream();
+      workbook.dispose();
+
+      final blob = html.Blob(
+        [bytes],
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      );
+      final url = html.Url.createObjectUrlFromBlob(blob);
+
+      final safeTutorId = tutorId.replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '_');
+      final fileName =
+          'tutor_logs_${safeTutorId}_${DateFormat('yyyyMMdd').format(range.start)}_${DateFormat('yyyyMMdd').format(range.endInclusive)}.xlsx';
+
+      html.AnchorElement(href: url)
+        ..setAttribute('download', fileName)
+        ..click();
+
+      html.Url.revokeObjectUrl(url);
+    } catch (e) {
+      error.value = 'Failed to export tutor logs Excel file: $e';
+    }
+  }
+
   void applyRowBorders(
       xlsio.Worksheet sheet,
       int row,
@@ -370,12 +530,40 @@ class TimeSummaryController extends GetxController {
     if (timeOut.isBefore(timeIn)) return null;
     return timeOut.difference(timeIn);
   }
+  //
+  // Duration? _calculateCappedSessionDuration(DateTime? timeIn, DateTime? timeOut) {
+  //   if (timeIn == null || timeOut == null) return null;
+  //   if (timeOut.isBefore(timeIn)) return null;
+  //
+  //   final rawDuration = timeOut.difference(timeIn);
+  //   const maxDuration = Duration(hours: 5);
+  //
+  //   return rawDuration > maxDuration ? maxDuration : rawDuration;
+  // }
 
-  Duration? _calculateCappedSessionDuration(DateTime? timeIn, DateTime? timeOut) {
-    if (timeIn == null || timeOut == null) return null;
-    if (timeOut.isBefore(timeIn)) return null;
+  DateTime? _clampTimeOutTo5Pm(DateTime? timeIn, DateTime? timeOut) {
+    if (timeIn == null || timeOut == null) return timeOut;
 
-    final rawDuration = timeOut.difference(timeIn);
+    final maxAllowedTimeOut = DateTime(
+      timeIn.year,
+      timeIn.month,
+      timeIn.day,
+      17, // 5 PM
+      0,
+      0,
+    );
+
+    return timeOut.isAfter(maxAllowedTimeOut) ? maxAllowedTimeOut : timeOut;
+  }
+
+  Duration? _calculateBusinessCappedDuration(DateTime? timeIn, DateTime? timeOut) {
+    if (timeIn == null) return null;
+
+    final effectiveTimeOut = _clampTimeOutTo5Pm(timeIn, timeOut);
+    if (effectiveTimeOut == null) return null;
+    if (effectiveTimeOut.isBefore(timeIn)) return null;
+
+    final rawDuration = effectiveTimeOut.difference(timeIn);
     const maxDuration = Duration(hours: 5);
 
     return rawDuration > maxDuration ? maxDuration : rawDuration;
@@ -397,4 +585,6 @@ class TimeSummaryController extends GetxController {
     if (dt == null) return '';
     return DateFormat('MM/dd/yyyy hh:mm a').format(dt);
   }
+
+
 }

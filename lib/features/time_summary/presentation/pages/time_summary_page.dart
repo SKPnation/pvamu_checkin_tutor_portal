@@ -431,6 +431,8 @@ class _TimeSummaryPageState extends State<TimeSummaryPage> {
   Widget buildDataTable(BuildContext context) {
     final ctrl = TimeSummaryController.instance;
 
+    print(ctrl.error.value);
+
     return Container(
       width: displayWidth(context),
       decoration: BoxDecoration(
@@ -473,6 +475,7 @@ class _TimeSummaryPageState extends State<TimeSummaryPage> {
             DataColumn(label: Text('Avg Duration (Capped)')),
             DataColumn(label: Text('Last Active')),
             DataColumn(label: Text('Action')),
+            DataColumn(label: Text('Export')),
           ],
           rows: ctrl.tutorRollUps.map((tutor) {
             return DataRow(
@@ -498,6 +501,12 @@ class _TimeSummaryPageState extends State<TimeSummaryPage> {
                     ),
                   ),
                 ),
+                DataCell(GestureDetector(
+                  onTap: () {
+                    timeSummaryCtrl.exportSpecificTutorLogsToExcel(tutor.tutorId);
+                  },
+                  child: const Icon(Icons.download, size: 16, color: Colors.blueAccent),
+                )),
               ],
             );
           }).toList(),
